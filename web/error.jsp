@@ -1,6 +1,6 @@
 <%-- 
-    Document   : dashboard
-    Created on : Jan 20, 2026, 11:52:08 PM
+    Document   : error
+    Created on : Jan 22, 2026, 12:35:34 AM
     Author     : hung2
 --%>
 
@@ -12,6 +12,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>You have not right to access this page</h1>
     </body>
 </html>

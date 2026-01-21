@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package auth;
+package controller.auth;
 
 import dal.UserDAO;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import Model.User;
 
 /**
  *
@@ -67,22 +69,38 @@ public class LoginServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    UserDAO userDAO = new UserDAO();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        UserDAO userDAO = new UserDAO();
-        if (userDAO.isExistAccount(email, password)) {
-            request.setAttribute("email", "login success");
-            request.getRequestDispatcher("/home.jsp").forward(request, response);
+
+        //if UserName/Email and Password is correct => allow to login
+        if (userDAO.isLogin(email, password) != null) {
+            User userLogin = userDAO.isLogin(email, password);
+            //login success => save user's session
+            HttpSession session = request.getSession();
+            session.setAttribute("user", userLogin);
+            //route user by this role
+            
+           
         } else {
+            // not allow to login
             request.setAttribute("mess", "wrong email or password");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
-
         }
 
     }
+
+   
+    protected void routeUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+    }
+    
+    
 
     /**
      * Returns a short description of the servlet.

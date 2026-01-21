@@ -9,20 +9,50 @@ package Model;
  * @author hung2
  */
 public class User {
+    private String userID;
+    private String role;
     private String userName;
     private String fullName;
     private String email;
     private String phoneNumber;
     private String password;
 
+    public User() {
+    }
+
+    public User(String userID, String role) {
+        this.userID = userID;
+        this.role = role;
+    }
+
     
-    //constructor to register new account
-    public User(String userName, String fullName, String email, String phoneNumber, String password) {
+    
+    //constructor to create new account
+
+    public User(String userID, String role, String userName, String fullName, String email, String phoneNumber, String password) {
+        this.userID = userID;
+        this.role = role;
         this.userName = userName;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getUserName() {
@@ -64,7 +94,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
     
     
     
