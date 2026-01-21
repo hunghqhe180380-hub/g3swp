@@ -14,12 +14,12 @@
     </head>
     <body>
         <h1>Login</h1>
-        <form action="${pageContext.request.contextPath}/Account/Login" method="POST">
+        <form action="${pageContext.request.contextPath}/account/login" method="POST">
             <table border="1">
                 <tbody>
                     <tr>
                         <td colspan="2">
-                            <input type="email" name="email" placeholder="Email or Username">
+                            <input type="text" name="email" placeholder="Email or Username">
                         </td>
                     </tr>
                     <tr>
