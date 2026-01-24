@@ -8,23 +8,28 @@
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>auth.LogoutServlet</servlet-class>
+        <servlet-class>controller.auth.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>auth.RegisterServlet</servlet-class>
+        <servlet-class>controller.auth.RegisterServlet</servlet-class>
     </servlet>
    
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Account/Login</url-pattern>
+        <url-pattern>/account/login</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Account/Logout</url-pattern>
+        <url-pattern>/account/logout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/Account/Register</url-pattern>
+        <url-pattern>/account/register</url-pattern>
     </servlet-mapping>
    
    
