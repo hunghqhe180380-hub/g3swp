@@ -13,7 +13,6 @@
     </head>
     <body>
         <h1>Register</h1>
-        <form action="${pageContext.request.contextPath}/Account/Register" method="POST">
 
         <form action="${pageContext.request.contextPath}/register" method="POST">
 
