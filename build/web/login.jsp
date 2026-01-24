@@ -15,6 +15,9 @@
     <body>
         <h1>Login</h1>
         <form action="${pageContext.request.contextPath}/Account/Login" method="POST">
+
+        <form action="${pageContext.request.contextPath}/login" method="POST">
+
             <table border="1">
                 <tbody>
                     <tr>
