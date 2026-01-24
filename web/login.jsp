@@ -14,20 +14,16 @@
     </head>
     <body>
         <h1>Login</h1>
-<<<<<<< HEAD
+
         <form action="${pageContext.request.contextPath}/login" method="POST">
-=======
-        <form action="${pageContext.request.contextPath}/account/login" method="POST">
->>>>>>> ac78ed828bc1abbe7578502ad78cedecb4647e33
+
             <table border="1">
                 <tbody>
                     <tr>
                         <td colspan="2">
-<<<<<<< HEAD
+
                             <input type="email" name="email" placeholder="Email or Username">
-=======
-                            <input type="text" name="email" placeholder="Email or Username">
->>>>>>> ac78ed828bc1abbe7578502ad78cedecb4647e33
+
                         </td>
                     </tr>
                     <tr>
