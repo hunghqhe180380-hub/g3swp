@@ -16,7 +16,9 @@
         <h1>Home Page</h1>
         <h2>${requestScope.email}</h2>
         <a href="${pageContext.request.contextPath}/Account/Login">Login</a>
+        <a href="${pageContext.request.contextPath}/account/login">Login</a>
         ||||
         <a href="${pageContext.request.contextPath}/Account/Register">Register</a>
+        <a href="${pageContext.request.contextPath}/account/register">Register</a>
     </body>
 </html>
