@@ -14,6 +14,7 @@
     </head>
     <body>
         <h1>Home Page</h1>
+<<<<<<< HEAD
     
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
@@ -26,5 +27,11 @@
             </c:when>        
         </c:choose>
 
+=======
+        <h2>${requestScope.email}</h2>
+        <a href="${pageContext.request.contextPath}/account/login">Login</a>
+        ||||
+        <a href="${pageContext.request.contextPath}/account/register">Register</a>
+>>>>>>> ac78ed828bc1abbe7578502ad78cedecb4647e33
     </body>
 </html>

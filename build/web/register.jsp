@@ -13,11 +13,7 @@
     </head>
     <body>
         <h1>Register</h1>
-<<<<<<< HEAD
-        <form action="${pageContext.request.contextPath}/register" method="POST">
-=======
-        <form action="${pageContext.request.contextPath}/account/register" method="POST">
->>>>>>> ac78ed828bc1abbe7578502ad78cedecb4647e33
+        <form action="${pageContext.request.contextPath}/Account/Register" method="POST">
             <table border="1">
                 <tbody>
                     <tr>

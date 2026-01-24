@@ -4,7 +4,9 @@
  */
 package dal;
 
+
 import model.User;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -22,7 +24,9 @@ public class UserDAO extends DBContext {
     
     //login success ? return userID and this role : null 
     public User isLogin(String name, String password) {
+
         //verify user login via email
+
         try {
             //get user's information from database SSMS
               String sql = "select a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"
@@ -30,21 +34,24 @@ public class UserDAO extends DBContext {
                     + "  on a.Id = b.UserId\n"
                     + "  join [dbo].[Roles] as c\n"
                     + "  on b.RoleId = c.Id\n "
+
                     + "where [Email] = ?" + " and a.PasswordHash = ? ";
+
             statement = connection.prepareStatement(sql);
             statement.setObject(1, name);
             statement.setObject(2, password);
             resultSet = statement.executeQuery();
+
             //verify Email and Password to allow login
             if(resultSet.next()){
                 return new User(resultSet.getString("UserID"),
                         resultSet.getString("RoleName"),
                         resultSet.getString("FullName"));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //if not correct Email or Password => not allow to login
         return null;
     }
 

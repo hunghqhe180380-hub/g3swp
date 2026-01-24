@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package model;
+package Model;
 
 /**
  *
@@ -23,19 +23,6 @@ public class User {
     public User(String userID, String role) {
         this.userID = userID;
         this.role = role;
-    }
-
-    public User(String userID, String role, String userName, String fullName) {
-        this.userID = userID;
-        this.role = role;
-        this.userName = userName;
-        this.fullName = fullName;
-    }
-
-    public User(String userID, String role, String fullName) {
-        this.userID = userID;
-        this.role = role;
-        this.fullName = fullName;
     }
 
     
