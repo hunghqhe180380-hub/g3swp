@@ -3,6 +3,7 @@
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>auth.LoginServlet</servlet-class>
+        <servlet-class>controller.auth.LoginServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
