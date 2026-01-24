@@ -22,7 +22,9 @@
                 <tbody>
                     <tr>
                         <td colspan="2">
+
                             <input type="email" name="email" placeholder="Email or Username">
+
                         </td>
                     </tr>
                     <tr>
