@@ -14,6 +14,7 @@
     <body>
         <h1>Register</h1>
         <form action="${pageContext.request.contextPath}/Account/Register" method="POST">
+        <form action="${pageContext.request.contextPath}/account/register" method="POST">
             <table border="1">
                 <tbody>
                     <tr>
