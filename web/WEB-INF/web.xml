@@ -34,8 +34,6 @@
         <servlet-class>controller.account.ProfileController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Dashboard</servlet-name>
-        <servlet-class>controller.account.Dashboard</servlet-class>
         <servlet-name>DashboardController</servlet-name>
         <servlet-class>controller.account.DashboardController</servlet-class>
     </servlet>
@@ -60,7 +58,6 @@
         <url-pattern>/account/profile</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Dashboard</servlet-name>
         <servlet-name>DashboardController</servlet-name>
         <url-pattern>/account/dashboard</url-pattern>
     </servlet-mapping>
