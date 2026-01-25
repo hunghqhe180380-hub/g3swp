@@ -9,6 +9,7 @@ package model;
  * @author hung2
  */
 public class User {
+    private String urlImgProfile;
     private String userID;
     private String role;
     private String userName;
@@ -16,6 +17,8 @@ public class User {
     private String email;
     private String phoneNumber;
     private String password;
+    private String accountCode;
+    private int emailConfirm;
 
     public User() {
     }
@@ -37,6 +40,22 @@ public class User {
         this.role = role;
         this.fullName = fullName;
     }
+
+    //constructor all info
+
+    public User(String urlImgProfile, String userID, String role, String userName, String fullName, String email, String phoneNumber, String password, String accountCode, int emailConfirm) {
+        this.urlImgProfile = urlImgProfile;
+        this.userID = userID;
+        this.role = role;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.accountCode = accountCode;
+        this.emailConfirm = emailConfirm;
+    }
+    
 
     
     
@@ -106,6 +125,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAccountCode() {
+        return accountCode;
+    }
+
+    public void setAccountCode(String accountCode) {
+        this.accountCode = accountCode;
+    }
+
+    public int getEmailConfirm() {
+        return emailConfirm;
+    }
+
+    public void setEmailConfirm(int emailConfirm) {
+        this.emailConfirm = emailConfirm;
     }
     
     
