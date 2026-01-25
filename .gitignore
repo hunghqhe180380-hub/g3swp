@@ -1,10 +1,9 @@
-# NetBeans
+# NetBeans / Java build
 /build/
 /dist/
+/out/
+/target/
 /nbproject/private/
-
-# Java
-*.log
 
 # OS
 .DS_Store
