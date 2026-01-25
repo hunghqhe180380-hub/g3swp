@@ -18,7 +18,7 @@ import model.User;
  *
  * @author hung2
  */
-public class Dashboard extends HttpServlet {
+public class DashboardController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
