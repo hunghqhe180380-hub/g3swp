@@ -14,39 +14,57 @@
     </head>
     <body>
         <h1>Login</h1>
-
+        
+        <a href="${pageContext.request.contextPath}/home"><-Back to home page</a>
+        
         <form action="${pageContext.request.contextPath}/login" method="POST">
 
-            <table border="1">
+            <table border="0">
                 <tbody>
                     <tr>
                         <td colspan="2">
-
-                            <input type="email" name="email" placeholder="Email or Username">
-
+                            Email:
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <input type="password" name="password" placeholder="Password">
+                            <input style="width: 100%" type="text" name="email" placeholder="Email or Username">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            Password:
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input style="width: 100%" type="password" name="password" placeholder="Password">
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="radio"> Remember me?
+                            <input type="radio"> Keep me logged in
                         </td>
                         <td>
                             <a href="#">Forgot password</a>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
+                        <td colspan="2" style="text-align: center">
                             <input type="submit" value="Log In">
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            ${requestScope.mess}
+                           Don't have an account? 
+                        </td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/register">Sig up here</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            ${requestScope.MSG}
                         </td>
                     </tr>
                 </tbody>
