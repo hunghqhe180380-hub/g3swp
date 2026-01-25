@@ -49,7 +49,7 @@ public class ProfileController extends HttpServlet {
                 request.getRequestDispatcher("/View/Teacher/profile.jsp").forward(request, response);
                 break;
             case "admin":
-                request.getRequestDispatcher("/View/Teacher/profile.jsp").forward(request, response);
+                request.getRequestDispatcher("").forward(request, response);
                 break;
             default:
                 throw new AssertionError();
