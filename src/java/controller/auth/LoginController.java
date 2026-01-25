@@ -12,7 +12,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import message.Message;
 import model.User;
+import validation.InputValidator;
 
 /**
  *
@@ -69,39 +73,40 @@ public class LoginController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-   
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       UserDAO userDAO = new UserDAO();
+        UserDAO userDAO = new UserDAO();
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        //if UserName/Email and Password is correct => allow to login
-        if (userDAO.isLogin(email, password) != null) {
+        if (isValid(email, password)) {
+            //if UserName/Email and Password is correct => allow to login
             User userLogin = userDAO.isLogin(email, password);
             //login success => save user's session
             HttpSession session = request.getSession();
             session.setAttribute("user", userLogin);
             //route user by this role
-            request.getRequestDispatcher("home.jsp").forward(request, response);
-           
+            request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
         } else {
             // not allow to login
-            request.setAttribute("mess", "wrong email or password");
+            request.setAttribute("MSG", new Message().MSG05);
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
-
     }
 
-   
-    protected void routeUser(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
+    private boolean isValid(String name, String password) {
+//        InputValidator inputvalidator = new InputValidator();
+//        if (inputvalidator.isEmail(name) && inputvalidator.isPassword(password)) {
+//            return true;
+//        }
+//        
+//        if(inputvalidator.isUserName(name) && inputvalidator.isPassword(password)){
+//            return true;
+//        }
+//        return false;
+        return true;
     }
-    
-    
 
     /**
      * Returns a short description of the servlet.
