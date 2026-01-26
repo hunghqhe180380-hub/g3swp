@@ -142,6 +142,14 @@ public class User {
     public void setEmailConfirm(int emailConfirm) {
         this.emailConfirm = emailConfirm;
     }
+
+    public String getUrlImgProfile() {
+        return urlImgProfile;
+    }
+
+    public void setUrlImgProfile(String urlImgProfile) {
+        this.urlImgProfile = urlImgProfile;
+    }
     
     
     

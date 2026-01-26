@@ -8,6 +8,9 @@ import model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -252,6 +255,64 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public String getRoleIdByRoleName(String roleName) {
+        String sql = "select Id from [Roles] where Name =?";
+        try {
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("Id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateUserRole(String userId, String roleId) {
+        String sql = "UPDATE [dbo].[UserRoles]\n"
+                + "   SET [RoleId] = ?\n"
+                + " WHERE UserId = ?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, roleId);
+            statement.setObject(2, userId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<User> getAllUsers() {
+        String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
+                    + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
+                    + "JOIN [Roles] as c on b.UserId = c.Id";        
+        List<User> list = new ArrayList<>();
+        try {
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                User user = new User();
+                user.setUserID(resultSet.getString("Id"));
+                user.setFullName(resultSet.getString("FullName"));
+                user.setAccountCode(resultSet.getString("AccountCode"));
+                user.setUrlImgProfile(resultSet.getString("AvatarUrl"));
+                user.setUserName(resultSet.getString("UserName"));
+                user.setEmail(resultSet.getString("Email"));
+                user.setEmailConfirm(resultSet.getInt("EmailConfirmed"));
+                user.setPassword(resultSet.getString("PasswordHash"));
+//                user.setSecurityStamp(resultSet.getString("SecurityStamp"));
+//                user.setConcurrencyStamp(resultSet.getString("Id"));
+                user.setPhoneNumber(resultSet.getString("PhoneNumber"));
+                user.setRole(resultSet.getString("RoleName"));
+                list.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
 //sql query string to get some importan user's information
