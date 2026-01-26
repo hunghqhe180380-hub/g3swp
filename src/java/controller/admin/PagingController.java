@@ -2,7 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+
+package controller.admin;
 
 import dal.UserDAO;
 import java.io.IOException;
@@ -11,46 +12,45 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import message.Message;
+import java.util.List;
 import model.User;
+import validation.PagingUtil;
 
 /**
  *
- * @author hung2
+ * @author BINH
  */
-public class LoginController extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+public class PagingController extends HttpServlet {
+    
+    private UserDAO dao;
+    
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet PagingController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet PagingController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -58,13 +58,28 @@ public class LoginController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
-    }
+    throws ServletException, IOException {
+        //processRequest(request, response);
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));        
+        List<User> users = dao.getAllUsers();
+        int size = users.size();
+        request.setAttribute("nrpp", nrpp);
+        int index = -1;        
+        try{
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index<0?0:index;
+        }catch (Exception e){
+            index = -1;
+        }
+        PagingUtil page= new PagingUtil(size,nrpp,index);
+        page.calc();
+        request.setAttribute("users", users);
+        request.setAttribute("page", page);
+        request.getRequestDispatcher("Views/Paging.jsp").forward(request, response);
+    } 
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -72,42 +87,12 @@ public class LoginController extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        UserDAO userDAO = new UserDAO();
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-
-        if (isValid(email, password)) {
-            //if UserName/Email and Password is correct => allow to login
-            User userLogin = userDAO.isLogin(email, password);
-            //login success => save user's session
-            HttpSession session = request.getSession();
-            session.setAttribute("user", userLogin);
-            //route user by this role
-            request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
-        } else {
-            // not allow to login
-            request.setAttribute("MSG", new Message().MSG05);
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
-        }
+    throws ServletException, IOException {
+        processRequest(request, response);
     }
 
-    private boolean isValid(String name, String password) {
-//        InputValidator inputvalidator = new InputValidator();
-//        if (inputvalidator.isEmail(name) && inputvalidator.isPassword(password)) {
-//            return true;
-//        }
-//        
-//        if(inputvalidator.isUserName(name) && inputvalidator.isPassword(password)){
-//            return true;
-//        }
-//        return false;
-        return true;
-    }
-
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

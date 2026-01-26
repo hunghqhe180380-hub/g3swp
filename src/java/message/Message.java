@@ -19,4 +19,5 @@ public class Message {
     public static final String MSG08 = "User Name must be between 4 and 20 characters.";
     public static final String MSG09 = "Invalid Phone Number. Please enter 10 digits number start by 0 or + 84.";
     public static final String MSG10 = "The password and confirmation password do not match.";
+    public static final String MSG11 = "Cannot change Admin role.";
 }
