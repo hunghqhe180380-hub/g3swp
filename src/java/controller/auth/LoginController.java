@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import message.Message;
 import model.User;
-import validation.InputValidator;
 
 /**
  *
