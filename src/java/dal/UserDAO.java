@@ -8,6 +8,9 @@ import model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -157,6 +160,7 @@ public class UserDAO extends DBContext {
 
     //set role for new account (default role: Student)
     public void setRoleNewUser(String userID) {
+
     try {
         String sql =
             "INSERT INTO [dbo].[UserRoles] (UserId, RoleId) " +
@@ -225,11 +229,13 @@ public class UserDAO extends DBContext {
         }
     }
 
+    //generate user ID
     public String generateID() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
 
+    //generateAccCode
     public String generateAccCode() {
 
         String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // A–Z
@@ -348,8 +354,8 @@ public class UserDAO extends DBContext {
 
     public List<User> getAllUsers() {
         String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
-                    + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
-                    + "JOIN [Roles] as c on b.UserId = c.Id";        
+                + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
+                + "JOIN [Roles] as c on b.UserId = c.Id";
         List<User> list = new ArrayList<>();
         try {
             statement = connection.prepareStatement(sql);
