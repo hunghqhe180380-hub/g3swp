@@ -22,42 +22,42 @@
                     <tr>
                         <td>User Name: </td>
                         <td>
-                            <input type="text" name="userName">
+                            <input type="text" name="userName" value="${requestScope.userName}">
                             <span class="errors">${listMSG.msgUserName}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Full Name: </td>
                         <td>
-                            <input type="text" name="fullName">
+                            <input type="text" name="fullName" value="${requestScope.fullName}">
                             <span class="errors">${listMSG.msgFullName}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Email: </td>
                         <td>
-                            <input type="email" name="email">
+                            <input type="email" name="email" value="${requestScope.email}">
                             <span class="errors">${listMSG.msgEmail}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Phone number:</td>
                         <td>
-                            <input type="text" name="phoneNumber">
+                            <input type="text" name="phoneNumber" value="${requestScope.phoneNumber}">
                             <span class="errors">${listMSG.msgPhoneNumber}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Password: </td>
                         <td>
-                            <input type="password" name="password">
+                            <input type="password" name="password" value="${requestScope.password}">
                             <span class="errors">${listMSG.msgPassword}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Confirm Password: </td>
                         <td>
-                            <input type="password" name="confirmPassword">
+                            <input type="password" name="confirmPassword" value="${requestScope.confirmPassword}">
                             <span class="errors">${listMSG.msgConfirmPassword}</span>
                         </td>
                     </tr>

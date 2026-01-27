@@ -14,9 +14,9 @@
     </head>
     <body>
         <h1>Login</h1>
-        
+
         <a href="${pageContext.request.contextPath}/home"><-Back to home page</a>
-        
+
         <form action="${pageContext.request.contextPath}/login" method="POST">
 
             <table border="0">
@@ -28,7 +28,10 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <input style="width: 100%" type="text" name="email" placeholder="Email or Username">
+                            <input style="width: 100%" type="text" name="email" 
+                                   placeholder="Email or Username"
+                                   value="${requestScope.email}">
+                            <span class="errors">${listMSG.msgUserName}</span>
                         </td>
                     </tr>
                     <tr>
@@ -39,6 +42,7 @@
                     <tr>
                         <td colspan="2">
                             <input style="width: 100%" type="password" name="password" placeholder="Password">
+                            <span class="errors">${listMSG.msgPassword}</span>
                         </td>
                     </tr>
                     <tr>
@@ -56,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>
-                           Don't have an account? 
+                            Don't have an account? 
                         </td>
                         <td>
                             <a href="${pageContext.request.contextPath}/register">Sig up here</a>
@@ -64,7 +68,7 @@
                     </tr>
                     <tr>
                         <td>
-                            ${requestScope.MSG}
+                            ${requestScope.MSG99}
                         </td>
                     </tr>
                 </tbody>

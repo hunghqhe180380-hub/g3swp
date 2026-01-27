@@ -28,19 +28,16 @@ public class User {
         this.role = role;
     }
 
-    public User(String userID, String role, String userName, String fullName) {
-        this.userID = userID;
-        this.role = role;
-        this.userName = userName;
-        this.fullName = fullName;
-    }
-
-    public User(String userID, String role, String fullName) {
+    public User(String userID, String role, String fullName, int emailConfirm) {
         this.userID = userID;
         this.role = role;
         this.fullName = fullName;
+        this.emailConfirm = emailConfirm;
     }
 
+    
+
+    
     //constructor all info
 
     public User(String urlImgProfile, String userID, String role, String userName, String fullName, String email, String phoneNumber, String password, String accountCode, int emailConfirm) {
@@ -60,15 +57,14 @@ public class User {
     
     
     //constructor to create new account
-
-    public User(String userID, String role, String userName, String fullName, String email, String phoneNumber, String password) {
+    public User(String userID, String userName, String fullName, String email, String phoneNumber, String password, String accountCode) {
         this.userID = userID;
-        this.role = role;
         this.userName = userName;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.accountCode = accountCode;
     }
 
     public String getUserID() {
@@ -141,6 +137,14 @@ public class User {
 
     public void setEmailConfirm(int emailConfirm) {
         this.emailConfirm = emailConfirm;
+    }
+
+    public String getUrlImgProfile() {
+        return urlImgProfile;
+    }
+
+    public void setUrlImgProfile(String urlImgProfile) {
+        this.urlImgProfile = urlImgProfile;
     }
     
     

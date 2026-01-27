@@ -8,6 +8,7 @@ import model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
 
 /**
  *
@@ -33,12 +34,12 @@ public class UserDAO extends DBContext {
 
         try {
             //get user's information from database SSMS
-            String sql = "select a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
+            String sql = "select a.EmailConfirmed, a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
                     + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
                     + "  on a.Id = b.UserId\n"
                     + "  join [dbo].[Roles] as c\n"
                     + "  on b.RoleId = c.Id\n "
-                    + "Where " + query + " and a.PasswordHash = ? and a.EmailConfirmed = 1";
+                    + "Where " + query + " and a.PasswordHash = ?";
 
             statement = connection.prepareStatement(sql);
             statement.setObject(1, name);
@@ -49,7 +50,9 @@ public class UserDAO extends DBContext {
             if (resultSet.next()) {
                 return new User(resultSet.getString("UserID"),
                         resultSet.getString("RoleName"),
-                        resultSet.getString("FullName"));
+                        resultSet.getString("FullName"),
+                        resultSet.getInt("EmailConfirmed")
+                );
 
             }
         } catch (Exception e) {
@@ -139,54 +142,115 @@ public class UserDAO extends DBContext {
         return null;
     }
 
+    //register new account
     public User isRegister(User user) {
-        // exist account ? 'denide register' : 'allow register'
-        if (isExistEmail(user.getEmail()) && !isExistUserName(user.getUserName())
-                && isExistAccID(user.getUserID())
-                && isExistAccountCode(user.getAccountCode())) {
-            return null;
+        if (!isExistEmail(user.getEmail()) && !isExistUserName(user.getUserName())
+                && !isExistAccID(user.getUserID())
+                && !isExistAccountCode(user.getAccountCode())) {
+            InserIntoUserDB(user);
+            setRoleNewUser(user.getUserID());
         } else {
-            try {
-                String sql = "INSERT INTO [dbo].[Users]\n"
-                        + "           ([Id]\n"
-                        + "           ,[FullName]\n"
-                        + "           ,[AccountCode]\n"
-                        + "          ,[AvatarUrl]\n"
-                        + "           ,[UserName]\n"
-                        + "           ,[NormalizedUserName]\n"
-                        + "           ,[Email]\n"
-                        + "           ,[NormalizedEmail]\n"
-                        + "           ,[EmailConfirmed]\n"
-                        + "           ,[PasswordHash]\n"
-                        + "           ,[PhoneNumber]\n"
-                        + "           ,[PhoneNumberConfirmed]\n"
-                        + "           ,[TwoFactorEnabled]\n"
-                        + "           ,[LockoutEnabled]\n"
-                        + "           ,[AccessFailedCount])\n"
-                        + "     VALUES\n"
-                        + "           ('hqhe180380'\n"
-                        + "           ,'Hoang Quoc Hung'\n"
-                        + "           ,'HQHEHQHE'\n"
-                        + "           ,'/uploads/avatars/avtProfile.png'\n"
-                        + "           ,'hunghqhe180380'\n"
-                        + "           ,'HUNGHQHE180380'\n"
-                        + "           ,'hunghqhe180380@gmail.com'\n"
-                        + "           ,'HUNGHQHE180380@GMAIL.COM'\n"
-                        + "           ,1\n"
-                        + "           ,11111111\n"
-                        + "           ,'0123456789'\n"
-                        + "           ,0\n"
-                        + "           ,1\n"
-                        + "           ,0\n"
-                        + "           ,0)";
-
-            } catch (Exception e) {
-            }
+            return null;
         }
         return user;
     }
 
-    public boolean isExistAccID(String userID) {
+    //set role for new account (default role: Student)
+    public void setRoleNewUser(String userID) {
+    try {
+        String sql =
+            "INSERT INTO [dbo].[UserRoles] (UserId, RoleId) " +
+            "VALUES (?, ?)";
+
+        statement = connection.prepareStatement(sql);
+        statement.setObject(1, userID);
+        statement.setObject(2, "b7f22aea-e296-482e-987d-60b18cee7dac");
+
+        statement.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+
+    //insert new account's information to database
+    public void InserIntoUserDB(User user) {
+        try {
+            String sql = "INSERT INTO [dbo].[Users]\n"
+                    + "           ([Id]\n"
+                    + "           ,[FullName]\n"
+                    + "           ,[AccountCode]\n"
+                    + "          ,[AvatarUrl]\n"
+                    + "           ,[UserName]\n"
+                    + "           ,[NormalizedUserName]\n"
+                    + "           ,[Email]\n"
+                    + "           ,[NormalizedEmail]\n"
+                    + "           ,[EmailConfirmed]\n"
+                    + "           ,[PasswordHash]\n"
+                    + "           ,[PhoneNumber]\n"
+                    + "           ,[PhoneNumberConfirmed]\n"
+                    + "           ,[TwoFactorEnabled]\n"
+                    + "           ,[LockoutEnabled]\n"
+                    + "           ,[AccessFailedCount])\n"
+                    + "     VALUES\n"
+                    + "           (?\n" //Id
+                    + "           ,?\n" //FullName
+                    + "           ,?\n" //AccountCode
+                    + "           ,?\n" //AvatarUrl
+                    + "           ,?\n" //UserName
+                    + "           ,?\n" //NormalizedUserName
+                    + "           ,?\n" //Email
+                    + "           ,?\n" //NormalizedEmail
+                    + "           ,0\n" //EmailConfirmed
+                    + "           ,?\n" //PasswordHash
+                    + "           ,?\n" //PhoneNumber
+                    + "           ,0\n" //PhoneNumberConfirmed
+                    + "           ,1\n" //TwoFactorEnabled
+                    + "           ,0\n" //LockoutEnabled
+                    + "           ,0)"; //AccessFailedCount
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, user.getUserID());
+            statement.setObject(2, user.getFullName());
+            statement.setObject(3, user.getAccountCode());
+            statement.setObject(4, "/uploads/avatars/avtProfile.png");
+            statement.setObject(5, user.getUserName());
+            statement.setObject(6, user.getUserName().toUpperCase());
+            statement.setObject(7, user.getEmail());
+            statement.setObject(8, user.getEmail().toUpperCase());
+            statement.setObject(9, user.getPassword());
+            statement.setObject(10, user.getPhoneNumber());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String generateID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
+
+    public String generateAccCode() {
+
+        String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // A–Z
+        String result = "";
+
+        //create 4 letter uppercases
+        for (int i = 0; i < 4; i++) {
+            int index = (int) (Math.random() * letters.length());
+            result += letters.charAt(index);
+        }
+
+        //create 4 digits
+        for (int i = 0; i < 4; i++) {
+            int digit = (int) (Math.random() * 10);
+            result += digit;
+        }
+
+        return result;
+    }
+
+    boolean isExistAccID(String userID) {
         try {
             String sql = "SELECT [Id]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"
@@ -220,7 +284,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    public boolean isExistEmail(String email) {
+    private boolean isExistEmail(String email) {
         try {
             String sql = "SELECT [Email]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"
@@ -237,7 +301,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    public boolean isExistUserName(String userName) {
+    private boolean isExistUserName(String userName) {
         try {
             String sql = "SELECT [UserName]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"

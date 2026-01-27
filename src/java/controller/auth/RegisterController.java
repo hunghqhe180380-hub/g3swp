@@ -82,20 +82,36 @@ public class RegisterController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userName = request.getParameter("userName");
-        String fullName = request.getParameter("fullName");
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phoneNumber");
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
+        String userName = request.getParameter("userName").trim();
+        String fullName = request.getParameter("fullName").trim();
+        String email = request.getParameter("email").trim();
+        String phoneNumber = request.getParameter("phoneNumber").trim();
+        String password = request.getParameter("password").trim();
+        String confirmPassword = request.getParameter("confirmPassword").trim();
 
         //list message errors
         Map<String, String> listMSG = validator(userName, fullName, email, phoneNumber, password, confirmPassword);
         //if validator is true => allow to register account
+        UserDAO userDAO = new UserDAO();
+        String userID = userDAO.generateID();
+        String accCode = userDAO.generateAccCode();
+//        System.out.println("User ID: " + userID);
+//        System.out.println("Account code: " + accCode);
+//        System.out.println("Email: " + email);
+//        System.out.println("Phone: " + phoneNumber);
+//        System.out.println("Pass: " + password);
+//        System.out.println("Confirm: " + confirmPassword);
+        
         if (listMSG.isEmpty()) {
-            User newUser = new User(userName, email, userName, fullName, email, phoneNumber, password);
-            UserDAO userDAO = new UserDAO();
+            User newUser = new User(userID,
+                    userName,
+                    fullName,
+                    email,
+                    phoneNumber,
+                    password,
+                    accCode);
             userDAO.isRegister(newUser);
+
             //tạm thời chưa làm register, đợi mofify lại database đã 
             //còn confirm email chưa làm 
             request.getRequestDispatcher("home.jsp").forward(request, response);
@@ -132,48 +148,48 @@ public class RegisterController extends HttpServlet {
             String confirmPassword) {
 
         Map<String, String> errors = new HashMap<>();
-        Message msg = new Message();
         InputValidator inputValidator = new InputValidator();
 
-        // username
-        if (!inputValidator.isUserName(userName)) {
-            errors.put("msgUserName", msg.MSG08);
+        // valid input username
+        if (inputValidator.isUserName(userName) != null) {
+            errors.put("msgUserName", inputValidator.isUserName(userName.trim()));
         }
-
         // full name
-        if (!inputValidator.isFullName(fullName)) {
-            errors.put("msgFullName", msg.MSG03);
+        if (inputValidator.isFullName(fullName) != null) {
+            errors.put("msgFullName", inputValidator.isFullName(fullName.trim()));
         }
-
         // email
-        if (!inputValidator.isEmail(email)) {
-            errors.put("msgEmail", msg.MSG02);
+        if (inputValidator.isEmail(email) != null) {
+            errors.put("msgEmail", inputValidator.isEmail(email.trim()));
         }
-
         // phone number
-        if (!inputValidator.isPhoneNumber(phoneNumber)) {
-            errors.put("msgPhoneNumber", msg.MSG09);
+        if (inputValidator.isPhoneNumber(phoneNumber) != null) {
+            errors.put("msgPhoneNumber", inputValidator.isPhoneNumber(phoneNumber.trim()));
         }
-
         // password
-        if (!inputValidator.isPassword(password)) {
-            errors.put("msgPassword", msg.MSG06);
+        if (inputValidator.isPassword(password) != null) {
+            errors.put("msgPassword", inputValidator.isPassword(password.trim()));
         }
-
         // confirm password
-        if (!isConfirmPassword(password, confirmPassword)) {
-            errors.put("msgConfirmPassword", msg.MSG10);
+        if (isConfirmPassword(password, confirmPassword) != null) {
+            errors.put("msgConfirmPassword", isConfirmPassword(password.trim(), confirmPassword.trim()));
         }
-
         return errors;
     }
 
     //check confirm password match password ? 
-    private boolean isConfirmPassword(String password, String confirmPassword) {
-        if (password == null || confirmPassword == null) {
-            return false;
+    private String isConfirmPassword(String password, String confirmPassword) {
+
+        if (password == null || password.trim().isEmpty()
+                || confirmPassword == null || confirmPassword.trim().isEmpty()) {
+            return Message.MSG07; // Password is required
         }
-        return password.equals(confirmPassword);
+
+        if (!password.equals(confirmPassword)) {
+            return Message.MSG07; // Passwords do not match
+        }
+
+        return null; // valid
     }
 
     /**

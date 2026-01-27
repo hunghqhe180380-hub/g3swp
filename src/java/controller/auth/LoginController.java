@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import message.Message;
 import model.User;
 import validation.InputValidator;
@@ -80,19 +82,55 @@ public class LoginController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (isValid(email, password)) {
+        //list message errors
+        Map<String, String> listMSG = validator(email, password);
+        if (listMSG.isEmpty()) {
             //if UserName/Email and Password is correct => allow to login
             User userLogin = userDAO.isLogin(email, password);
-            //login success => save user's session
-            HttpSession session = request.getSession();
-            session.setAttribute("user", userLogin);
-            //route user by this role
-            request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
-        } else {
-            // not allow to login
-            request.setAttribute("MSG", new Message().MSG05);
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            //email is confirmed to login
+            if (userLogin.getEmailConfirm() == 1) {
+                //login success => save user's session
+                HttpSession session = request.getSession();
+                session.setAttribute("user", userLogin);
+                //route user by this role
+                request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
+            } else {
+                request.setAttribute("MSG99", Message.MSG99);
+            }
         }
+        request.setAttribute("email", email);
+        request.setAttribute("listMSG", listMSG);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+
+    }
+
+    private Map<String, String> validator(
+            String userName,
+            String password) {
+
+        Map<String, String> errors = new HashMap<>();
+        InputValidator inputValidator = new InputValidator();
+        // userName is blank ? return : continue
+        if (userName.isEmpty()) {
+            errors.put("msgUserName", Message.MSG01);
+            return errors;
+        }
+        // valid input username
+        if (!userName.contains("@") && inputValidator.isUserName(userName) != null) {
+            errors.put("msgUserName", inputValidator.isUserName(userName.trim()));
+        }
+
+        // email
+        if (userName.contains("@") && inputValidator.isEmail(userName) != null) {
+            errors.put("msgUserName", inputValidator.isEmail(userName.trim()));
+        }
+
+        // password
+        if (inputValidator.isPassword(password) != null) {
+            errors.put("msgPassword", inputValidator.isPassword(password.trim()));
+        }
+
+        return errors;
     }
 
     private boolean isValid(String name, String password) {

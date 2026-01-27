@@ -8,65 +8,68 @@ package validation;
  *
  * @author hung2
  */
+import message.Message;
+
 public class InputValidator {
 
-    public boolean isEmail(String email) {
+    private Message msg = new Message();
 
-        if (email == null) {
-            return false;
+    public static String isEmail(String email) {
+
+        if (email == null || email.trim().isEmpty()) {
+            return Message.MSG11; // Email is required
         }
 
         email = email.trim();
-        if (email.isEmpty()) {
-            return false;
-        }
 
-        // not allow space
+        // not allow spaces
         if (email.contains(" ")) {
-            return false;
+            return Message.MSG13;
         }
 
         int atIndex = email.indexOf('@');
 
-        // have only 1 @
+        // must contain exactly one '@'
         if (atIndex == -1 || atIndex != email.lastIndexOf('@')) {
-            return false;
+            return Message.MSG14;
         }
 
-        // not allow start or end by @
+        // not allow start or end with '@'
         if (atIndex == 0 || atIndex == email.length() - 1) {
-            return false;
+            return Message.MSG15;
         }
 
-        // have to following @ by dot (.)
+        // domain must contain dot
         String domain = email.substring(atIndex + 1);
         if (!domain.contains(".")) {
-            return false;
+            return Message.MSG16;
         }
 
-        // not allow start or end by dot (.)
+        // not allow start or end with dot
         if (email.startsWith(".") || email.endsWith(".")) {
-            return false;
+            return Message.MSG17;
         }
 
         // not allow "@." or ".@"
         if (email.contains("@.") || email.contains(".@")) {
-            return false;
+            return Message.MSG18;
         }
 
-        return true; //pass
+        return null; // valid
     }
 
-    //check legit password
-    public static boolean isPassword(String password) {
-        if (password == null) {
-            return false;
+    public static String isPassword(String password) {
+
+        // null or empty
+        if (password == null || password.trim().isEmpty()) {
+            return Message.MSG04; // Password is required
         }
-        // must be have from 8 to 20 character
+
+        // length 8 - 20
         if (password.length() < 8 || password.length() > 20) {
-            return false;
+            return Message.MSG06;
         }
-        //contain at least one uppercase letter, one number, and one special character.
+
         boolean hasUpper = false;
         boolean hasDigit = false;
         boolean hasSpecial = false;
@@ -80,18 +83,23 @@ public class InputValidator {
                 hasSpecial = true;
             }
         }
-        return hasUpper && hasDigit && hasSpecial;
+
+        if (!hasUpper || !hasDigit || !hasSpecial) {
+            return Message.MSG06;
+        }
+
+        return null; // valid password
     }
 
     //check legit user name 
-    public static boolean isUserName(String username) {
-        if (username == null) {
-            return false;
+    public String isUserName(String username) {
+        if (username.isEmpty()) {
+            return msg.MSG11;
         }
 
         //have aleast 4 character
         if (username.length() < 4) {
-            return false;
+            return msg.MSG08;
         }
 
         //containing only letters, digits, dots, hyphens, or underscores.
@@ -104,38 +112,48 @@ public class InputValidator {
                     = c == '.' || c == '-' || c == '_';
 
             if (!isLetter && !isDigit && !isAllowedSpecial) {
-                return false;
+                return msg.MSG08;
             }
         }
 
-        return true; // pass
+        return null; // pass
     }
-    
-    
 
     //check fullname allow Unicode letters + 1 space between words
-    public static boolean isFullName(String fullName) {
-    if (fullName == null) return false;
+    public String isFullName(String fullName) {
+        if (fullName.isEmpty()) {
+            return msg.MSG10;
+        }
 
-    fullName = fullName.trim();
-    //from 4 to 50 characters
-    if (fullName.length() < 4 || fullName.length() > 50) {
-        return false;
+        fullName = fullName.trim();
+        //from 4 to 50 characters
+        if (fullName.length() < 4 || fullName.length() > 50) {
+            return msg.MSG21;
+        }
+
+        // allow Unicode letters + 1 space between words
+        if (!fullName.matches("^[\\p{L}]+(\\s[\\p{L}]+)+$")) {
+            return msg.MSG22;
+        };
+
+        return null;
     }
 
-    // allow Unicode letters + 1 space between words
-    return fullName.matches("^[\\p{L}]+(\\s[\\p{L}]+)+$");
-}
+    // Check phone number: start with 0 or +84, followed by 9 digits
+    public String isPhoneNumber(String phone) {
 
-    //check phone number start by 0 or +84 follow by 9 number
-    public static boolean isPhoneNumber(String phone) {
-    if (phone == null) return false;
+        if (phone == null || phone.trim().isEmpty()) {
+            return msg.MSG23;
+        }
 
-    phone = phone.trim();
+        phone = phone.trim();
 
-    return phone.matches("^(0|\\+84)[0-9]{9}$");
-}
+        if (!phone.matches("^(0|\\+84)[0-9]{9}$")) {
+            return msg.MSG24;
+        }
 
+        return null; // valid
+    }
 
     //encryp password by Bcrypt
 }
