@@ -97,8 +97,10 @@ public class LoginController extends HttpServlet {
                     session.setAttribute("user", userLogin);
                     //route user by this role
                     request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
+                    return;
                 } else {
                     request.setAttribute("MSG99", Message.MSG99);
+                    return;
                 }
             }
         }
