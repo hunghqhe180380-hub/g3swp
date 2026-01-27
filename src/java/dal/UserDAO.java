@@ -290,7 +290,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    private boolean isExistEmail(String email) {
+    public boolean isExistEmail(String email) {
         try {
             String sql = "SELECT [Email]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"
@@ -381,6 +381,8 @@ public class UserDAO extends DBContext {
         }
         return list;
     }
+    
+    //
 }
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"

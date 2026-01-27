@@ -112,7 +112,6 @@ public class RegisterController extends HttpServlet {
                     accCode);
             userDAO.isRegister(newUser);
 
-            //tạm thời chưa làm register, đợi mofify lại database đã 
             //còn confirm email chưa làm 
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } else {
