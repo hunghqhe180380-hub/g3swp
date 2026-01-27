@@ -27,21 +27,25 @@
                     <td>${user.userName}</td>
                     <td>${user.email}</td>
                     <td>${user.role}</td>
-                    <td>${user.account}</td>
-                    <td></td>
+                    <td>${user.accountCode}</td>
+                    <td>
+                        <form action="${pageContext.request.contextPath}/admin/change-role">
+                            
+                        </form>
+                    </td>
                 </tr>
             </c:forEach>            
         </table>
         <c:if test="${page.index!=0}">
-            <a href="DemoPaging?index=0">Home</a>
-            <a href="DemoPaging?index=${page.index-1}">Pre</a>
+            <a href="${pageContext.request.contextPath}/admin/user-list?index=0">Home</a>
+            <a href="${pageContext.request.contextPath}/admin/user-list?index=${page.index-1}">Pre</a>
         </c:if>
         <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
-            <a href="DemoPaging?index=${index}">${index+1}</a>
+            <a href="${pageContext.request.contextPath}/admin/user-list?index=${index}">${index+1}</a>
         </c:forEach>
         <c:if test="${page.index!=page.totalPage-1}">
-            <a href="DemoPaging?index=${page.index+1}">Next</a>
-            <a href="DemoPaging?index=${page.totalPage-1}">End</a>
+            <a href="${pageContext.request.contextPath}/admin/user-list?index=${page.index+1}">Next</a>
+            <a href="${pageContext.request.contextPath}/admin/user-list?index=${page.totalPage-1}">End</a>
         </c:if>
 </body>
 </html>

@@ -42,8 +42,12 @@
         <servlet-class>controller.admin.ChangeRoleController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>PagingController</servlet-name>
-        <servlet-class>controller.admin.PagingController</servlet-class>
+        <servlet-name>UserListController</servlet-name>
+        <servlet-class>controller.admin.UserListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ClassListController</servlet-name>
+        <servlet-class>controller.admin.ClassListController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
@@ -74,8 +78,12 @@
         <url-pattern>/admin/change-role</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>PagingController</servlet-name>
-        <url-pattern>/paging-controller</url-pattern>
+        <servlet-name>UserListController</servlet-name>
+        <url-pattern>/admin/user-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClassListController</servlet-name>
+        <url-pattern>/admin/class-list</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

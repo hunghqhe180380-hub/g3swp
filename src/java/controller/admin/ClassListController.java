@@ -5,24 +5,22 @@
 
 package controller.admin;
 
-import dal.UserDAO;
+import dal.ClassroomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import message.Message;
+import java.util.List;
+import model.Classroom;
+import validation.PagingUtil;
 
 /**
  *
  * @author BINH
  */
-public class ChangeRoleController extends HttpServlet {
-    
-    private UserDAO dao;
-    
+public class ClassListController extends HttpServlet {    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -38,10 +36,10 @@ public class ChangeRoleController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangeRoleController</title>");  
+            out.println("<title>Servlet ClassListController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangeRoleController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ClassListController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,7 +56,23 @@ public class ChangeRoleController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        ClassroomDAO dao = new ClassroomDAO();
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));        
+        List<Classroom> classes = dao.getAllClassroom();
+        int size = classes.size();
+        request.setAttribute("nrpp", nrpp);
+        int index = -1;        
+        try{
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index<0?0:index;
+        }catch (Exception e){
+            index = -1;
+        }
+        PagingUtil page= new PagingUtil(size,nrpp,index);
+        page.calc();
+        request.setAttribute("classes", classes);
+        request.setAttribute("page", page);
+        request.getRequestDispatcher("/View/Admin/manage-classroom.jsp").forward(request, response);
     } 
 
     /** 
@@ -71,29 +85,9 @@ public class ChangeRoleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String userId = request.getParameter("");
-        String currentRole = dao.getRoleByID(userId);
-        if(currentRole.equalsIgnoreCase("Teacher")){
-            demoteToStudent(userId);
-            return;
-        }else if (currentRole.equalsIgnoreCase("Student")){
-            promoteToTeacher(userId);
-            return;
-        }else{
-            request.setAttribute("MSG", new Message().MSG100);
-            request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
-    
-    private void promoteToTeacher(String userId){
-        String roleId = dao.getRoleIdByRoleName("Student");
-        dao.updateUserRole(userId, roleId);
-    }
-    
-    private void demoteToStudent(String userId){
-        String roleId = dao.getRoleIdByRoleName("Teacher");
-        dao.updateUserRole(userId, roleId);
-    }
+
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description

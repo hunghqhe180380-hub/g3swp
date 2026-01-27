@@ -4,6 +4,8 @@
  */
 package validation;
 
+import dal.UserDAO;
+
 /**
  *
  * @author BINH
@@ -101,5 +103,11 @@ public class PagingUtil {
         end = end>=size?size-1:end;
         pageStart = index-2<0?0:index-2;
         pageEnd = index+2>totalPage-1?totalPage-1:index+2;
+    }
+    
+    public static void main(String[] args) {
+        UserDAO dao = new UserDAO();
+        int size = dao.getAllUsers().size();
+        System.out.println(size);
     }
 }
