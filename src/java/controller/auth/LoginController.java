@@ -75,7 +75,7 @@ public class LoginController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+       @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserDAO userDAO = new UserDAO();
@@ -137,19 +137,6 @@ public class LoginController extends HttpServlet {
         }
 
         return errors;
-    }
-
-    private boolean isValid(String name, String password) {
-//        InputValidator inputvalidator = new InputValidator();
-//        if (inputvalidator.isEmail(name) && inputvalidator.isPassword(password)) {
-//            return true;
-//        }
-//        
-//        if(inputvalidator.isUserName(name) && inputvalidator.isPassword(password)){
-//            return true;
-//        }
-//        return false;
-        return true;
     }
 
     /**
