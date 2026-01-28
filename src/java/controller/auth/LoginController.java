@@ -79,7 +79,7 @@ public class LoginController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+       @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
@@ -90,21 +90,15 @@ public class LoginController extends HttpServlet {
         if (listMSG.isEmpty()) {
             //if UserName/Email and Password is correct => allow to login
             User userLogin = userDAO.isLogin(email, password);
-            if (userLogin == null) {
-                request.setAttribute("msgIncorectLogin", Message.MSG05);
+            //email is confirmed to login
+            if (userLogin.getEmailConfirm() == 1) {
+                //login success => save user's session
+                HttpSession session = request.getSession();
+                session.setAttribute("user", userLogin);
+                //route user by this role
+                request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
             } else {
-                //email is confirmed to login
-                if (userLogin.getEmailConfirm() == 1 && userLogin != null) {
-                    //login success => save user's session
-                    HttpSession session = request.getSession();
-                    session.setAttribute("user", userLogin);
-                    //route user by this role
-                    request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
-                    return;
-                } else {
-                    request.setAttribute("MSG99", Message.MSG99);
-                    return;
-                }
+                request.setAttribute("MSG99", Message.MSG99);
             }
         }
         request.setAttribute("email", email);
@@ -140,19 +134,6 @@ public class LoginController extends HttpServlet {
         }
 
         return errors;
-    }
-
-    private boolean isValid(String name, String password) {
-//        InputValidator inputvalidator = new InputValidator();
-//        if (inputvalidator.isEmail(name) && inputvalidator.isPassword(password)) {
-//            return true;
-//        }
-//        
-//        if(inputvalidator.isUserName(name) && inputvalidator.isPassword(password)){
-//            return true;
-//        }
-//        return false;
-        return true;
     }
 
     /**
