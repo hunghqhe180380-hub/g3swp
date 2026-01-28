@@ -20,9 +20,7 @@ import validation.PagingUtil;
  *
  * @author BINH
  */
-public class PagingController extends HttpServlet {
-    
-    private UserDAO dao;
+public class UserListController extends HttpServlet {       
     
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -39,10 +37,10 @@ public class PagingController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PagingController</title>");  
+            out.println("<title>Servlet UserListController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PagingController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UserListController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,8 +56,8 @@ public class PagingController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        //processRequest(request, response);
+    throws ServletException, IOException {   
+        UserDAO dao = new UserDAO();
         int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));        
         List<User> users = dao.getAllUsers();
         int size = users.size();
@@ -75,7 +73,7 @@ public class PagingController extends HttpServlet {
         page.calc();
         request.setAttribute("users", users);
         request.setAttribute("page", page);
-        request.getRequestDispatcher("Views/Paging.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
     } 
 
     /** 

@@ -352,10 +352,10 @@ public class UserDAO extends DBContext {
         }
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() {                
         String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
                 + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
-                + "JOIN [Roles] as c on b.UserId = c.Id";
+                + "JOIN [Roles] as c on b.RoleId = c.Id";
         List<User> list = new ArrayList<>();
         try {
             statement = connection.prepareStatement(sql);

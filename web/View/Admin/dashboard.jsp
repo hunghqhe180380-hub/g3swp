@@ -18,6 +18,17 @@
         <a href="${pageContext.request.contextPath}/home">Home</a> ||
         <a href="${pageContext.request.contextPath}/account/profile">View Profile</a> ||
         <a href="${pageContext.request.contextPath}/logout">Logout</a>  
-
+        <<table>
+            <tr>
+                <th>Manage Account</th>
+                <th>Manage Class</th>
+            </tr>
+            <tr>
+                <td><a href="${pageContext.request.contextPath}/admin/user-list">Open</a></td>                
+            </tr>
+            <tr>
+                <td><a href="${pageContext.request.contextPath}/admin/class-list">Open</a></td>                 
+            </tr>
+        </table>>
     </body>
 </html>
