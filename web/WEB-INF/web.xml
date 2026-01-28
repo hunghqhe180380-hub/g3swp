@@ -45,18 +45,12 @@
         <servlet-name>ClassListController</servlet-name>
         <servlet-class>controller.admin.ClassListController</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <servlet-class>controller.auth.VerifyEmailController</servlet-class>
-    </servlet>
-    <servlet>
+   
+   <servlet>
         <servlet-name>ResetPasswordController</servlet-name>
         <servlet-class>controller.auth.ResetPasswordController</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <servlet-class>controller.auth.RequestPasswordController</servlet-class>
-    </servlet>
+   
     <servlet>
         <servlet-name>ChangeRoleController</servlet-name>
         <servlet-class>controller.admin.ChangeRoleController</servlet-class>
@@ -101,18 +95,12 @@
         <servlet-name>ClassListController</servlet-name>
         <url-pattern>/admin/class-list</url-pattern>
     </servlet-mapping>        
-    <servlet-mapping>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <url-pattern>/verify-email</url-pattern>
-    </servlet-mapping>
+   
     <servlet-mapping>
         <servlet-name>ResetPasswordController</servlet-name>
         <url-pattern>/reset-password</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <url-pattern>/request-password</url-pattern>
-    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
