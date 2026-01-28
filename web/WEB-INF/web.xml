@@ -49,10 +49,7 @@
         <servlet-name>ClassListController</servlet-name>
         <servlet-class>controller.admin.ClassListController</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <servlet-class>controller.auth.VerifyEmailController</servlet-class>
-    </servlet>
+   
     <servlet>
         <servlet-name>ResetPasswordController</servlet-name>
         <servlet-class>controller.auth.ResetPasswordController</servlet-class>
@@ -65,14 +62,7 @@
         <servlet-name>VerifyEmailController</servlet-name>
         <servlet-class>controller.auth.VerifyEmailController</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>ResetPasswordController</servlet-name>
-        <servlet-class>controller.auth.ResetPasswordController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <servlet-class>controller.auth.RequestPasswordController</servlet-class>
-    </servlet>
+   
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -113,18 +103,8 @@
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ResetPasswordController</servlet-name>
-        <url-pattern>/reset-password</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <url-pattern>/request-password</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <url-pattern>/verify-email</url-pattern>
-    </servlet-mapping>
+    
+   
     <servlet-mapping>
         <servlet-name>ResetPasswordController</servlet-name>
         <url-pattern>/reset-password</url-pattern>
