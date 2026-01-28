@@ -100,11 +100,13 @@
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
         <url-pattern>/admin/class-list</url-pattern>
-    </servlet-mapping>        
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
     </servlet-mapping>
+    
+   
     <servlet-mapping>
         <servlet-name>ResetPasswordController</servlet-name>
         <url-pattern>/reset-password</url-pattern>
