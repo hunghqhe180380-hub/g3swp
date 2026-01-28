@@ -1,0 +1,267 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jan 27, 2026, 10:09:46 PM
+    Author     : tuana
+*/
+
+:root{
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e5e7eb;
+    --bg:#f3f6fb;
+    --card:#ffffff;
+    --primary:#2563eb;
+    --primary2:#1d4ed8;
+    --shadow: 0 18px 45px rgba(2,6,23,0.12);
+    --radius: 18px;
+    --container: 1120px;
+}
+*{
+    box-sizing:border-box;
+}
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+a{
+    color: inherit;
+    text-decoration: none;
+}
+.container{
+    width:100%;
+    max-width: var(--container);
+    margin:0 auto;
+    padding:0 22px;
+}
+
+.nav{
+    position: sticky;
+    top:0;
+    z-index:10;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+}
+.nav-inner{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.logo-img{
+    height: 40px;
+    width:auto;
+    display:block;
+}
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+    border: 1px solid transparent;
+    transition: .15s ease;
+    cursor:pointer;
+    white-space:nowrap;
+}
+.btn-outline{
+    background:#fff;
+    border-color:#cbd5e1;
+}
+.btn-outline:hover{
+    border-color:#94a3b8;
+}
+
+/* Page wrapper */
+.auth-wrap{
+    min-height: calc(100vh - 72px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 40px 0 28px;
+    background:
+        radial-gradient(900px 420px at 50% 0%, rgba(37,99,235,0.12), transparent 60%),
+        linear-gradient(180deg, rgba(2,6,23,0.02), transparent 45%);
+}
+
+/* Card */
+.card{
+    width: 100%;
+    max-width: 560px;
+    background: var(--card);
+    border: 1px solid #e8eefc;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 34px 34px 28px;
+}
+.card-head{
+    text-align:center;
+    margin-bottom: 18px;
+}
+.badge{
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    margin: 0 auto 12px;
+    display:grid;
+    place-items:center;
+    background: rgba(37,99,235,0.10);
+    color: var(--primary);
+}
+.card-head h1{
+    margin:0;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+.card-head p{
+    margin: 8px 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 14.5px;
+}
+
+/* Form */
+.form{
+    margin-top: 18px;
+    display:grid;
+    gap: 14px;
+}
+.field label{
+    display:block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+.input{
+    width:100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    outline: none;
+    font-size: 15px;
+    transition: .15s ease;
+    background:#fff;
+}
+.input:focus{
+    border-color: rgba(37,99,235,0.65);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+
+.hint{
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.errors{
+    display:block;
+    margin-top: 6px;
+    color:#dc2626;
+    font-size: 12.5px;
+    line-height: 1.4;
+}
+
+/* Password row */
+.pass-wrap{
+    position: relative;
+}
+/* PASS EYE */
+.pass-btn{
+    position:absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    transition: 0.15s ease;
+    color:#64748b;
+}
+.pass-btn:hover{ border-color:#cbd5e1; transform: translateY(-50%) scale(1.02); }
+
+.pass-btn .eye{
+    position:absolute;
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.pass-btn .eye-open{
+    opacity: 0;
+    transform: scale(0.85);
+}
+.pass-btn .eye-closed{
+    opacity: 1;
+    transform: scale(1);
+}
+
+.pass-btn.is-show .eye-open{
+    opacity: 1;
+    transform: scale(1);
+}
+.pass-btn.is-show .eye-closed{
+    opacity: 0;
+    transform: scale(0.85);
+}
+
+/* Submit */
+.btn-submit{
+    margin-top: 6px;
+    width:100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color:#fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor:pointer;
+    transition: .15s ease;
+}
+.btn-submit:hover{
+    background: var(--primary2);
+}
+
+.bottom{
+    text-align:center;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 14px;
+}
+.bottom a{
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.page-footer{
+    text-align:center;
+    margin-top: 18px;
+    color: rgba(15,23,42,0.55);
+    font-size: 13px;
+    letter-spacing: .6px;
+}
+
+@media (max-width: 560px){
+    .card{
+        padding: 26px 18px;
+        border-radius: 18px;
+    }
+}
