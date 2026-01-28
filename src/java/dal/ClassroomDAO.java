@@ -7,24 +7,24 @@ package dal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
 
-/**
- *
- * @author BINH
- */
-public class ClassroomDAO extends DBContext{
+public class ClassroomDAO extends DBContext {
+
     protected PreparedStatement statement;
     protected ResultSet resultSet;
-    
-    public List<Classroom> getAllClassroom(){
-        String sql = "select * from [Classrooms]";
+
+    public List<Classroom> getAllClassroom() {
+        String sql = "SELECT * FROM [Classrooms]";
         List<Classroom> list = new ArrayList<>();
+
         try {
             statement = connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
+
             while (resultSet.next()) {
                 Classroom classes = new Classroom();
                 classes.setId(resultSet.getString("Id"));
@@ -41,8 +41,31 @@ public class ClassroomDAO extends DBContext{
         }
         return list;
     }
-    
-    public void getTeacherNameById(String id){
-        
+
+    // ✅ METHOD INSERT – CÁI MÀ CONTROLLER ĐANG GỌI
+    public void insert(Classroom c) {
+        String sql = """
+            INSERT INTO Classrooms
+            (Name, ClassCode, Subject, TeacherId, CreatedAt, MaxStudents)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """;
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, c.getName());
+            statement.setString(2, c.getClassCode());
+            statement.setString(3, c.getSubject());
+            statement.setString(4, c.getTeacherId());
+            statement.setTimestamp(5, Timestamp.valueOf(c.getCreatedAt()));
+            statement.setInt(6, c.getMaxStudent());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getTeacherNameById(String id) {
+        // TODO
     }
 }

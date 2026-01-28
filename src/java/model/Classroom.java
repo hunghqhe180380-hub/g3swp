@@ -8,21 +8,23 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author BINH
+ * @author BINH+Dung
  */
 public class Classroom {
+
     private String id;
-    private String name;
+    private String name;        // class name
     private String classCode;
-    private String subject;
+    private String subject;     // dùng như description
     private String teacherId;
-    private LocalDateTime createdAt;        
+    private LocalDateTime createdAt;
     private int maxStudent;
 
     public Classroom() {
     }
 
-    public Classroom(String id, String name, String classCode, String subject, String teacherId, LocalDateTime createdAt, int maxStudent) {
+    public Classroom(String id, String name, String classCode, String subject,
+                     String teacherId, LocalDateTime createdAt, int maxStudent) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
@@ -31,6 +33,8 @@ public class Classroom {
         this.createdAt = createdAt;
         this.maxStudent = maxStudent;
     }
+
+    // ===== GET / SET CHUẨN =====
 
     public String getId() {
         return id;
@@ -86,6 +90,18 @@ public class Classroom {
 
     public void setMaxStudent(int maxStudent) {
         this.maxStudent = maxStudent;
-    }   
-    
+    }
+
+    // ===== ALIAS SETTER (ĐỂ KHỚP CONTROLLER CŨ) =====
+    // ⚠️ KHÔNG thêm field mới, chỉ map lại
+
+    // c.setClassName(className)
+    public void setClassName(String className) {
+        this.name = className;
+    }
+
+    // c.setDescription(description)
+    public void setDescription(String description) {
+        this.subject = description;
+    }
 }

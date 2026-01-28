@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -160,6 +161,21 @@ public class HomeFilter implements Filter {
             return;
         }
         
+        HttpSession session = req.getSession(false);
+        String role = null;
+
+        if (session != null) {
+            role = (String) session.getAttribute("role");
+        }
+
+        // ví dụ: URL /teacher/create-class
+        if (url.contains("create-class")) {
+            if (role == null || !"Teacher".equals(role)) {
+                res.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
+        }
+
         Throwable problem = null;
         
         try {

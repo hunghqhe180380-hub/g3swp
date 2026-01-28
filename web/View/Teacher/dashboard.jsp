@@ -18,6 +18,7 @@
         <a href="${pageContext.request.contextPath}/home">Home</a> ||
         <a href="${pageContext.request.contextPath}/account/profile">View Profile</a> ||
         <a href="${pageContext.request.contextPath}/logout">Logout</a>  
+        <a href="${pageContext.request.contextPath}/teacher/create-class">Create New Class</a>
 
     </body>
 </html>
