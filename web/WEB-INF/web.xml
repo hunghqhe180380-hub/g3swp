@@ -45,7 +45,124 @@
         <servlet-name>UserListController</servlet-name>
         <servlet-class>controller.admin.UserListController</servlet-class>
     </servlet>
-<<<<<<< HEAD
+    <servlet-mapping>
+        <servlet-name>LoginController</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutController</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterController</servlet-name>
+        <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomeController</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProfileController</servlet-name>
+        <url-pattern>/account/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardController</servlet-name>
+        <url-pattern>/account/dashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <url-pattern>/admin/change-role</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserListController</servlet-name>
+        <url-pattern>/admin/user-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClassListController</servlet-name>
+        <url-pattern>/admin/class-list</url-pattern>
+    </servlet-mapping>        
+    <servlet-mapping>
+        <servlet-name>VerifyEmailController</servlet-name>
+        <url-pattern>/verify-email</url-pattern>
+    </servlet-mapping>
+    
+   
+    <servlet-mapping>
+        <servlet-name>ResetPasswordController</servlet-name>
+        <url-pattern>/reset-password</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RequestPasswordController</servlet-name>
+        <url-pattern>/request-password</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>home.jsp</welcome-file>
+    </welcome-file-list>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+    
+    //library to encryp from normal password to Bcrypt password 
+    <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>0.4</version>
+    </dependency>
+    
+    //Distribute Pages
+    <context-param>
+        <param-name>nrpp</param-name>
+        <param-value>5</param-value>
+    </context-param>
+</web-app>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+    <filter>
+        <filter-name>HomeFilter</filter-name>
+        <filter-class>filter.HomeFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HomeFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>LoginController</servlet-name>
+        <servlet-class>controller.auth.LoginController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogoutController</servlet-name>
+        <servlet-class>controller.auth.LogoutController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterController</servlet-name>
+        <servlet-class>controller.auth.RegisterController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>HomeController</servlet-name>
+        <servlet-class>controller.auth.HomeController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Error</servlet-name>
+        <servlet-class>controller.auth.Error</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ProfileController</servlet-name>
+        <servlet-class>controller.account.ProfileController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashboardController</servlet-name>
+        <servlet-class>controller.account.DashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <servlet-class>controller.admin.ChangeRoleController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserListController</servlet-name>
+        <servlet-class>controller.admin.UserListController</servlet-class>
+    </servlet>
+
     <servlet>
         <servlet-name>ClassListController</servlet-name>
         <servlet-class>controller.admin.ClassListController</servlet-class>
@@ -64,8 +181,6 @@
         <servlet-class>controller.auth.VerifyEmailController</servlet-class>
     </servlet>
    
-=======
->>>>>>> parent of 4591fbc (hunghqhe180380)
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -102,7 +217,6 @@
         <servlet-name>ClassListController</servlet-name>
         <url-pattern>/admin/class-list</url-pattern>
     </servlet-mapping>
-<<<<<<< HEAD
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
@@ -117,8 +231,7 @@
         <servlet-name>RequestPasswordController</servlet-name>
         <url-pattern>/request-password</url-pattern>
     </servlet-mapping>
-=======
->>>>>>> parent of 4591fbc (hunghqhe180380)
+
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
