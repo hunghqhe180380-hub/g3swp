@@ -43,7 +43,6 @@
                         <td colspan="2">
                             <input style="width: 100%" type="password" name="password" placeholder="Password">
                             <span class="errors">${listMSG.msgPassword}</span>
-                            <span class="errors">${requestScope.msgIncorectLogin}</span>
                         </td>
                     </tr>
                     <tr>
@@ -51,7 +50,7 @@
                             <input type="radio"> Keep me logged in
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/request-password">Forgot password</a>
+                            <a href="#">Forgot password</a>
                         </td>
                     </tr>
                     <tr>
@@ -67,16 +66,11 @@
                             <a href="${pageContext.request.contextPath}/register">Sig up here</a>
                         </td>
                     </tr>
-                    <c:if test="${not empty requestScope.MSG99}">
-                        <tr>
-                            <td>
-                                ${requestScope.MSG99}
-                            </td>
-                            <td>
-                                <a href="${pageContext.request.contextPath}/verify-email">Verify Email</a>
-                            </td>
-                        </tr>
-                    </c:if>
+                    <tr>
+                        <td>
+                            ${requestScope.MSG99}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </form>

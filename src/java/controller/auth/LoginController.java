@@ -87,9 +87,15 @@ public class LoginController extends HttpServlet {
         if (listMSG.isEmpty()) {
             //if UserName/Email and Password is correct => allow to login
             User userLogin = userDAO.isLogin(email, password);
-            if (userLogin == null) {
-                request.setAttribute("msgIncorectLogin", Message.MSG05);
+            //email is confirmed to login
+            if (userLogin.getEmailConfirm() == 1) {
+                //login success => save user's session
+                HttpSession session = request.getSession();
+                session.setAttribute("user", userLogin);
+                //route user by this role
+                request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
             } else {
+<<<<<<< HEAD
                 //email is confirmed to login
                 if (userLogin.getEmailConfirm() == 1 && userLogin != null) {
                     //login success => save user's session
@@ -102,6 +108,9 @@ public class LoginController extends HttpServlet {
                     request.setAttribute("MSG99", Message.MSG99);
                     return;
                 }
+=======
+                request.setAttribute("MSG99", Message.MSG99);
+>>>>>>> parent of 4591fbc (hunghqhe180380)
             }
         }
         request.setAttribute("email", email);
