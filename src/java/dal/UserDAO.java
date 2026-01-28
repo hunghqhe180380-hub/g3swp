@@ -237,7 +237,6 @@ public class UserDAO extends DBContext {
 
     //generateAccCode
     public String generateAccCode() {
-
         String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // A–Z
         String result = "";
 
@@ -328,10 +327,13 @@ public class UserDAO extends DBContext {
         String sql = "select Id from [Roles] where Name =?";
         try {
             statement = connection.prepareStatement(sql);
+            statement.setObject(1, roleName);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getString("Id");
-            }
+            }  
+            resultSet.close();
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -347,6 +349,7 @@ public class UserDAO extends DBContext {
             statement.setObject(1, roleId);
             statement.setObject(2, userId);
             statement.executeUpdate();
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -375,14 +378,26 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(resultSet.getString("PhoneNumber"));
                 user.setRole(resultSet.getString("RoleName"));
                 list.add(user);
-            }
+            }   
+            resultSet.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
     
-    //
+    public void deleteUser(String userId){
+        String sql = "delete from Users where Id = ?";
+        try{
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            statement.executeUpdate();            
+            statement.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
 }
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"

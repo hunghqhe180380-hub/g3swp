@@ -25,6 +25,12 @@ import validation.InputValidator;
  */
 public class RegisterController extends HttpServlet {
 
+    private UserDAO userDAO;
+
+    public void init() {
+        userDAO = new UserDAO();
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -91,8 +97,7 @@ public class RegisterController extends HttpServlet {
 
         //list message errors
         Map<String, String> listMSG = validator(userName, fullName, email, phoneNumber, password, confirmPassword);
-        //if validator is true => allow to register account
-        UserDAO userDAO = new UserDAO();
+        //if validator is true => allow to register account        
         String userID = userDAO.generateID();
         String accCode = userDAO.generateAccCode();
 //        System.out.println("User ID: " + userID);
@@ -101,7 +106,7 @@ public class RegisterController extends HttpServlet {
 //        System.out.println("Phone: " + phoneNumber);
 //        System.out.println("Pass: " + password);
 //        System.out.println("Confirm: " + confirmPassword);
-        
+
         if (listMSG.isEmpty()) {
             User newUser = new User(userID,
                     userName,

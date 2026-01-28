@@ -5,27 +5,22 @@
 
 package controller.admin;
 
-import dal.UserDAO;
+import dal.ClassroomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.User;
-import validation.PagingUtil;
 
 /**
  *
  * @author BINH
  */
-public class UserListController extends HttpServlet {       
-    
-    private UserDAO dao;
-    
+public class DeleteClassController extends HttpServlet {
+    private ClassroomDAO dao;
     public void init(){
-        dao = new UserDAO();
+        dao = new ClassroomDAO();
     }
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -42,10 +37,10 @@ public class UserListController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UserListController</title>");  
+            out.println("<title>Servlet DeleteClassController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UserListController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeleteClassController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,23 +56,8 @@ public class UserListController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {           
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));        
-        List<User> users = dao.getAllUsers();
-        int size = users.size();
-        request.setAttribute("nrpp", nrpp);
-        int index = -1;        
-        try{
-            index = Integer.parseInt(request.getParameter("index"));
-            index = index<0?0:index;
-        }catch (Exception e){
-            index = -1;
-        }
-        PagingUtil page= new PagingUtil(size,nrpp,index);
-        page.calc();
-        request.setAttribute("users", users);
-        request.setAttribute("page", page);
-        request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
+    throws ServletException, IOException {
+        processRequest(request, response);
     } 
 
     /** 
@@ -90,8 +70,12 @@ public class UserListController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String classId = request.getParameter("classId");
+        String pageIndex = request.getParameter("pageIndex");
+        dao.deleteClassroom(classId);
+        response.sendRedirect(request.getContextPath() + "/admin/class-list?index=" + pageIndex);
     }
+
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description

@@ -4,33 +4,36 @@
  */
 package model;
 
-import java.time.LocalDateTime;
-
 /**
  *
  * @author BINH
  */
 public class Classroom {
+
     private String id;
     private String name;
     private String classCode;
     private String subject;
     private String teacherId;
-    private LocalDateTime createdAt;        
+    private String teacherName;
+    private String createdAt;
     private int maxStudent;
+    private int sumOfStudent;
 
     public Classroom() {
     }
 
-    public Classroom(String id, String name, String classCode, String subject, String teacherId, LocalDateTime createdAt, int maxStudent) {
+    public Classroom(String id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sumOfStudent) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
         this.subject = subject;
         this.teacherId = teacherId;
+        this.teacherName = teacherName;
         this.createdAt = createdAt;
         this.maxStudent = maxStudent;
-    }
+        this.sumOfStudent = sumOfStudent;
+    }        
 
     public String getId() {
         return id;
@@ -72,11 +75,19 @@ public class Classroom {
         this.teacherId = teacherId;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
+    }
+
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -86,6 +97,14 @@ public class Classroom {
 
     public void setMaxStudent(int maxStudent) {
         this.maxStudent = maxStudent;
-    }   
+    }
+
+    public int getSumOfStudent() {
+        return sumOfStudent;
+    }
+
+    public void setSumOfStudent(int sumOfStudent) {
+        this.sumOfStudent = sumOfStudent;
+    }
     
 }

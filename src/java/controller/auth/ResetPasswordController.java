@@ -22,6 +22,12 @@ import validation.InputValidator;
  */
 public class ResetPasswordController extends HttpServlet {
 
+    private UserDAO userDAO;
+
+    public void init() {
+        userDAO = new UserDAO();
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,7 +41,6 @@ public class ResetPasswordController extends HttpServlet {
             throws ServletException, IOException {
         String email = request.getParameter("email");
         InputValidator inputValidator = new InputValidator();
-        UserDAO userDAO = new UserDAO();
         request.setAttribute("email", email);
         //list message errors
         Map<String, String> listMSG = validator(email);

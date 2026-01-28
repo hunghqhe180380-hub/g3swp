@@ -12,8 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import message.Message;
 
 /**
  *
@@ -22,6 +20,10 @@ import message.Message;
 public class ChangeRoleController extends HttpServlet {
     
     private UserDAO dao;
+    
+    public void init(){
+        dao = new UserDAO();
+    }
     
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -71,29 +73,27 @@ public class ChangeRoleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String userId = request.getParameter("");
+        String userId = request.getParameter("userId");
+        String pageIndex = request.getParameter("pageIndex");
         String currentRole = dao.getRoleByID(userId);
-        if(currentRole.equalsIgnoreCase("Teacher")){
-            demoteToStudent(userId);
-            return;
-        }else if (currentRole.equalsIgnoreCase("Student")){
-            promoteToTeacher(userId);
-            return;
-        }else{
-            request.setAttribute("MSG", new Message().MSG100);
-            request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
+        if (currentRole.equalsIgnoreCase("Teacher")) {
+            demoteToStudent(userId);            
+        } else if (currentRole.equalsIgnoreCase("Student")) {
+            promoteToTeacher(userId);            
         }
+        response.sendRedirect(request.getContextPath() + "/admin/user-list?index=" + pageIndex);
     }
-    
-    private void promoteToTeacher(String userId){
-        String roleId = dao.getRoleIdByRoleName("Student");
-        dao.updateUserRole(userId, roleId);
-    }
-    
-    private void demoteToStudent(String userId){
+
+    private void promoteToTeacher(String userId) {
         String roleId = dao.getRoleIdByRoleName("Teacher");
         dao.updateUserRole(userId, roleId);
     }
+
+    private void demoteToStudent(String userId) {
+        String roleId = dao.getRoleIdByRoleName("Student");
+        dao.updateUserRole(userId, roleId);
+    }
+
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description

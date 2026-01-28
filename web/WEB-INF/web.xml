@@ -38,10 +38,6 @@
         <servlet-class>controller.account.DashboardController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ChangeRoleController</servlet-name>
-        <servlet-class>controller.admin.ChangeRoleController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UserListController</servlet-name>
         <servlet-class>controller.admin.UserListController</servlet-class>
     </servlet>
@@ -60,6 +56,18 @@
     <servlet>
         <servlet-name>RequestPasswordController</servlet-name>
         <servlet-class>controller.auth.RequestPasswordController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <servlet-class>controller.admin.ChangeRoleController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteUserController</servlet-name>
+        <servlet-class>controller.admin.DeleteUserController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteClassController</servlet-name>
+        <servlet-class>controller.admin.DeleteClassController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
@@ -86,10 +94,6 @@
         <url-pattern>/account/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ChangeRoleController</servlet-name>
-        <url-pattern>/admin/change-role</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UserListController</servlet-name>
         <url-pattern>/admin/user-list</url-pattern>
     </servlet-mapping>
@@ -108,6 +112,18 @@
     <servlet-mapping>
         <servlet-name>RequestPasswordController</servlet-name>
         <url-pattern>/request-password</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <url-pattern>/admin/change-role</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUserController</servlet-name>
+        <url-pattern>/admin/delete-user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteClassController</servlet-name>
+        <url-pattern>/admin/delete-class</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
