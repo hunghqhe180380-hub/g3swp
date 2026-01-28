@@ -69,27 +69,6 @@
         <servlet-name>DeleteClassController</servlet-name>
         <servlet-class>controller.admin.DeleteClassController</servlet-class>
     </servlet>
-<<<<<<< HEAD
-    <servlet>
-        <servlet-name>ClassListController</servlet-name>
-        <servlet-class>controller.admin.ClassListController</servlet-class>
-    </servlet>
-   
-    <servlet>
-        <servlet-name>ResetPasswordController</servlet-name>
-        <servlet-class>controller.auth.ResetPasswordController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <servlet-class>controller.auth.RequestPasswordController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <servlet-class>controller.auth.VerifyEmailController</servlet-class>
-    </servlet>
-   
-=======
->>>>>>> parent of 4591fbc (hunghqhe180380)
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -121,17 +100,11 @@
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
         <url-pattern>/admin/class-list</url-pattern>
-    </servlet-mapping>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of 350330d (Merge branch 'main' into hunghqhe180380)
+    </servlet-mapping>        
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
     </servlet-mapping>
-    
-   
     <servlet-mapping>
         <servlet-name>ResetPasswordController</servlet-name>
         <url-pattern>/reset-password</url-pattern>
@@ -140,23 +113,6 @@
         <servlet-name>RequestPasswordController</servlet-name>
         <url-pattern>/request-password</url-pattern>
     </servlet-mapping>
-<<<<<<< HEAD
-    <servlet-mapping>
-        <servlet-name>ChangeRoleController</servlet-name>
-        <url-pattern>/admin/change-role</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteUserController</servlet-name>
-        <url-pattern>/admin/delete-user</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteClassController</servlet-name>
-        <url-pattern>/admin/delete-class</url-pattern>
-    </servlet-mapping>
-=======
-=======
->>>>>>> parent of 4591fbc (hunghqhe180380)
->>>>>>> parent of 350330d (Merge branch 'main' into hunghqhe180380)
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
