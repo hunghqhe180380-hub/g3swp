@@ -289,7 +289,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    private boolean isExistEmail(String email) {
+    public boolean isExistEmail(String email) {
         try {
             String sql = "SELECT [Email]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"
@@ -339,7 +339,11 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
-
+    /**
+     * change role of user by user's id
+     * @param userId id of user you want to change
+     * @param roleId new role you want to change for the user
+     */
     public void updateUserRole(String userId, String roleId) {
         String sql = "UPDATE [dbo].[UserRoles]\n"
                 + "   SET [RoleId] = ?\n"
@@ -354,7 +358,10 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
-
+    /**
+     * get all user from database
+     * @return a list of user
+     */
     public List<User> getAllUsers() {                
         String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
                 + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
@@ -386,7 +393,10 @@ public class UserDAO extends DBContext {
         }
         return list;
     }
-    
+    /**
+     * delete an user object by its id
+     * @param userId a string of user's id
+     */
     public void deleteUser(String userId){
         String sql = "delete from Users where Id = ?";
         try{
@@ -398,6 +408,45 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    /**
+     * get user information even param just a character
+     * @param name an email/fullname/username
+     * @return a list of user
+     */    
+    public List<User> getUserInforByName(String name) {
+    String sql = "SELECT a.*, c.Name as RoleName FROM [Users] as a\n"
+            + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
+            + "JOIN [Roles] as c on b.RoleId = c.Id\n"
+            + "WHERE LOWER(a.FullName) LIKE ? OR LOWER(a.UserName) LIKE ? OR LOWER(a.Email) LIKE ?";
+    List<User> list = new ArrayList<>();
+    try {            
+        statement = connection.prepareStatement(sql);
+        String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";         
+        statement.setObject(1, searchPattern); 
+        statement.setObject(2, searchPattern); 
+        statement.setObject(3, searchPattern);      
+        resultSet = statement.executeQuery();
+        while(resultSet.next()) {
+            User user = new User();
+            user.setUserID(resultSet.getString("Id"));
+            user.setFullName(resultSet.getString("FullName"));
+            user.setAccountCode(resultSet.getString("AccountCode"));
+            user.setUrlImgProfile(resultSet.getString("AvatarUrl"));
+            user.setUserName(resultSet.getString("UserName"));
+            user.setEmail(resultSet.getString("Email"));
+            user.setEmailConfirm(resultSet.getInt("EmailConfirmed"));
+            user.setPassword(resultSet.getString("PasswordHash"));              
+            user.setPhoneNumber(resultSet.getString("PhoneNumber"));
+            user.setRole(resultSet.getString("RoleName"));
+            list.add(user);
+        }
+        resultSet.close();
+        statement.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
 }
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"

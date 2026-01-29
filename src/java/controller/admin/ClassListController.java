@@ -5,17 +5,14 @@
 package controller.admin;
 
 import dal.ClassroomDAO;
-import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
-import model.User;
 import validation.PagingUtil;
 
 /**
@@ -77,12 +74,12 @@ public class ClassListController extends HttpServlet {
         }
         int size = classes.size();
         request.setAttribute("nrpp", nrpp);
-        int index = -1;
+        int index = 0;
         try {
             index = Integer.parseInt(request.getParameter("index"));
             index = index < 0 ? 0 : index;
         } catch (Exception e) {
-            index = -1;
+            index = 0;
         }
         PagingUtil page = new PagingUtil(size, nrpp, index);
         page.calc();

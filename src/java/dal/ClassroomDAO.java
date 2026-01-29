@@ -57,6 +57,8 @@ public class ClassroomDAO extends DBContext{
             if(resultSet.next()){
                 sum = resultSet.getInt("TotalStudent");
             }
+            resultSet.close();
+            statement.close();
         }catch(SQLException e){
             e.printStackTrace();
         }

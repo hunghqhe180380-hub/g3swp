@@ -29,7 +29,8 @@ public class Message {
     public static final String MSG16 = "Email domain must contain a dot ('.').";
     public static final String MSG17 = "Email must not start or end with a dot ('.').";
     public static final String MSG18 = "Email must not contain '@.' or '.@'.";
-
+    public static final String MSG19 = "Email is not exist.";
+    public static final String MSG25 = "Email is exist.";
     // Full name validation
     public static final String MSG20 = "Full name is required.";
     public static final String MSG21 = "Full name must be between 4 and 50 characters.";
@@ -43,5 +44,5 @@ public class Message {
     public static final String MSG99 = "Please verify your email address to activate your account.";
 
     public static final String MSG100 = "Admin role cannot be change.";
-    
+
 }
