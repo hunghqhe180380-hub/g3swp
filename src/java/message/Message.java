@@ -31,6 +31,7 @@ public class Message {
     public static final String MSG18 = "Email must not contain '@.' or '.@'.";
     public static final String MSG19 = "Email is not exist.";
     public static final String MSG25 = "Email is exist.";
+
     // Full name validation
     public static final String MSG20 = "Full name is required.";
     public static final String MSG21 = "Full name must be between 4 and 50 characters.";
