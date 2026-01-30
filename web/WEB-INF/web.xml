@@ -7,7 +7,10 @@
     <filter-mapping>
         <filter-name>HomeFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
+
     <servlet>
         <servlet-name>LoginController</servlet-name>
         <servlet-class>controller.auth.LoginController</servlet-class>
@@ -69,6 +72,22 @@
         <servlet-class>controller.admin.DeleteClassController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>StudentListController</servlet-name>
+        <servlet-class>controller.admin.StudentListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>KickStudentController</servlet-name>
+        <servlet-class>controller.admin.KickStudentController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteClassController</servlet-name>
+        <url-pattern>/admin/delete-class</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUserController</servlet-name>
+        <url-pattern>/admin/delete-user</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>ForgotPasswordController</servlet-name>
         <servlet-class>controller.auth.ForgotPasswordController</servlet-class>
     </servlet>
@@ -126,6 +145,15 @@
         <url-pattern>/request-password</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>StudentListController</servlet-name>
+        <url-pattern>/admin/student-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KickStudentController</servlet-name>
+        <url-pattern>/admin/kick-student</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>ForgotPasswordController</servlet-name>
         <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
@@ -156,9 +184,5 @@
     </context-param>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ERROR</dispatcher>
-    <dependency>
-        <groupId>org.mindrot</groupId>
-        <artifactId>jbcrypt</artifactId>
-        <version>0.4</version>
-    </dependency>
+
 </web-app>

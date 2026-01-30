@@ -91,4 +91,4 @@ public class KickStudentController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-}
+
