@@ -94,7 +94,7 @@
                             Remember me?
                         </label>
 
-                        <a class="link" href="${pageContext.request.contextPath}/verify-email?action=forgot-password">Forgot password?</a>
+                        <a class="link" href="${pageContext.request.contextPath}/forgot-password">Forgot password?</a>
                     </div>
 
                     <button class="btn-submit" type="submit">Log in</button>

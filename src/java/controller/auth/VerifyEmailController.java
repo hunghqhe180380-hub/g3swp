@@ -34,78 +34,10 @@ public class VerifyEmailController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
-        if (action.isEmpty()) {
-            response.sendRedirect("home.jsp");
-        } else {
-            switch (action) {
-                case "register":
-                    registerAccount(request, response);
-                    break;
-                case "forgot-password":
-                    forgotPassword(request, response);
-                    break;
-                case "verify-email":
-                    forgotPassword(request, response);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-        }
+       
     }
 
-    //register
-    public void registerAccount(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-    }
-//verify email
-
-    public void verifyEmail(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-    }
-
-    //forgot password
-    public void forgotPassword(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String email = request.getParameter("email");
-        InputValidator inputValidator = new InputValidator();
-        request.setAttribute("email", email);
-        UserDAO userDAO = new UserDAO();
-        //list message errors
-        Map<String, String> listMSG = validator(email);
-
-        if (listMSG.isEmpty()) {
-            if (!userDAO.isExistEmail(email)) {
-                listMSG.put("msgEmail", Message.MSG19);
-            } else {
-                request.getRequestDispatcher("reset-password.jsp").forward(request, response);
-                return;
-            }
-        }
-        System.out.println(listMSG.size());
-
-        request.setAttribute("listMSG", listMSG);
-        request.getRequestDispatcher("reset-password.jsp").forward(request, response);
-    }
-
-    private Map<String, String> validator(String email) {
-        Map<String, String> errors = new HashMap<>();
-        InputValidator inputValidator = new InputValidator();
-        // email is blank ? return : continue
-        if (email.isEmpty()) {
-            errors.put("msgEmail", Message.MSG11);
-            return errors;
-        }
-
-        // email
-        if (inputValidator.isEmail(email) != null) {
-            errors.put("msgEmail", inputValidator.isEmail(email.trim()));
-        }
-
-        return errors;
-    }
+   
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
