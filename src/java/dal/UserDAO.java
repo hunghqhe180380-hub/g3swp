@@ -434,6 +434,7 @@ public class UserDAO extends DBContext {
         return userName;
     }
 
+
     /**
      * get user information even param just a character
      *
@@ -474,6 +475,7 @@ public class UserDAO extends DBContext {
         }
         return list;
     }
+
 }
 
 //sql query string to get some importan user's information

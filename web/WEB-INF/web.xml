@@ -72,6 +72,7 @@
         <servlet-name>ForgotPasswordController</servlet-name>
         <servlet-class>controller.auth.ForgotPasswordController</servlet-class>
     </servlet>
+
     <servlet>
         <servlet-name>KickStudentController</servlet-name>
         <servlet-class>controller.admin.KickStudentController</servlet-class>
@@ -128,6 +129,7 @@
         <servlet-name>ForgotPasswordController</servlet-name>
         <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>KickStudentController</servlet-name>
         <url-pattern>/admin/kick-student</url-pattern>
@@ -136,6 +138,7 @@
         <servlet-name>StudentListController</servlet-name>
         <url-pattern>/admin/student-list</url-pattern>
     </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
