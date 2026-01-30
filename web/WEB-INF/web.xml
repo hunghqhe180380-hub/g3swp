@@ -8,7 +8,10 @@
     <filter-mapping>
         <filter-name>HomeFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
+
     <servlet>
         <servlet-name>LoginController</servlet-name>
         <servlet-class>controller.auth.LoginController</servlet-class>
@@ -85,6 +88,7 @@
         <servlet-name>DeleteUserController</servlet-name>
         <url-pattern>/admin/delete-user</url-pattern>
     </servlet-mapping>
+    <servlet>
         <servlet-name>ForgotPasswordController</servlet-name>
         <servlet-class>controller.auth.ForgotPasswordController</servlet-class>
     </servlet>
@@ -139,25 +143,17 @@
     <servlet-mapping>
         <servlet-name>KickStudentController</servlet-name>
         <url-pattern>/admin/kick-student</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>ForgotPasswordController</servlet-name>
         <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ERROR</dispatcher>
     
-    //library to encryp from normal password to Bcrypt password 
-    <dependency>
-        <groupId>org.mindrot</groupId>
-        <artifactId>jbcrypt</artifactId>
-        <version>0.4</version>
-    </dependency>
-    
-    //Distribute Pages
-    <context-param>
-        <param-name>nrpp</param-name>
-        <param-value>5</param-value>
-    </context-param>
 </web-app>

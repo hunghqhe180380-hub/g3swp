@@ -460,6 +460,7 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }
     public String getUserNameByEmail(String email) {
         String userName = "";
         try {
