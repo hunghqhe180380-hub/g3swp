@@ -4,43 +4,44 @@
  */
 package model;
 
-import java.time.LocalDateTime;
 
 /**
  *
  * @author BINH
  */
 public class Enrollment {
-    private String id;
-    private String classId;
+    private int id;
+    private int classId;
     private String userId;
     private String roleInClass;
-    private LocalDateTime joinedAt;
+    private String joinedAt;
+    private User user;
 
     public Enrollment() {
     }
 
-    public Enrollment(String id, String classId, String userId, String roleInClass, LocalDateTime joinedAt) {
+    public Enrollment(int id, int classId, String userId, String roleInClass, String joinedAt, User user) {
         this.id = id;
         this.classId = classId;
         this.userId = userId;
         this.roleInClass = roleInClass;
         this.joinedAt = joinedAt;
-    }
+        this.user = user;
+    }    
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getClassId() {
+    public int getClassId() {
         return classId;
     }
 
-    public void setClassId(String classId) {
+    public void setClassId(int classId) {
         this.classId = classId;
     }
 
@@ -60,12 +61,20 @@ public class Enrollment {
         this.roleInClass = roleInClass;
     }
 
-    public LocalDateTime getJoinedAt() {
+    public String getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(LocalDateTime joinedAt) {
+    public void setJoinedAt(String joinedAt) {
         this.joinedAt = joinedAt;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }        
         
 }

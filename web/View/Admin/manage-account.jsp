@@ -16,7 +16,7 @@
     <body>
         <div>
             <h1>Manage Account </h1>
-            <a href="${pageContext.request.contextPath}/account/dashboard"><- Back</a>
+            <a href="${pageContext.request.contextPath}/account/dashboard">Back</a>
         </div>
         <div>
             <h2>Account (${fn:length(users)})</h2>
@@ -72,7 +72,7 @@
                             </td>
                         </tr>
                     </c:forEach> 
-                <tbody>
+                </tbody>
             </table>
         </div>
         <c:if test="${page.index!=0}">

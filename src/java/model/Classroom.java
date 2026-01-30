@@ -10,7 +10,7 @@ package model;
  */
 public class Classroom {
 
-    private String id;
+    private int id;
     private String name;
     private String classCode;
     private String subject;
@@ -23,7 +23,13 @@ public class Classroom {
     public Classroom() {
     }
 
-    public Classroom(String id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sumOfStudent) {
+    public Classroom(String name, String subject, int sumOfStudent) {
+        this.name = name;
+        this.subject = subject;
+        this.sumOfStudent = sumOfStudent;
+    }        
+
+    public Classroom(int id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sumOfStudent) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
@@ -35,11 +41,11 @@ public class Classroom {
         this.sumOfStudent = sumOfStudent;
     }        
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
