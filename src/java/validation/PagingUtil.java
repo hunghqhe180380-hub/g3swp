@@ -96,18 +96,20 @@ public class PagingUtil {
     }
     public void calc(){
         totalPage = (size+nrpp-1)/nrpp;
-        index = index<0?0:index;
-        index = index>totalPage?totalPage:index;
-        start = index*nrpp; //Index tinh tu 0
+        index = index<0?0:index;         
+        index = totalPage>0&&index>=totalPage?totalPage-1:index;
+        start = index*nrpp;
         end = start+nrpp-1;
         end = end>=size?size-1:end;
+        end = end<0?0:end;
         pageStart = index-2<0?0:index-2;
         pageEnd = index+2>totalPage-1?totalPage-1:index+2;
+        pageEnd = pageEnd<0?0:pageEnd;
     }
     
     public static void main(String[] args) {
         UserDAO dao = new UserDAO();
         int size = dao.getAllUsers().size();
-        System.out.println(size);
+        System.out.println(size);        
     }
 }

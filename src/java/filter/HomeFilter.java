@@ -156,10 +156,10 @@ public class HomeFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         
         String url = req.getServletPath();
-        if(url.endsWith(".jsp")){
-            res.sendRedirect(req.getContextPath() + "/home");
-            return;
-        }
+//        if(url.endsWith(".jsp")){
+//            res.sendRedirect(req.getContextPath() + "/home");
+//            return;
+//        }
         
         HttpSession session = req.getSession(false);
         String role = null;

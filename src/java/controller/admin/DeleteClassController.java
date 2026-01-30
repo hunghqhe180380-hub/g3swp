@@ -3,8 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.auth;
+package controller.admin;
 
+import dal.ClassroomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,10 +15,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author hung2
+ * @author BINH
  */
-public class VerifyEmailController extends HttpServlet {
-   
+public class DeleteClassController extends HttpServlet {
+    private ClassroomDAO dao;
+    public void init(){
+        dao = new ClassroomDAO();
+    }
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -33,10 +37,10 @@ public class VerifyEmailController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet VerifyEmailController</title>");  
+            out.println("<title>Servlet DeleteClassController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet VerifyEmailController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeleteClassController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,7 +70,10 @@ public class VerifyEmailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String classId = request.getParameter("classId");
+        String pageIndex = request.getParameter("pageIndex");
+        dao.deleteClassroom(classId);
+        response.sendRedirect(request.getContextPath() + "/admin/class-list?index=" + pageIndex);
     }
 
     /** 

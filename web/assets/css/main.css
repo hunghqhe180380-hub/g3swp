@@ -1,0 +1,339 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jan 27, 2026, 9:15:53 PM
+    Author     : tuana
+*/
+
+:root{
+    --text: #0f172a;
+    --muted: #64748b;
+    --line: #e5e7eb;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --primary: #2563eb;
+    --primary-2: #1d4ed8;
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+    --radius: 18px;
+    --container: 1120px;
+}
+
+.logo-img{
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+*{
+    box-sizing: border-box;
+}
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+a{
+    color: inherit;
+    text-decoration: none;
+}
+.container{
+    width: 100%;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 22px;
+}
+
+/* Navbar */
+.nav{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+}
+.nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height: 72px;
+}
+.brand{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+}
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+}
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-outline{
+    background: #fff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+.btn-outline:hover{
+    border-color: #94a3b8;
+}
+.btn-primary{
+    background: var(--primary);
+    color:#fff;
+}
+.btn-primary:hover{
+    background: var(--primary-2);
+}
+.btn-lg{
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+/* Hero */
+.hero{
+    padding: 72px 0 30px;
+    text-align: center;
+}
+.hero h1{
+    margin:0;
+    font-size: clamp(34px, 4.6vw, 64px);
+    line-height: 1.06;
+    letter-spacing: -0.8px;
+    font-weight: 800;
+}
+.hero p{
+    margin: 16px auto 0;
+    max-width: 780px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.6;
+}
+.hero-cta{
+    margin-top: 22px;
+    display:flex;
+    justify-content:center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.arrow{
+    display:inline-block;
+    transform: translateY(1px);
+}
+
+/* Section title */
+.section{
+    padding: 60px 0;
+}
+.section-title{
+    text-align:center;
+    margin-bottom: 30px;
+}
+.section-title h2{
+    margin:0;
+    font-size: clamp(28px, 3.2vw, 46px);
+    letter-spacing: -0.6px;
+    font-weight: 800;
+}
+.section-title p{
+    margin: 12px auto 0;
+    max-width: 650px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Features */
+.grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+.card{
+    background: var(--card);
+    border: 1px solid #e6eefc;
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: 0 1px 0 rgba(2,6,23,0.02);
+    transition: 0.2s ease;
+}
+.card:hover{
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+.icon{
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:grid;
+    place-items:center;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--primary);
+    margin-bottom: 14px;
+}
+.card h3{
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+.card p{
+    margin: 10px 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* Why choose */
+.two-col{
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items:center;
+    margin-top: 36px;
+}
+.why h2{
+    margin:0 0 16px;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+.why-list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display:grid;
+    gap: 16px;
+}
+.why-item{
+    display:flex;
+    gap: 12px;
+    align-items:flex-start;
+}
+.tick{
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display:grid;
+    place-items:center;
+    background: rgba(34,197,94,0.12);
+    color: #16a34a;
+    flex: 0 0 22px;
+    margin-top: 2px;
+}
+.why-item b{
+    display:block;
+    font-size: 16px;
+}
+.why-item span{
+    display:block;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.6;
+}
+
+.illus{
+    width: 100%;
+    border-radius: 22px;
+    border: 1px solid #e6eefc;
+    overflow: hidden;
+    background: #f8fbff;
+    min-height: 260px;
+    display:grid;
+    place-items:center;
+}
+.illus img{
+    width: 100%;
+    height: auto;
+    display:block;
+}
+.illus-fallback{
+    padding: 28px;
+    color: var(--muted);
+    text-align:center;
+    font-size: 14px;
+}
+
+.cta-gradient{
+    text-align: center;
+    padding: 48px 40px;
+    color: #fff;
+
+    background:
+        radial-gradient(
+        1200px 500px at 50% -20%,
+        rgba(255,255,255,0.08),
+        transparent 60%
+        ),
+        linear-gradient(
+        135deg,
+        #0b1224 0%,
+        #0e1a3a 50%,
+        #0b2a5b 100%
+        );
+}
+
+.cta-gradient h2{
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.15;
+}
+
+.cta-gradient p{
+    font-size: 18px;
+    opacity: 0.85;
+    margin-bottom: 10px;
+}
+
+.btn-white{
+    margin-top: 18px;
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid rgba(255,255,255,0.18);
+}
+.btn-white:hover{
+    filter: brightness(0.97);
+}
+
+.footer{
+    padding: 64px 0;
+    background:
+        linear-gradient(180deg, #0b1224, #0a1430);
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+}
+
+.footer-inner{
+    text-align:center;
+}
+
+/* Responsive */
+@media (max-width: 980px){
+    .grid{
+        grid-template-columns: 1fr;
+    }
+    .two-col{
+        grid-template-columns: 1fr;
+    }
+    .hero{
+        padding-top: 52px;
+    }
+}

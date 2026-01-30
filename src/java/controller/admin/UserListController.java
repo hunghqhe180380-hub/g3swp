@@ -22,6 +22,11 @@ import validation.PagingUtil;
  */
 public class UserListController extends HttpServlet {       
     
+    private UserDAO dao;
+    
+    public void init(){
+        dao = new UserDAO();
+    }
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -56,21 +61,28 @@ public class UserListController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {   
-        UserDAO dao = new UserDAO();
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));        
-        List<User> users = dao.getAllUsers();
+    throws ServletException, IOException {           
+        String searchUser = request.getParameter("search");       
+        List<User> users;  
+        if(searchUser!=null&&!searchUser.trim().isEmpty()){
+            users = dao.getUserInforByName(searchUser);
+        }else{
+            users = dao.getAllUsers();
+            searchUser = "";
+        }
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp")); 
         int size = users.size();
         request.setAttribute("nrpp", nrpp);
-        int index = -1;        
+        int index = 0;        
         try{
             index = Integer.parseInt(request.getParameter("index"));
             index = index<0?0:index;
         }catch (Exception e){
-            index = -1;
+            index = 0;
         }
         PagingUtil page= new PagingUtil(size,nrpp,index);
-        page.calc();
+        page.calc();      
+        request.setAttribute("search", searchUser);
         request.setAttribute("users", users);
         request.setAttribute("page", page);
         request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
@@ -88,7 +100,6 @@ public class UserListController extends HttpServlet {
     throws ServletException, IOException {
         processRequest(request, response);
     }
-
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description

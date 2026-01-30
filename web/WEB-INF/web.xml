@@ -42,10 +42,6 @@
         <servlet-class>controller.account.DashboardController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ChangeRoleController</servlet-name>
-        <servlet-class>controller.admin.ChangeRoleController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UserListController</servlet-name>
         <servlet-class>controller.admin.UserListController</servlet-class>
     </servlet>
@@ -66,16 +62,16 @@
         <servlet-class>controller.auth.RequestPasswordController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <servlet-class>controller.auth.VerifyEmailController</servlet-class>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <servlet-class>controller.admin.ChangeRoleController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ResetPasswordController</servlet-name>
-        <servlet-class>controller.auth.ResetPasswordController</servlet-class>
+        <servlet-name>DeleteUserController</servlet-name>
+        <servlet-class>controller.admin.DeleteUserController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <servlet-class>controller.auth.RequestPasswordController</servlet-class>
+        <servlet-name>DeleteClassController</servlet-name>
+        <servlet-class>controller.admin.DeleteClassController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>create-class</servlet-name>
@@ -110,29 +106,13 @@
         <url-pattern>/account/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ChangeRoleController</servlet-name>
-        <url-pattern>/admin/change-role</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UserListController</servlet-name>
         <url-pattern>/admin/user-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
         <url-pattern>/admin/class-list</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VerifyEmailController</servlet-name>
-        <url-pattern>/verify-email</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ResetPasswordController</servlet-name>
-        <url-pattern>/reset-password</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RequestPasswordController</servlet-name>
-        <url-pattern>/request-password</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>        
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>

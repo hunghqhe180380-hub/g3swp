@@ -1,15 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-import java.time.LocalDateTime;
-
-/**
- *
- * @author BINH+Dung
- */
 public class Classroom {
 
     private String id;
@@ -17,24 +7,29 @@ public class Classroom {
     private String classCode;
     private String subject;     // dùng như description
     private String teacherId;
-    private LocalDateTime createdAt;
+    private String teacherName;
+    private String createdAt;   // đã format sẵn từ DAO
     private int maxStudent;
+    private int sumOfStudent;
 
     public Classroom() {
     }
 
     public Classroom(String id, String name, String classCode, String subject,
-                     String teacherId, LocalDateTime createdAt, int maxStudent) {
+                     String teacherId, String teacherName,
+                     String createdAt, int maxStudent, int sumOfStudent) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
         this.subject = subject;
         this.teacherId = teacherId;
+        this.teacherName = teacherName;
         this.createdAt = createdAt;
         this.maxStudent = maxStudent;
+        this.sumOfStudent = sumOfStudent;
     }
 
-    // ===== GET / SET CHUẨN =====
+    // ===== GET / SET =====
 
     public String getId() {
         return id;
@@ -76,11 +71,19 @@ public class Classroom {
         this.teacherId = teacherId;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
+    }
+
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -92,15 +95,22 @@ public class Classroom {
         this.maxStudent = maxStudent;
     }
 
-    // ===== ALIAS SETTER (ĐỂ KHỚP CONTROLLER CŨ) =====
-    // ⚠️ KHÔNG thêm field mới, chỉ map lại
+    public int getSumOfStudent() {
+        return sumOfStudent;
+    }
 
-    // c.setClassName(className)
+    public void setSumOfStudent(int sumOfStudent) {
+        this.sumOfStudent = sumOfStudent;
+    }
+
+    // ===== ALIAS SETTER (GIỮ CONTROLLER CŨ KHÔNG BỊ GÃY) =====
+
+    // c.setClassName(...)
     public void setClassName(String className) {
         this.name = className;
     }
 
-    // c.setDescription(description)
+    // c.setDescription(...)
     public void setDescription(String description) {
         this.subject = description;
     }

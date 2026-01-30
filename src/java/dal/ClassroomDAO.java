@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
@@ -17,8 +14,12 @@ public class ClassroomDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
+    // ✅ LẤY TẤT CẢ CLASS + TÊN GIÁO VIÊN
     public List<Classroom> getAllClassroom() {
-        String sql = "SELECT * FROM [Classrooms]";
+        String sql = "select a.*, b.FullName as TeacherName "
+                   + "from [Classrooms] as a "
+                   + "join [Users] as b on a.TeacherId = b.Id";
+
         List<Classroom> list = new ArrayList<>();
 
         try {
@@ -32,17 +33,25 @@ public class ClassroomDAO extends DBContext {
                 classes.setClassCode(resultSet.getString("ClassCode"));
                 classes.setSubject(resultSet.getString("Subject"));
                 classes.setTeacherId(resultSet.getString("TeacherId"));
-                classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime());
+                classes.setTeacherName(resultSet.getString("TeacherName"));
+                classes.setCreatedAt(
+                    resultSet.getTimestamp("CreatedAt")
+                             .toLocalDateTime()
+                             .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                );
                 classes.setMaxStudent(resultSet.getInt("MaxStudents"));
                 list.add(classes);
             }
+
+            resultSet.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    // ✅ METHOD INSERT – CÁI MÀ CONTROLLER ĐANG GỌI
+    // ✅ INSERT CLASSROOM (CONTROLLER ĐANG GỌI)
     public void insert(Classroom c) {
         String sql = """
             INSERT INTO Classrooms
@@ -60,12 +69,45 @@ public class ClassroomDAO extends DBContext {
             statement.setInt(6, c.getMaxStudent());
 
             statement.executeUpdate();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void getTeacherNameById(String id) {
-        // TODO
+    // ✅ ĐẾM SỐ HỌC SINH TRONG LỚP
+    public int getSumOfStudent(String classId) {
+        String sql = "select count(*) as TotalStudent from [Enrollments] where ClassId = ?";
+        int sum = 0;
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, classId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                sum = resultSet.getInt("TotalStudent");
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sum;
+    }
+
+    // ✅ XÓA CLASSROOM
+    public void deleteClassroom(String classId) {
+        String sql = "delete from [Classrooms] where Id = ?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, classId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
+

@@ -45,5 +45,5 @@ public class Message {
     public static final String MSG99 = "Please verify your email address to activate your account.";
 
     public static final String MSG100 = "Admin role cannot be change.";
-    
+
 }

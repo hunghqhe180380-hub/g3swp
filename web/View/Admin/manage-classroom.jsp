@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,16 +23,22 @@
                 <th>Created</th>
                 <th></th>
             </tr>           
-            <c:forEach items="${classes}" var="class" begin="${page.start}" end="${page.end}">
+            <c:forEach items="${classes}" var="cl" begin="${page.start}" end="${page.end}">
                 <tr>
-                    <td>${class.name}</td>
-                    <td>${class.classCode}</td>
-                    <td>${class.role}</td>
-                    <td>${class.accountCode}</td>
-                    <td>${class.createdAt}</td>
                     <td>
-                        <form action="${pageContext.request.contextPath}/admin/change-role">
-                            
+                        <strong>${cl.name}</strong>
+                        <small>${cl.subject}</small>
+                    </td>
+                    <td>${cl.classCode}</td>
+                    <td>${cl.teacherName}</td>
+                    <td>${cl.sumOfStudent}</td>
+                    <td>${cl.createdAt}</td>
+                    <td>
+                        
+                        <form action="${pageContext.request.contextPath}/admin/change-role" method="post">
+                            <input type="hidden" name="classId" value="${cl.id}">
+                            <input type="hidden" name="pageIndex" value="${page.index}">
+                            <button type="submit">Delete</button>
                         </form>
                     </td>
                 </tr>
