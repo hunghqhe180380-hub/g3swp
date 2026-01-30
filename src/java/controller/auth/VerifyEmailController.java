@@ -4,7 +4,6 @@
  */
 package controller.auth;
 
-import dal.TokenForgetDAO;
 import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,8 +20,7 @@ import validation.InputValidator;
  *
  * @author hung2
  */
-public class ResetPasswordController extends HttpServlet {
-
+public class VerifyEmailController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,7 +31,13 @@ public class ResetPasswordController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+       
+    }
+
+   
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -47,22 +51,9 @@ public class ResetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //validation token exist and no expirytime
-        String token = request.getParameter("token");
-        System.out.println("token reset: " + token);
-        TokenForgetDAO tokenForgetDAO = new TokenForgetDAO();
-        //if exist token and not expiry time => allow to reset password
-        if(tokenForgetDAO.isExistToken(token)){
-            request.getRequestDispatcher("reset-password.jsp").forward(request, response);
-        } else {
-            //token is not exits or expiry time => not allow to reset password
-            Map<String, String> listMSG = new HashMap<>();
-            listMSG.put("msgToken", Message.MSG101);
-            request.setAttribute("listMSG", listMSG);
-            request.getRequestDispatcher("request-password.jsp").forward(request, response);
-        }
-        
+        processRequest(request, response);
     }
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -74,7 +65,7 @@ public class ResetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
+        processRequest(request, response);
     }
 
     /**

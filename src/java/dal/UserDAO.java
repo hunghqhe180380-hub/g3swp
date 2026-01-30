@@ -359,11 +359,6 @@ public class UserDAO extends DBContext {
         }
     }
 
-    /**
-     * get all user from database
-     *
-     * @return a list of user
-     */
     public List<User> getAllUsers() {
         String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
                 + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
@@ -396,11 +391,6 @@ public class UserDAO extends DBContext {
         return list;
     }
 
-    /**
-     * delete an user object by its id
-     *
-     * @param userId a string of user's id
-     */
     public void deleteUser(String userId) {
         String sql = "delete from Users where Id = ?";
         try {
@@ -411,6 +401,24 @@ public class UserDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getUserIdByEmail(String email) {
+        String userID = "";
+        try {
+            String sql = "SELECT  [Id]\n"
+                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  Where Email = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, email);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                userID = resultSet.getString("Id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userID;
     }
 
     /**
@@ -452,8 +460,25 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    public String getUserNameByEmail(String email) {
+        String userName = "";
+        try {
+            String sql = "SELECT [UserName]\n"
+                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  Where Email = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, email);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                userName = resultSet.getString("UserName");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userName;
     }
 }
+
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"
 //                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
