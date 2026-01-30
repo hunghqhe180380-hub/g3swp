@@ -5,17 +5,15 @@
 package controller.admin;
 
 import dal.ClassroomDAO;
-import dal.UserDAO;
+import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
-import model.User;
 import validation.PagingUtil;
 
 /**
@@ -24,11 +22,10 @@ import validation.PagingUtil;
  */
 public class ClassListController extends HttpServlet {
 
-    private ClassroomDAO classDao;
+    private ClassroomDAO dao;
 
     public void init() {
-        classDao = new ClassroomDAO();
-
+        dao = new ClassroomDAO();
     }
 
     /**
@@ -57,7 +54,6 @@ public class ClassListController extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -69,23 +65,27 @@ public class ClassListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
-        List<Classroom> classes = classDao.getAllClassroom();  
-        for(Classroom c: classes){
-            int sum = classDao.getSumOfStudent(c.getId());
-            c.setSumOfStudent(sum);
+        String search = request.getParameter("search");
+        List<Classroom> classes;
+        if (search != null && !search.trim().isEmpty()) {
+            classes = dao.getClassInforByName(search);
+        } else {
+            classes = dao.getAllClassroom();
+            search = "";
         }
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
         int size = classes.size();
         request.setAttribute("nrpp", nrpp);
-        int index = -1;
+        int index = 0;
         try {
             index = Integer.parseInt(request.getParameter("index"));
             index = index < 0 ? 0 : index;
         } catch (Exception e) {
-            index = -1;
+            index = 0;
         }
         PagingUtil page = new PagingUtil(size, nrpp, index);
         page.calc();
+        request.setAttribute("search", search);
         request.setAttribute("classes", classes);
         request.setAttribute("page", page);
         request.getRequestDispatcher("/View/Admin/manage-classroom.jsp").forward(request, response);

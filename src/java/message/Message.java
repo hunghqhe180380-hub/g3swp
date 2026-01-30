@@ -46,4 +46,9 @@ public class Message {
 
     public static final String MSG100 = "Admin role cannot be change.";
 
+    //Reset Password
+    public static final String MSG101 = "Your password reset link is invalid or has expired.\n"
+            + "Please request a new password reset link to continue.";
+    public static final String MSG102 = "We’ve sent a password reset link to your email address.\n"
+            + "Please check your inbox and follow the instructions to reset your password.";
 }
