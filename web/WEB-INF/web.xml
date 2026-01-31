@@ -80,7 +80,10 @@
         <servlet-name>KickStudentController</servlet-name>
         <servlet-class>controller.admin.KickStudentController</servlet-class>
     </servlet>
-    <servlet-mapping>
+    <servlet>
+        <servlet-name>MaterialListController</servlet-name>
+        <servlet-class>controller.admin.MaterialListController</servlet-class>
+    </servlet><servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/admin/delete-class</url-pattern>
     </servlet-mapping>
@@ -150,10 +153,24 @@
         <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>ChangeRoleController</servlet-name>
+        <url-pattern>/admin/change-role</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MaterialListController</servlet-name>
+        <url-pattern>/admin/material-list</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ERROR</dispatcher>
     
+    //Distribute Pages
+    <context-param>
+        <param-name>nrpp</param-name>
+        <param-value>5</param-value>
+    </context-param>
 </web-app>

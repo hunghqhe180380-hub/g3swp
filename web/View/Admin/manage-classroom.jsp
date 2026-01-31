@@ -45,7 +45,7 @@
                         <td>${cl.sumOfStudent}</td>
                         <td>${cl.createdAt}</td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/">Materials</a><br>
+                            <a href="${pageContext.request.contextPath}/admin/material-list">Materials</a><br>
                             <a href="${pageContext.request.contextPath}/admin/">Assignments</a><br>
                             <a href="${pageContext.request.contextPath}/admin/student-list?classId=${cl.id}">Students</a><br>
                             <form action="${pageContext.request.contextPath}/admin/delete-class" method="post">
