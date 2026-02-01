@@ -18,18 +18,18 @@ public class Classroom {
     private String teacherName;
     private String createdAt;
     private int maxStudent;
-    private int sumOfStudent;
+    private int sum;
 
     public Classroom() {
     }
 
-    public Classroom(String name, String subject, int sumOfStudent) {
+    public Classroom(String name, String subject, int sum) {
         this.name = name;
         this.subject = subject;
-        this.sumOfStudent = sumOfStudent;
-    }        
+        this.sum = sum;
+    }         
 
-    public Classroom(int id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sumOfStudent) {
+    public Classroom(int id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sum) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
@@ -38,7 +38,7 @@ public class Classroom {
         this.teacherName = teacherName;
         this.createdAt = createdAt;
         this.maxStudent = maxStudent;
-        this.sumOfStudent = sumOfStudent;
+        this.sum = sum;
     }        
 
     public int getId() {
@@ -105,12 +105,12 @@ public class Classroom {
         this.maxStudent = maxStudent;
     }
 
-    public int getSumOfStudent() {
-        return sumOfStudent;
+    public int getSum() {
+        return sum;
     }
 
-    public void setSumOfStudent(int sumOfStudent) {
-        this.sumOfStudent = sumOfStudent;
+    public void setSum(int sum) {
+        this.sum = sum;
     }
     
 }

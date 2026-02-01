@@ -20,20 +20,20 @@ public class EnrollmentDAO extends DBContext {
 
     protected PreparedStatement statement;
     protected ResultSet resultSet;
-    
-    public List<Enrollment> getEnrollmentByClassId(String classId){
+
+    public List<Enrollment> getEnrollmentByClassId(String classId) {
         String sql = "SELECT a.*,b.FullName,b.UserName,b.Email FROM [Enrollments] as a\n"
                 + "JOIN [Users] as b ON a.UserId = b.Id\n"
                 + "WHERE a.ClassId =?";
         List<Enrollment> list = new ArrayList<>();
-        try{
+        try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             resultSet = statement.executeQuery();
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 Enrollment enroll = new Enrollment();
                 enroll.setId(resultSet.getInt("Id"));
-                enroll.setClassId(resultSet.getInt("ClassId")); 
+                enroll.setClassId(resultSet.getInt("ClassId"));
                 enroll.setUserId(resultSet.getString("UserId"));
                 enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
@@ -42,19 +42,20 @@ public class EnrollmentDAO extends DBContext {
             }
             resultSet.close();
             statement.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
+
     public List<Enrollment> getUserInforByName(String name, String classId) {
         String sql = "SELECT a.*,b.FullName,b.UserName,b.Email FROM [Enrollments] as a\n"
                 + "JOIN [Users] as b ON a.UserId = b.Id\n"
-                + "WHERE (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?) and a.ClassId =?";            
+                + "WHERE (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?) and a.ClassId =?";
         List<Enrollment> list = new ArrayList<>();
         try {
             statement = connection.prepareStatement(sql);
-            String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";            
+            String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";
             statement.setObject(1, searchPattern);
             statement.setObject(2, searchPattern);
             statement.setObject(3, searchPattern);
@@ -63,7 +64,7 @@ public class EnrollmentDAO extends DBContext {
             while (resultSet.next()) {
                 Enrollment enroll = new Enrollment();
                 enroll.setId(resultSet.getInt("Id"));
-                enroll.setClassId(resultSet.getInt("ClassId")); 
+                enroll.setClassId(resultSet.getInt("ClassId"));
                 enroll.setUserId(resultSet.getString("UserId"));
                 enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
@@ -77,18 +78,39 @@ public class EnrollmentDAO extends DBContext {
         }
         return list;
     }
-    
-    public void kickOutStudent(String userId, String classId){
+
+    public void kickOutStudent(String userId, String classId) {
         String sql = "delete from [Enrollments] where userId =? and classId =?";
-        try{
+        try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             statement.setObject(2, classId);
             statement.executeUpdate();
             statement.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-        
+
+    public Classroom getClassInfoByClassId(String classId) {
+        String sql = "SELECT a.Name,"
+                + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
+                + "FROM [Classrooms] as a WHERE a.Id = ?";
+        Classroom cl = new Classroom();
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {                
+                cl.setName(resultSet.getString("Name"));
+                cl.setSum(resultSet.getInt("TotalStudent"));                
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cl;
+    }
+
 }

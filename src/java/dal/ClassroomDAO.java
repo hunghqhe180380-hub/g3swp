@@ -40,7 +40,7 @@ public class ClassroomDAO extends DBContext {
                 classes.setTeacherName(resultSet.getString("TeacherName"));
                 classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 classes.setMaxStudent(resultSet.getInt("MaxStudents"));
-                classes.setSumOfStudent(resultSet.getInt("TotalStudent"));
+                classes.setSum(resultSet.getInt("TotalStudent"));
                 list.add(classes);
             }
             statement.close();
@@ -96,26 +96,5 @@ public class ClassroomDAO extends DBContext {
         }
         return list;
     }
-    
-    public Classroom getClassInfoByClassId(String classId){
-        String sql = "SELECT a.Name,"
-                + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
-                + "FROM [Classrooms] as a WHERE a.Id = ?";
-        try{
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classId);
-            resultSet = statement.executeQuery();
-            if(resultSet.next()){
-                Classroom cl = new Classroom();
-                cl.setName(resultSet.getString("Name"));
-                cl.setSumOfStudent(resultSet.getInt("TotalStudent"));
-                return cl;
-            }
-            resultSet.close();
-            statement.close();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
+        
 }

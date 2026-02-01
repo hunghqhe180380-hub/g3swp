@@ -21,11 +21,9 @@ import model.*;
 public class StudentListController extends HttpServlet {
 
     private EnrollmentDAO enrollDAO;
-    private ClassroomDAO classDAO;
 
     public void init() {
         enrollDAO = new EnrollmentDAO();
-        classDAO = new ClassroomDAO();
     }
 
     /**
@@ -66,17 +64,17 @@ public class StudentListController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
-        String search = request.getParameter("search");        
-        Classroom cl = classDAO.getClassInfoByClassId(classId);
+        String search = request.getParameter("search");
+        Classroom cl = enrollDAO.getClassInfoByClassId(classId);
         List<Enrollment> enrolls;
         if (search != null && !search.trim().isEmpty()) {
             enrolls = enrollDAO.getUserInforByName(search, classId);
         } else {
             enrolls = enrollDAO.getEnrollmentByClassId(classId);
             search = "";
-        }        
+        }
 
-        request.setAttribute("classes", cl);        
+        request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
         request.setAttribute("enrolls", enrolls);

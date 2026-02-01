@@ -15,6 +15,8 @@ public class Material {
     private String title;
     private String description;
     private String fileUrl;
+    private String originalFileName;
+    private long fileSize;
     private String externalUrl;
     private String provider;
     private String mediaKind;
@@ -28,12 +30,14 @@ public class Material {
     public Material() {
     }
 
-    public Material(int id, int classId, String title, String description, String fileUrl, String externalUrl, String provider, String mediaKind, String thumbnailUrl, String category, String createdAt, String updateAt, String createdById, String indexContent) {
+    public Material(int id, int classId, String title, String description, String fileUrl, String originalFileName, long fileSize, String externalUrl, String provider, String mediaKind, String thumbnailUrl, String category, String createdAt, String updateAt, String createdById, String indexContent) {
         this.id = id;
         this.classId = classId;
         this.title = title;
         this.description = description;
         this.fileUrl = fileUrl;
+        this.originalFileName = originalFileName;
+        this.fileSize = fileSize;
         this.externalUrl = externalUrl;
         this.provider = provider;
         this.mediaKind = mediaKind;
@@ -83,6 +87,22 @@ public class Material {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 
     public String getExternalUrl() {
@@ -156,5 +176,5 @@ public class Material {
     public void setIndexContent(String indexContent) {
         this.indexContent = indexContent;
     }
-        
+    
 }

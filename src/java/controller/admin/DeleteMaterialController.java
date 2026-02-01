@@ -11,14 +11,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.*;
 
 /**
  *
  * @author BINH
  */
-public class MaterialListController extends HttpServlet {
+public class DeleteMaterialController extends HttpServlet {
 
     private MaterialDAO dao;
 
@@ -43,15 +41,16 @@ public class MaterialListController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MaterialListController</title>");
+            out.println("<title>Servlet DeleteMaterialController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MaterialListController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteMaterialController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -63,22 +62,7 @@ public class MaterialListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String classId = request.getParameter("classId");
-        String search = request.getParameter("search");
-        Classroom cl = dao.getClassInfoByClassId(classId);
-        List<Material> materials;
-        if (search != null && !search.trim().isEmpty()) {
-            materials = dao.getMaterialByName(search, classId);
-        } else {
-            materials = dao.getMaterialByClassId(classId);
-            search = "";
-        }
-
-        request.setAttribute("classes", cl);
-        request.setAttribute("classId", classId);
-        request.setAttribute("search", search);
-        request.setAttribute("materials", materials);
-        request.getRequestDispatcher("/View/Admin/material-list.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -92,7 +76,10 @@ public class MaterialListController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String classId = request.getParameter("classId");
+        String materialId = request.getParameter("Id");
+        dao.deleteMaterialById(materialId, classId);
+        response.sendRedirect(request.getContextPath()+"/admin/material-list?classId="+classId);
     }
 
     /**

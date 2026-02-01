@@ -83,7 +83,12 @@
     <servlet>
         <servlet-name>MaterialListController</servlet-name>
         <servlet-class>controller.admin.MaterialListController</servlet-class>
-    </servlet><servlet-mapping>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteMaterialController</servlet-name>
+        <servlet-class>controller.admin.DeleteMaterialController</servlet-class>
+    </servlet>
+    <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/admin/delete-class</url-pattern>
     </servlet-mapping>
@@ -161,6 +166,10 @@
     <servlet-mapping>
         <servlet-name>MaterialListController</servlet-name>
         <url-pattern>/admin/material-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteMaterialController</servlet-name>
+        <url-pattern>/admin/delete-material</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
