@@ -1,0 +1,287 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 2, 2026, 1:15:06 AM
+    Author     : tuana
+*/
+:root{
+    --bg:#f3f6fb;
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e5e7eb;
+    --card:#ffffff;
+    --primary:#2563eb;
+    --primary2:#1d4ed8;
+    --shadow: 0 12px 28px rgba(2,6,23,0.10);
+    --radius:18px;
+    --container: 1200px;
+}
+
+*{ box-sizing: border-box; }
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+}
+a{ text-decoration:none; color: inherit; }
+
+/* ===== TOPBAR ===== */
+.admin-topbar{
+    background: linear-gradient(90deg, #0ea5e9, #4f46e5);
+    padding: 18px 0 14px;
+    box-shadow: 0 2px 0 rgba(2,6,23,0.06);
+}
+.admin-topbar__inner{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 22px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 16px;
+}
+.admin-title__small{
+    font-size: 14px;
+    color: rgba(255,255,255,0.88);
+    margin-bottom: 2px;
+}
+.admin-title__big{
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    line-height: 1.05;
+}
+.btn-top{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    border: 1px solid transparent;
+    transition: .15s ease;
+}
+.btn-top--ghost{
+    border-color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.08);
+    color:#fff;
+}
+.btn-top--ghost:hover{
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.70);
+}
+
+/* ===== PAGE ===== */
+.page{
+    background: var(--bg);
+    min-height: calc(100vh - 78px);
+    padding: 24px 0 60px;
+}
+.wrap{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 22px;
+}
+
+/* Header row */
+.section-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 16px;
+    margin: 6px 0 14px;
+}
+.section-title{
+    margin:0;
+    font-size: 22px;
+    font-weight: 800;
+}
+.count{ color: var(--muted); font-weight: 700; }
+
+/* Search */
+.search{
+    display:flex;
+    gap: 10px;
+    align-items:center;
+}
+.search__input{
+    width: 340px;
+    max-width: 52vw;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    outline:none;
+    background:#fff;
+    font-size: 14px;
+    transition: .15s ease;
+}
+.search__input:focus{
+    border-color: rgba(37,99,235,0.65);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+.search__btn{
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background:#fff;
+    font-weight: 800;
+    cursor:pointer;
+    transition:.15s ease;
+}
+.search__btn:hover{ border-color:#94a3b8; }
+
+.search__btn--primary{
+    background: var(--primary);
+    border-color: var(--primary);
+    color:#fff;
+}
+.search__btn--primary:hover{
+    background: var(--primary2);
+    border-color: var(--primary2);
+}
+
+/* Card container for table */
+.card{
+    background: var(--card);
+    border: 1px solid #e8eefc;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 0 rgba(2,6,23,0.02);
+    overflow:hidden;
+}
+
+/* Table */
+.table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.table thead th{
+    text-align:left;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    color: #0f172a;
+    padding: 14px 16px;
+    background: rgba(2,6,23,0.02);
+    border-bottom: 1px solid #e5e7eb;
+}
+.th-actions{ width: 170px; }
+
+.table tbody td{
+    padding: 18px 16px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+}
+.table tbody tr:hover{
+    background: rgba(37,99,235,0.04);
+}
+
+.muted{ color: var(--muted); }
+.code{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color:#e11d48;
+}
+.num{ font-weight: 700; }
+
+.classcell__name{
+    font-weight: 800;
+}
+.classcell__sub{
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Actions column */
+.actions{ text-align:right; }
+
+.btnstack{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items:flex-end;
+}
+.btn-mini{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 110px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid #94a3b8;
+    background:#fff;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 13px;
+    transition: .15s ease;
+}
+.btn-mini:hover{
+    border-color:#64748b;
+    color:#334155;
+    background: rgba(2,6,23,0.02);
+}
+
+/* delete red */
+.btn-mini--danger{
+    border-color: rgba(239,68,68,0.55);
+    color:#dc2626;
+    background:#fff;
+}
+.btn-mini--danger:hover{
+    background: rgba(239,68,68,0.10);
+}
+
+/* Empty state */
+.empty{
+    padding: 36px 16px !important;
+    text-align:center;
+    color: var(--muted);
+}
+
+/* Pager */
+.pager{
+    margin-top: 14px;
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.pg{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background:#fff;
+    font-weight: 800;
+    color:#0f172a;
+    transition:.15s ease;
+}
+.pg:hover{ border-color:#94a3b8; }
+.pg.is-active{
+    background: var(--primary);
+    border-color: var(--primary);
+    color:#fff;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+    .admin-title__big{ font-size: 28px; }
+    .section-head{
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search{ width:100%; }
+    .search__input{
+        width:100%;
+        max-width: none;
+        flex: 1;
+    }
+    .actions{ text-align:left; }
+    .btnstack{ align-items:flex-start; }
+}
+

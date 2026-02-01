@@ -1,0 +1,251 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 2, 2026, 1:30:50 AM
+    Author     : tuana
+*/
+:root{
+    --bg:#f3f6fb;
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e5e7eb;
+    --card:#ffffff;
+    --primary:#2563eb;
+    --primary2:#1d4ed8;
+    --shadow: 0 12px 28px rgba(2,6,23,0.10);
+    --radius:18px;
+    --container: 1200px;
+}
+
+*{ box-sizing: border-box; }
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+}
+a{ text-decoration:none; color: inherit; }
+
+/* ===== TOPBAR ===== */
+.topbar{
+    background: linear-gradient(90deg, #4f46e5, #22c3e6);
+    padding: 18px 0 16px;
+    box-shadow: 0 2px 0 rgba(2,6,23,0.06);
+}
+.topbar__inner{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 22px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 16px;
+}
+.topbar__small{
+    color: rgba(255,255,255,0.90);
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+.topbar__big{
+    margin:0;
+    color:#fff;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.4px;
+    line-height: 1.05;
+}
+.topbar__meta{
+    margin-top: 6px;
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+}
+
+.btn-back{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(255,255,255,0.0);
+    color:#0f172a;
+    transition: .15s ease;
+}
+.btn-back:hover{
+    transform: translateY(-1px);
+    background: #fff;
+}
+
+/* ===== PAGE ===== */
+.page{
+    background: var(--bg);
+    min-height: calc(100vh - 78px);
+    padding: 26px 0 60px;
+}
+.wrap{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 22px;
+}
+
+/* Toolbar */
+.toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+/* Search */
+.search{
+    flex: 1;
+    max-width: 520px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background:#fff;
+    border: 1px solid #e8eefc;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+.search__icon{
+    color:#334155;
+    display:grid;
+    place-items:center;
+    width: 26px;
+    height: 26px;
+}
+.search__input{
+    flex:1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--text);
+}
+.search__btn{
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color:#fff;
+    font-weight: 800;
+    cursor:pointer;
+    transition: .15s ease;
+}
+.search__btn:hover{
+    background: var(--primary2);
+    border-color: var(--primary2);
+}
+
+.showing{
+    color: var(--muted);
+    font-size: 14px;
+}
+.showing strong{ color: var(--text); }
+
+/* Card */
+.card{
+    background: var(--card);
+    border: 1px solid #e8eefc;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 0 rgba(2,6,23,0.02);
+    overflow:hidden;
+    padding: 0;
+}
+
+/* Empty state */
+.empty{
+    padding: 54px 18px;
+    text-align:center;
+}
+.empty__icon{
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: rgba(37,99,235,0.10);
+    color: var(--primary);
+    display:grid;
+    place-items:center;
+    margin: 0 auto 14px;
+}
+.empty__title{
+    font-weight: 900;
+    font-size: 18px;
+}
+.empty__sub{
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* Table */
+.table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.table thead th{
+    text-align:left;
+    font-size: 13px;
+    padding: 14px 16px;
+    background: rgba(2,6,23,0.02);
+    border-bottom: 1px solid #e5e7eb;
+}
+.th-actions{ width: 120px; }
+
+.table tbody td{
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+}
+.table tbody tr:hover{
+    background: rgba(37,99,235,0.04);
+}
+
+.cell-title{ font-weight: 700; }
+.muted{ color: var(--muted); }
+
+/* Kind badge */
+.badge-kind{
+    display:inline-flex;
+    align-items:center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(2,6,23,0.04);
+    color:#334155;
+    font-weight: 700;
+    font-size: 12.5px;
+}
+
+/* Delete button */
+.actions{ text-align:right; }
+.btn-danger{
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(239,68,68,0.55);
+    background:#fff;
+    color:#dc2626;
+    font-weight: 800;
+    cursor:pointer;
+    transition:.15s ease;
+}
+.btn-danger:hover{
+    background: rgba(239,68,68,0.10);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+    .toolbar{
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search{
+        max-width: none;
+        width: 100%;
+    }
+    .actions{ text-align:left; }
+}
+
