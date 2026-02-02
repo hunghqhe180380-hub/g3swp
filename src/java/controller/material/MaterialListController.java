@@ -2,26 +2,29 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.admin;
+package controller.material;
 
-import dal.EnrollmentDAO;
+import dal.MaterialDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.*;
 
 /**
  *
  * @author BINH
  */
-public class KickStudentController extends HttpServlet {
+public class MaterialListController extends HttpServlet {
 
-    private EnrollmentDAO dao;
+    private MaterialDAO dao;
 
     public void init() {
-        dao = new EnrollmentDAO();
+        dao = new MaterialDAO();
     }
 
     /**
@@ -41,10 +44,10 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet MaterialListController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MaterialListController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,7 +64,24 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String classId = request.getParameter("classId");
+        String search = request.getParameter("search");
+        Classroom cl = dao.getClassInfoByClassId(classId);
+        HttpSession ses = request.getSession();
+        User user = (User) ses.getAttribute("user");
+        List<Material> materials;
+        if (search != null && !search.trim().isEmpty()) {
+            materials = dao.getMaterialByName(search, classId);
+        } else {
+            materials = dao.getMaterialByClassId(classId);
+            search = "";
+        }
+
+        request.setAttribute("classes", cl);
+        request.setAttribute("classId", classId);
+        request.setAttribute("search", search);
+        request.setAttribute("materials", materials);
+        request.getRequestDispatcher("/View/" + user.getRole() + "/material-list.jsp").forward(request, response);
     }
 
     /**
@@ -75,10 +95,7 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String classId = request.getParameter("classId");
-        String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
-        response.sendRedirect(request.getContextPath()+"/admin/student-list?classId="+classId);
+        processRequest(request, response);
     }
 
     /**

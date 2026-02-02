@@ -41,7 +41,7 @@
                 <div class="section-head">
                     <h2 class="section-title">Classes <span class="count">(${fn:length(classes)})</span></h2>
 
-                    <form class="search" action="${ctx}/admin/class-list" method="get">
+                    <form class="search" action="${ctx}/classroom/manage/class-list" method="get">
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
                                placeholder="Search class/teacher/code...">
@@ -68,8 +68,8 @@
                                 <tr>
                                     <td>
                                         <div class="classcell">
-                                            <div class="classcell__name"><c:out value="${cl.className}"/></div>
-                                            <div class="classcell__sub"><c:out value="${cl.subjects}"/></div>
+                                            <div class="classcell__name"><c:out value="${cl.name}"/></div>
+                                            <div class="classcell__sub"><c:out value="${cl.subject}"/></div>
                                         </div>
                                     </td>
 
@@ -77,18 +77,18 @@
 
                                     <td class="muted"><c:out value="${cl.teacherName}"/></td>
 
-                                    <td><span class="num"><c:out value="${cl.studentCount}"/></span></td>
+                                    <td><span class="num"><c:out value="${cl.sum}"/></span></td>
 
                                     <td class="muted"><c:out value="${cl.createdAt}"/></td>
 
                                     <td class="actions">
                                         <div class="btnstack">
-                                            <a class="btn-mini" href="${ctx}/admin/materials?classId=${cl.classId}">Materials</a>
-                                            <a class="btn-mini" href="${ctx}/admin/assignments?classId=${cl.classId}">Assignments</a>
-                                            <a class="btn-mini" href="${ctx}/admin/students?classId=${cl.classId}">Students</a>
+                                            <a class="btn-mini" href="${ctx}/material/view/material-list?classId=${cl.id}">Materials</a>
+                                            <a class="btn-mini" href="${ctx}/admin/assignment-list?classId=${cl.id}">Assignments</a>
+                                            <a class="btn-mini" href="${ctx}/classroom/view/student-list?classId=${cl.id}">Students</a>
 
-                                            <form action="${ctx}/admin/delete-class" method="post">
-                                                <input type="hidden" name="classId" value="<c:out value="${cl.classId}"/>">
+                                            <form action="${ctx}/classroom/manage/delete-class" method="post">
+                                                <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
                                                 <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
                                                 <button class="btn-mini btn-mini--danger" type="submit">Delete</button>
                                             </form>
@@ -110,7 +110,7 @@
                 <!-- PAGING -->
                 <div class="pager">
                     <c:set var="mark" value="${empty search ? '?': '&'}" />
-                    <c:url var="basePath" value="/admin/class-list">
+                    <c:url var="basePath" value="/classroom/manage/class-list">
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>

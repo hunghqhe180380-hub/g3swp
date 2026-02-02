@@ -2,15 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.admin;
+package controller.classroom;
 
-import dal.MaterialDAO;
+import dal.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.*;
 
@@ -18,12 +19,12 @@ import model.*;
  *
  * @author BINH
  */
-public class MaterialListController extends HttpServlet {
+public class StudentListController extends HttpServlet {
 
-    private MaterialDAO dao;
+    private EnrollmentDAO enrollDAO;
 
     public void init() {
-        dao = new MaterialDAO();
+        enrollDAO = new EnrollmentDAO();
     }
 
     /**
@@ -43,10 +44,10 @@ public class MaterialListController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MaterialListController</title>");
+            out.println("<title>Servlet StudentListController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MaterialListController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet StudentListController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,20 +66,22 @@ public class MaterialListController extends HttpServlet {
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
         String search = request.getParameter("search");
-        Classroom cl = dao.getClassInfoByClassId(classId);
-        List<Material> materials;
+        HttpSession ses = request.getSession();
+        User user = (User) ses.getAttribute("user");
+        Classroom cl = enrollDAO.getClassInfoByClassId(classId);
+        List<Enrollment> enrolls;
         if (search != null && !search.trim().isEmpty()) {
-            materials = dao.getMaterialByName(search, classId);
+            enrolls = enrollDAO.getUserInforByName(search, classId);
         } else {
-            materials = dao.getMaterialByClassId(classId);
+            enrolls = enrollDAO.getEnrollmentByClassId(classId);
             search = "";
         }
 
         request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
-        request.setAttribute("materials", materials);
-        request.getRequestDispatcher("/View/Admin/material-list.jsp").forward(request, response);
+        request.setAttribute("enrolls", enrolls);
+        request.getRequestDispatcher("/View/" + user.getRole() + "/student-list.jsp").forward(request, response);
     }
 
     /**

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-
     <filter>
         <filter-name>HomeFilter</filter-name>
         <filter-class>filter.HomeFilter</filter-class>
@@ -11,7 +10,6 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-
     <servlet>
         <servlet-name>LoginController</servlet-name>
         <servlet-class>controller.auth.LoginController</servlet-class>
@@ -46,7 +44,7 @@
     </servlet>
     <servlet>
         <servlet-name>ClassListController</servlet-name>
-        <servlet-class>controller.admin.ClassListController</servlet-class>
+        <servlet-class>controller.classroom.ClassListController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>VerifyEmailController</servlet-name>
@@ -70,27 +68,27 @@
     </servlet>
     <servlet>
         <servlet-name>DeleteClassController</servlet-name>
-        <servlet-class>controller.admin.DeleteClassController</servlet-class>
+        <servlet-class>controller.classroom.DeleteClassController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>StudentListController</servlet-name>
-        <servlet-class>controller.admin.StudentListController</servlet-class>
+        <servlet-class>controller.classroom.StudentListController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>KickStudentController</servlet-name>
-        <servlet-class>controller.admin.KickStudentController</servlet-class>
+        <servlet-class>controller.classroom.KickStudentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MaterialListController</servlet-name>
-        <servlet-class>controller.admin.MaterialListController</servlet-class>
+        <servlet-class>controller.material.MaterialListController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteMaterialController</servlet-name>
-        <servlet-class>controller.admin.DeleteMaterialController</servlet-class>
+        <servlet-class>controller.material.DeleteMaterialController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
-        <url-pattern>/admin/delete-class</url-pattern>
+        <url-pattern>/classroom/manage/delete-class</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteUserController</servlet-name>
@@ -130,8 +128,8 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
-        <url-pattern>/admin/class-list</url-pattern>
-    </servlet-mapping>        
+        <url-pattern>/classroom/manage/class-list</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
@@ -146,30 +144,27 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StudentListController</servlet-name>
-        <url-pattern>/admin/student-list</url-pattern>
+        <url-pattern>/classroom/view/student-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>KickStudentController</servlet-name>
-        <url-pattern>/admin/kick-student</url-pattern>
+        <url-pattern>/classroom/manage/kick-student</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>ForgotPasswordController</servlet-name>
         <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>ChangeRoleController</servlet-name>
         <url-pattern>/admin/change-role</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>MaterialListController</servlet-name>
-        <url-pattern>/admin/material-list</url-pattern>
+        <url-pattern>/material/view/material-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteMaterialController</servlet-name>
-        <url-pattern>/admin/delete-material</url-pattern>
+        <url-pattern>/material/manage/delete-material</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
