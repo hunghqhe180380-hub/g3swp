@@ -98,7 +98,7 @@ public class ForgotPasswordController extends HttpServlet {
                     serviceEmail.setExpriryDateTime());
             //send link to this email 
             TokenDAO tokenForgetDAO = new TokenDAO();
-            boolean isInsert = tokenForgetDAO.insertTokenForget(newTokenForgetPassword);
+            boolean isInsert = tokenForgetDAO.insertTokenForget(newTokenForgetPassword, "ResetPassword");
             boolean isSend = serviceEmail.sendEmail(email, linkReset, userName, "resetPassword");
             listMSG.put("msgEmail", Message.MSG102);
         } else {

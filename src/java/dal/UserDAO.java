@@ -553,6 +553,22 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
+    
+    //get email by user name
+    public String getEmailByUserName(String userName){
+        try {
+            String sql = "";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userName);
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                return resultSet.getString("Email");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 
 //sql query string to get some importan user's information

@@ -51,6 +51,8 @@ public class VerifyEmailController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String token = request.getParameter("token");
+        //check time expiry token and action have to = "VerifyEmail"
     }
 
     /**
@@ -64,7 +66,29 @@ public class VerifyEmailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+       
+    }
+    
+    
+     private Map<String, String> validator(String userName) {
+        
+        Map<String, String> errors = new HashMap<>();
+        InputValidator inputValidator = new InputValidator();
+        // userName is blank ? return : continue
+        if (userName.isEmpty()) {
+            errors.put("msgUserName", Message.MSG01);
+            return errors;
+        }
+        // valid input username
+        if (!userName.contains("@") && inputValidator.isUserName(userName) != null) {
+            errors.put("msgUserName", inputValidator.isUserName(userName.trim()));
+        }
+
+        // email
+        if (userName.contains("@") && inputValidator.isEmail(userName) != null) {
+            errors.put("msgUserName", inputValidator.isEmail(userName.trim()));
+        }
+        return errors;
     }
 
     /**
