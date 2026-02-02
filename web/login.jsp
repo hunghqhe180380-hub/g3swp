@@ -52,9 +52,9 @@
                 <form class="form" action="${ctx}/login" method="POST">
                     <!-- Email / Username -->
                     <div>
-                        <input class="input" type="text" name="email"
+                        <input class="input" type="text" name="userName"
                                placeholder="Email or Username"
-                               value="${requestScope.email}">
+                               value="${requestScope.userName}">
                         <span class="errors">${listMSG.msgUserName}</span>
                     </div>
 
@@ -103,15 +103,20 @@
                         Don&apos;t have an account?
                         <a href="${ctx}/register">Register</a>
                     </div>
-
-                    <c:if test="${not empty requestScope.MSG99}">
-                        <div class="msg-global">${requestScope.MSG99}</div>
+                    <c:if test="${not empty requestScope.listMSG.msgInvalidUser}">
+                        <div class="msg-global">
+                            ${requestScope.listMSG.msgInvalidUser}
+                        </div>
                     </c:if>
                 </form>
-                <div>
-                    <a href="${pageContext.request.contextPath}/verify-email?action=verify-email">Click here to verify email</a>
-                </div>
-
+                <c:if test="${not empty requestScope.msgVeriyEmail}">
+                    <div class="msg-global">
+                        <form action="verify-email" method="POST">
+                            <input type="text" name="userName" value="${requestScope.userName}" readonly="true" hidden="true">
+                            ${requestScope.msgVeriyEmail}<input type="submit" value="Click here">
+                        </form>
+                    </div>
+                </c:if>
                 <div class="page-footer">
                     © 2026 POET. Professional Online Education Technology.
                 </div>

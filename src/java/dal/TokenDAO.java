@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.sql.Timestamp;
 import java.util.UUID;
-import model.TokenForgetPassword;
+import model.Token;
 
 /**
  *
  * @author hung2
  */
-public class TokenForgetDAO extends DBContext {
+public class TokenDAO extends DBContext {
 
     protected PreparedStatement statement;
     protected ResultSet resultSet;
@@ -27,26 +27,32 @@ public class TokenForgetDAO extends DBContext {
         return formattedDate;
     }
 
-    public boolean insertTokenForget(TokenForgetPassword tokenForget) {
+    public boolean insertTokenForget(Token tokenForget) {
         try {
-            String sql = "INSERT INTO [dbo].[TokenForgetPassword]\n"
+            String sql = "INSERT INTO [dbo].[Token]\n"
                     + "           ([Id]\n"
                     + "           ,[Token]\n"
                     + "           ,[ExpiryTime]"
                     + "           ,[IsUsed]\n"
-                    + "           ,[UserId])\n"
+                    + "           ,[UserId]\n"
+                    + "           ,[Email]"
+                    + "           ,[Action])\n"
                     + "     VALUES\n"
                     + "           (?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
-                    + "           ,?\n)";
+                    + "           ,?\n"
+                    + "           ,?\n"
+                    + "           ,?)";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, UUID.randomUUID());
             statement.setObject(2, tokenForget.getToken());
             statement.setObject(3, Timestamp.valueOf(getFormatDate(tokenForget.getExpiryTime())));
             statement.setObject(4, tokenForget.isIsUsed());
             statement.setObject(5, tokenForget.getUserID());
+            statement.setObject(6, tokenForget.getEmail());
+            statement.setObject(7, "ResetPassword");
             return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,9 +64,10 @@ public class TokenForgetDAO extends DBContext {
     public boolean isExistToken(String token) {
         try {
             String sql = "SELECT [Token]\n"
-                    + "  FROM [POETWebDB].[dbo].[TokenForgetPassword]\n"
+                    + "  FROM [POETWebDB].[dbo].[Token]\n"
                     + "WHERE [Token] = ? and [IsUsed] = 0\n"
-                    + "And ExpiryTime > GetDate()";
+                    + "And ExpiryTime > GetDate()\n"
+                    + "And [Action] = 'ResetPassword'";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, token);
             resultSet = statement.executeQuery();
@@ -71,5 +78,41 @@ public class TokenForgetDAO extends DBContext {
         return false;
     }
 
-     
+    public String getEmailByToken(String token) {
+        try {
+            String sql = "SELECT [Email]\n"
+                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  where Token = ?\n"
+                    + "  And [ExpiryTime] > GETDATE()\n"
+                    + "  And [IsUsed] = 0\n"
+                    + "And [Action] = 'ResetPassword'";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, token);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("Email");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean setTokenIsUsed(String token, String action) {
+        try {
+            String sql = "UPDATE [dbo].[Token]\n"
+                    + "   SET [IsUsed] = 1\n"
+                    + " WHERE [Token] = ?\n"
+                    + "And [Action] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, token);
+            statement.setObject(2, action);
+            statement.executeUpdate();
+            return resultSet.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

@@ -20,7 +20,7 @@
                     <tr>
                         <th>Email: </th>
                         <th>
-                            <input type="email" name="email" value="${requestScope.email}">
+                            <input type="email" name="email" value="${requestScope.email}" readonly="true">
                         </th>
                     </tr>
                 </thead>
@@ -28,13 +28,16 @@
                     <tr>
                         <td>New password: </td>
                         <td>
-                            <input type="password" name="newPassword">
+                            <input type="password" name="newPassword" value="${newPassword}">
+                            <input type="text" name="token" value="${requestScope.token}" hidden="true" readonly="true">
+                            <span>${requestScope.listMSG.msgPassword}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Confirm password: </td>
                         <td>
                             <input type="password" name="confirmPassword">
+                            <span>${requestScope.listMSG.msgConfirmPassword}</span>
                         </td>
                     </tr>
                     <tr>

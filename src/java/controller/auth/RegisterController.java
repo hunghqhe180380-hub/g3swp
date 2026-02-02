@@ -100,13 +100,6 @@ public class RegisterController extends HttpServlet {
         //if validator is true => allow to register account        
         String userID = userDAO.generateID();
         String accCode = userDAO.generateAccCode();
-//        System.out.println("User ID: " + userID);
-//        System.out.println("Account code: " + accCode);
-//        System.out.println("Email: " + email);
-//        System.out.println("Phone: " + phoneNumber);
-//        System.out.println("Pass: " + password);
-//        System.out.println("Confirm: " + confirmPassword);
-
         if (listMSG.isEmpty()) {
             User newUser = new User(userID,
                     userName,
@@ -116,7 +109,7 @@ public class RegisterController extends HttpServlet {
                     password,
                     accCode);
             userDAO.isRegister(newUser);
-
+            //verify email to done register
             //tạm thời chưa làm register, đợi mofify lại database đã 
             //còn confirm email chưa làm 
             request.getRequestDispatcher("home.jsp").forward(request, response);

@@ -42,8 +42,7 @@ public class Message {
     public static final String MSG24 = "Invalid phone number format. Please enter a valid number starting with 0 or +84.";
 
 //Confirm Email
-    public static final String MSG99 = "Please verify your email address to activate your account.";
-
+    public static final String MSG99 = "Your email address is not verified. Resend verification email.";
     public static final String MSG100 = "Admin role cannot be change.";
 
     //Reset Password
@@ -51,4 +50,8 @@ public class Message {
             + "Please request a new password reset link to continue.";
     public static final String MSG102 = "We’ve sent a password reset link to your email address.\n"
             + "Please check your inbox and follow the instructions to reset your password.";
+    public static final String MSG103 = "The password reset request has expired. Please submit a new request.";
+
+    //Login
+    public static final String MSG200 = "Incorrect username/email or password.";
 }

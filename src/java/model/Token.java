@@ -11,20 +11,30 @@ import java.time.LocalDateTime;
  *
  * @author hung2
  */
-public class TokenForgetPassword {
+public class Token {
+    private String email;
     private String userID;
     private boolean isUsed;
     private String token;
     private LocalDateTime expiryTime;
 
-    public TokenForgetPassword() {
+    public Token() {
     }
 
-    public TokenForgetPassword(String userID, boolean isUsed, String token, LocalDateTime expiryTime) {
+    public Token(String email, String userID, boolean isUsed, String token, LocalDateTime expiryTime) {
+        this.email = email;
         this.userID = userID;
         this.isUsed = isUsed;
         this.token = token;
         this.expiryTime = expiryTime;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUserID() {
@@ -59,6 +69,5 @@ public class TokenForgetPassword {
         this.expiryTime = expiryTime;
     }
 
-    
-    
+   
 }

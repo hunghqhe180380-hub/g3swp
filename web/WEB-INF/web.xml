@@ -176,8 +176,6 @@
     </welcome-file-list>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ERROR</dispatcher>
-    
-    //Distribute Pages
     <context-param>
         <param-name>nrpp</param-name>
         <param-value>5</param-value>

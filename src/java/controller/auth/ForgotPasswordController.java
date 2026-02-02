@@ -4,7 +4,7 @@
  */
 package controller.auth;
 
-import dal.TokenForgetDAO;
+import dal.TokenDAO;
 import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import message.Message;
-import model.TokenForgetPassword;
+import model.Token;
 import model.User;
-import util.ServiceEmail;
+import util.EmailService;
 import validation.InputValidator;
 
 /**
@@ -85,22 +85,21 @@ public class ForgotPasswordController extends HttpServlet {
         String userName = userDAO.getUserNameByEmail(email);
         //list message errors
         Map<String, String> listMSG = validator(email);
-
         if (listMSG.isEmpty() && userDAO.isExistEmail(email) == true) {
             //send email allow to reset password
-            ServiceEmail serviceEmail = new ServiceEmail();
+            EmailService serviceEmail = new EmailService();
             String newToken = serviceEmail.generateToken();
             String linkReset = "http://localhost:8080/POET/reset-password?token=" + newToken;
-            TokenForgetPassword newTokenForgetPassword = new TokenForgetPassword(
+            Token newTokenForgetPassword = new Token(
+                    email,
                     userID,
                     false,
                     newToken,
                     serviceEmail.setExpriryDateTime());
-
             //send link to this email 
-            TokenForgetDAO tokenForgetDAO = new TokenForgetDAO();
+            TokenDAO tokenForgetDAO = new TokenDAO();
             boolean isInsert = tokenForgetDAO.insertTokenForget(newTokenForgetPassword);
-            boolean isSend = serviceEmail.sendEmail(email, linkReset, userName);
+            boolean isSend = serviceEmail.sendEmail(email, linkReset, userName, "resetPassword");
             listMSG.put("msgEmail", Message.MSG102);
         } else {
             //wrong format email or email is not exist(have not register)

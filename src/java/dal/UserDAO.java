@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import util.PasswordService;
 
 /**
  *
@@ -22,11 +23,8 @@ public class UserDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    // register => confirm email
-    // login => only allow login if email is confirmed 
-    //login success ? return userID and this role : null 
-    public User isLogin(String name, String password) {
-
+    //login (this function not check email confirm)
+    public User isLogin(String name, String rawPassword) {
         //verify user login via email or username
         String query = "";
         if (name.contains("@")) {
@@ -35,29 +33,64 @@ public class UserDAO extends DBContext {
             query = "a.UserName = ? ";
         }
 
-        try {
-            //get user's information from database SSMS
-            String sql = "select a.EmailConfirmed, a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
-                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
-                    + "  on a.Id = b.UserId\n"
-                    + "  join [dbo].[Roles] as c\n"
-                    + "  on b.RoleId = c.Id\n "
-                    + "Where " + query + " and a.PasswordHash = ?";
+        //get password hash of this username/email
+        String passwordHash = getPasswordHash(name);
+        System.out.println("PsHHH: " + passwordHash);
+        //if Email/User Name is not exist
+        if (passwordHash == null) {
+            return null;
+        };
+        //compare hashedpassword with input password
+        PasswordService passwordService = new PasswordService();
+        System.out.println("Rsss: " + passwordService.checkPassword(rawPassword, passwordHash));
+        //if match => get information of this user
+        if (passwordService.checkPassword(rawPassword, passwordHash)) {
+            try {
+                //get user's information from database SSMS
+                String sql = "select a.EmailConfirmed, a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
+                        + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
+                        + "  on a.Id = b.UserId\n"
+                        + "  join [dbo].[Roles] as c\n"
+                        + "  on b.RoleId = c.Id\n "
+                        + "Where " + query;
 
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, name);
-            statement.setObject(2, password);
-            resultSet = statement.executeQuery();
+                statement = connection.prepareStatement(sql);
+                statement.setObject(1, name);
+                resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    return new User(resultSet.getString("UserID"),
+                            resultSet.getString("RoleName"),
+                            resultSet.getString("FullName"),
+                            resultSet.getInt("EmailConfirmed")
+                    );
 
-            //verify Email and Password to allow login
-            if (resultSet.next()) {
-                return new User(resultSet.getString("UserID"),
-                        resultSet.getString("RoleName"),
-                        resultSet.getString("FullName"),
-                        resultSet.getInt("EmailConfirmed")
-                );
-
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        };
+        //invalid username/email or password
+        return null;
+    }
+
+    //get password hash by email
+    public String getPasswordHash(String userName) {
+        String query = "";
+        if (userName.contains("@")) {
+            query = "Where [Email] = ? ";
+        } else {
+            query = "Where [UserName] = ? ";
+        }
+        try {
+            String sql = "Select [PasswordHash]\n"
+                    + "from [users]\n"
+                    + query;
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userName);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("PasswordHash");
+            };
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -341,6 +374,7 @@ public class UserDAO extends DBContext {
 
     /**
      * change role of user by user's id
+     *
      * @param userId id of user you want to change
      * @param roleId new role you want to change for the user
      */
@@ -461,6 +495,7 @@ public class UserDAO extends DBContext {
         }
         return list;
     }
+
     public String getUserNameByEmail(String email) {
         String userName = "";
         try {
@@ -477,6 +512,46 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return userName;
+    }
+
+    //get userID by token request
+    public String getUserIdByTokenRequest(String token, String action) {
+        try {
+            String sql = "SELECT [UserId]\n"
+                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  Where [IsUsed] = 0\n"
+                    + "  And [Action] = ?\n"
+                    + "  And [Token] = ?\n"
+                    + "  And [ExpiryTime] > GETDATE();";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, action);
+            statement.setObject(2, token);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("UserId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //get Email by UserID
+    public String getEmailByUserId(String userID) {
+        try {
+            String sql = "SELECT [Email]\n"
+                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  where [Id] = ? ";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userID);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("Email");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

@@ -4,6 +4,7 @@
  */
 package util;
 
+import dal.DBContext;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.PasswordAuthentication;
@@ -19,7 +20,7 @@ import java.util.UUID;
  *
  * @author hung2
  */
-public class ServiceEmail {
+public class EmailService extends DBContext {
 
     //root email
     private final String from = "hunghoang042310s10@gmail.com";
@@ -42,7 +43,7 @@ public class ServiceEmail {
         return LocalDateTime.now().isAfter(time);
     }
 
-    public boolean sendEmail(String to, String link, String userName) {
+    public boolean sendEmail(String to, String link, String userName, String action) {
         Properties props = new Properties();
         //add host
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -74,12 +75,19 @@ public class ServiceEmail {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to, false));
             msg.setSubject("Reset Password", "UTF-8");
-            String content
-                    = "<h1>Hello " + userName + "</h1>"
-                    + "<p>Click the link below to reset your password</p>"
-                    + "<a href=\"" + link + "\">Click here</a>";
-            msg.setContent(content, "text/html; charaset=UTF-8");
+            String content = "";
+            if (action.equalsIgnoreCase("resetPassword")) {
+                content = "<h1>Hello " + userName + "</h1>"
+                        + "<p>Click the link below to reset your password</p>"
+                        + "<a href=\"" + link + "\">Click here</a>";
 
+            } else {
+                content = "<h1>Hello " + userName + "</h1>"
+                        + "<p>Click the link below to verify your email</p>"
+                        + "<a href=\"" + link + "\">Click here</a>";
+            }
+            //set content
+            msg.setContent(content, "text/html; charaset=UTF-8");
             //send email
             Transport.send(msg);
             return true;
@@ -88,4 +96,5 @@ public class ServiceEmail {
         }
         return false;
     }
+
 }
