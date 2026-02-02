@@ -4,6 +4,7 @@
  */
 package controller.auth;
 
+import dal.TokenDAO;
 import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +16,9 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import message.Message;
+import model.Token;
 import model.User;
+import util.EmailService;
 import validation.InputValidator;
 
 /**
@@ -23,9 +26,9 @@ import validation.InputValidator;
  * @author hung2
  */
 public class LoginController extends HttpServlet {
-    
+
     private UserDAO userDAO;
-    
+
     public void init() {
         userDAO = new UserDAO();
     }
@@ -90,6 +93,7 @@ public class LoginController extends HttpServlet {
         if (listMSG.isEmpty()) {
             //if UserName/Email and Password input right format => continue
             User userLogin = userDAO.isLogin(userName, password);
+
             //check user exist in database
             if (userLogin == null) {
                 listMSG.put("msgInvalidUser", Message.MSG05);
@@ -98,7 +102,6 @@ public class LoginController extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
-            System.out.println("hehehehe");
             //email is confirmed to login
             if (userLogin.getEmailConfirm() == 1) {
                 //login success => save user's session
@@ -108,6 +111,30 @@ public class LoginController extends HttpServlet {
                 request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
                 return;
             } else {
+                String email = "";
+                if (userName.contains("@")) {
+                    // login bằng email
+                    email = userName;
+                } else {
+                    // login bằng username
+                    email = userDAO.getEmailByUserName(userName);
+                }
+                //auto send email to account not verify yet 
+                EmailService emailService = new EmailService();
+                String newToken = emailService.generateToken();
+                String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
+                System.out.println("EmailL:" + email);
+                Token newTokenForgetPassword = new Token(
+                        email,
+                        userLogin.getUserID(),
+                        false,
+                        newToken,
+                        emailService.setExpriryDateTime());
+                //send link to this email 
+                TokenDAO tokenForgetDAO = new TokenDAO();
+                boolean isInsert = tokenForgetDAO.insertTokenForget(newTokenForgetPassword, "VerifyEmail");
+                boolean isSend = emailService.sendEmail(email, linkVerifyEmail, userName, "VerifyEmail");
+                //send link to this email 
                 request.setAttribute("msgVeriyEmail", Message.MSG99);
             }
         }
@@ -116,11 +143,11 @@ public class LoginController extends HttpServlet {
         request.getRequestDispatcher("login.jsp").forward(request, response);
         return;
     }
-    
+
     private Map<String, String> validator(
             String userName,
             String password) {
-        
+
         Map<String, String> errors = new HashMap<>();
         InputValidator inputValidator = new InputValidator();
         // userName is blank ? return : continue
@@ -142,7 +169,7 @@ public class LoginController extends HttpServlet {
         if (inputValidator.isPassword(password) != null) {
             errors.put("msgPassword", inputValidator.isPassword(password.trim()));
         }
-        
+
         return errors;
     }
 

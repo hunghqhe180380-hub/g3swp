@@ -70,11 +70,18 @@ public class EmailService extends DBContext {
         try {
             msg.addHeader("Content-type", "text/html; character=UTF-8");
             //config email to send
-            msg.setFrom(from);
+            msg.setFrom(new InternetAddress(from));
             //config recive email
-            msg.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(to, false));
-            msg.setSubject("Reset Password", "UTF-8");
+            if (to == null || to.trim().isEmpty()) {
+                throw new IllegalArgumentException("Recipient email is empty");
+            } else {
+                msg.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(to, false));
+            }
+            String subject = action.equalsIgnoreCase("ResetPassword")
+                    ? "ResetPassword"
+                    : "VerifyEmail";
+            msg.setSubject(subject, "UTF-8");
             String content = "";
             if (action.equalsIgnoreCase("resetPassword")) {
                 content = "<h1>Hello " + userName + "</h1>"
@@ -87,7 +94,7 @@ public class EmailService extends DBContext {
                         + "<a href=\"" + link + "\">Click here</a>";
             }
             //set content
-            msg.setContent(content, "text/html; charaset=UTF-8");
+            msg.setContent(content, "text/html; charset=UTF-8");
             //send email
             Transport.send(msg);
             return true;
