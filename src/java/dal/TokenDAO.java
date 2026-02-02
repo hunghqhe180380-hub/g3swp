@@ -27,7 +27,7 @@ public class TokenDAO extends DBContext {
         return formattedDate;
     }
 
-    public boolean insertTokenForget(Token tokenForget) {
+    public boolean insertTokenForget(Token tokenForget, String action) {
         try {
             String sql = "INSERT INTO [dbo].[Token]\n"
                     + "           ([Id]\n"
@@ -52,7 +52,7 @@ public class TokenDAO extends DBContext {
             statement.setObject(4, tokenForget.isIsUsed());
             statement.setObject(5, tokenForget.getUserID());
             statement.setObject(6, tokenForget.getEmail());
-            statement.setObject(7, "ResetPassword");
+            statement.setObject(7, action);
             return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
