@@ -81,7 +81,7 @@ public class MaterialListController extends HttpServlet {
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
-        request.getRequestDispatcher("/View/" + user.getRole() + "/material-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/material/material-list.jsp").forward(request, response);
     }
 
     /**

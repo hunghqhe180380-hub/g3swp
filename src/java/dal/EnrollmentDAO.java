@@ -132,5 +132,22 @@ public class EnrollmentDAO extends DBContext {
         }
         return cl;
     }
+    
+    public boolean isUnenroll(String userId, String classId){
+        boolean enroll = false;
+        String sql = "SELECT Status from [Enrollments] WHERE UserId =? and ClassId =?";
+        try{
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            statement.setObject(2, classId);
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                enroll = resultSet.getBoolean("Status")?true:false; 
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return enroll;
+    }
 
 }
