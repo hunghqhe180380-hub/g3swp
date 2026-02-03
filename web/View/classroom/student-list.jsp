@@ -101,8 +101,8 @@
 
                                     <td class="actions">
                                         <c:if test="${enroll.status == 0}">
-                                            <form action="${ctx}/classroom/manage/kick-student" method="post"
-                                                  onsubmit="return confirm('Kick this student from the class?');">
+                                            <form action="${ctx}/classroom/manage/soft-kick-student" method="post"
+                                                  onsubmit="return confirm('Deactive this student from the class?');">
                                                 <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                                 <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
                                                 <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
@@ -119,7 +119,7 @@
                                             </form>
                                         </c:if>
                                         <c:if test="${enroll.status == 1}">
-                                            <form action="${ctx}/classroom/manage/kick-student" method="post"
+                                            <form action="${ctx}/classroom/manage/soft-kick-student" method="post"
                                                   onsubmit="return confirm('Restore this student to the class?');">
                                                 <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                                 <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
@@ -137,7 +137,7 @@
                                         </c:if>
                                     </td>
                                     <td class="actions">
-                                        <form action="${ctx}/classroom/manage/delete-student-permanently" method="post"
+                                        <form action="${ctx}/classroom/manage/kick-student" method="post"
                                               onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY delete this student? This action cannot be undone.');">
                                             <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                             <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
