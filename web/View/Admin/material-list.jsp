@@ -34,7 +34,7 @@
                     <div class="topbar__meta"><c:out value="${classes.sum}"/> items</div>
                 </div>
 
-                <a class="btn-back" href="${ctx}/admin/class-list">← Back</a>
+                <a class="btn-back" href="${ctx}/classroom/manage/class-list">← Back</a>
             </div>
         </header>
 
@@ -43,7 +43,7 @@
             <div class="wrap">
                 <!-- TOOLBAR -->
                 <div class="toolbar">
-                    <form class="search" action="${ctx}/admin/material-list" method="get">
+                    <form class="search" action="${ctx}/material/view/material-list" method="get">
                         <span class="search__icon" aria-hidden="true">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
@@ -114,7 +114,7 @@
                                             </td>
 
                                             <td class="actions">
-                                                <form action="${ctx}/admin/delete-material" method="post">
+                                                <form action="${ctx}/material/manage/delete-material" method="post">
                                                     <input type="hidden" name="Id" value="<c:out value='${material.id}'/>">
                                                     <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
                                                     <button class="btn-danger" type="submit">Delete</button>

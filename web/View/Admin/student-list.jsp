@@ -34,7 +34,7 @@
                     <div class="topbar__meta"><c:out value="${classes.sum}"/> students</div>
                 </div>
 
-                <a class="btn-back" href="${ctx}/admin/class-list">← Back</a>
+                <a class="btn-back" href="${ctx}/classroom/manage/class-list">← Back</a>
             </div>
         </header>
 
@@ -42,7 +42,7 @@
         <main class="page">
             <div class="wrap">
                 <div class="toolbar">
-                    <form class="search" action="${ctx}/admin/student-list" method="get">
+                    <form class="search" action="${ctx}/classroom/view/student-list" method="get">
                         <span class="search__icon" aria-hidden="true">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
@@ -99,7 +99,7 @@
                                     </td>
 
                                     <td class="actions">
-                                        <form action="${ctx}/admin/kick-student" method="post"
+                                        <form action="${ctx}/classroom/manage/kick-student" method="post"
                                               onsubmit="return confirm('Kick this student from the class?');">
                                             <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                             <input type="hidden" name="classId" value="<c:out value='${classId}'/>">

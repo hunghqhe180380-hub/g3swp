@@ -66,9 +66,9 @@ public class InputValidator {
         }
 
         // length 8 - 20
-        if (password.length() < 8 || password.length() > 20) {
-            return Message.MSG06;
-        }
+//        if (password.length() < 8 || password.length() > 20) {
+//            return Message.MSG06;
+//        }
 
         boolean hasUpper = false;
         boolean hasDigit = false;
