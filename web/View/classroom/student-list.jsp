@@ -45,8 +45,8 @@
                     <form class="search" action="${ctx}/classroom/view/student-list" method="get">
                         <span class="search__icon" aria-hidden="true">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
-                                <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </span>
 
@@ -73,6 +73,7 @@
                                 <th>User</th>
                                 <th>Email</th>
                                 <th>Joined</th>
+                                <th class="th-actions">Status</th>
                                 <th class="th-actions"></th>
                             </tr>
                         </thead>
@@ -99,18 +100,55 @@
                                     </td>
 
                                     <td class="actions">
-                                        <form action="${ctx}/classroom/manage/kick-student" method="post"
-                                              onsubmit="return confirm('Kick this student from the class?');">
-                                            <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
-                                            <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+                                        <c:if test="${enroll.status == 0}">
+                                            <form action="${ctx}/classroom/manage/kick-student" method="post"
+                                                  onsubmit="return confirm('Kick this student from the class?');">
+                                                <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
+                                                <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
+                                                <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
 
-                                            <button class="btn-kick" type="submit" title="Kick">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <button class="btn-deactive" type="submit" title="Kick">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                                           stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                                     <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
                                                     <path d="M19 8l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                                     <path d="M23 8l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${enroll.status == 1}">
+                                            <form action="${ctx}/classroom/manage/kick-student" method="post"
+                                                  onsubmit="return confirm('Restore this student to the class?');">
+                                                <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
+                                                <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
+                                                <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+
+                                                <button class="btn-restore" type="submit" title="Restore / Re-activate">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="9" cy="7" r="4" />
+                                                    <polyline points="16 11 18 13 22 9" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                    </td>
+                                    <td class="actions">
+                                        <form action="${ctx}/classroom/manage/delete-student-permanently" method="post"
+                                              onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY delete this student? This action cannot be undone.');">
+                                            <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
+                                            <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+
+                                            <button class="btn-kick" type="submit" title="Delete Permanently">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
                                                 </svg>
                                             </button>
                                         </form>

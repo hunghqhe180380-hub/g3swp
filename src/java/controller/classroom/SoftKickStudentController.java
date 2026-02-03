@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author BINH
  */
-public class KickStudentController extends HttpServlet {
+public class SoftKickStudentController extends HttpServlet {
 
     private EnrollmentDAO dao;
 
@@ -41,15 +41,16 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet SoftKickStudentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SoftKickStudentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -77,7 +78,8 @@ public class KickStudentController extends HttpServlet {
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
         String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
+        String status = request.getParameter("status");
+        dao.changeStudentStatus(userId, classId, status);
         response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
     }
 

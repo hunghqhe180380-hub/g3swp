@@ -58,7 +58,7 @@
                                 <th>Code</th>
                                 <th>Teacher</th>
                                 <th>Students</th>
-                                <th>Created</th>
+                                <th>Created</th>                                
                                 <th class="th-actions"></th>
                             </tr>
                         </thead>

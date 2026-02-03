@@ -195,7 +195,28 @@ a{ text-decoration:none; color: inherit; }
 
 /* Kick button (icon) */
 .actions{ text-align:right; }
-.btn-kick{
+
+.btn-kick {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    background: #fff;
+    color: #be123c; /* Màu đỏ đậm hơn */
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.btn-kick:hover {
+    background: #fff1f2; /* Red-50 */
+    color: #e11d48;
+    border-color: #e11d48;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
+}
+.btn-deactive{
     width: 34px;
     height: 34px;
     border-radius: 8px;
@@ -207,9 +228,29 @@ a{ text-decoration:none; color: inherit; }
     cursor:pointer;
     transition:.15s ease;
 }
-.btn-kick:hover{
+.btn-deactive:hover{
     background: rgba(239,68,68,0.10);
     transform: translateY(-1px);
+}
+
+.btn-restore {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    /* Màu xanh lá cho hành động khôi phục */
+    border: 1px solid rgba(34, 197, 94, 0.55); 
+    background: #fff;
+    color: #16a34a; /* Green-600 */
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.btn-restore:hover {
+    background: rgba(34, 197, 94, 0.10);
+    transform: translateY(-1px);
+    border-color: #16a34a;
 }
 
 /* Empty row */
