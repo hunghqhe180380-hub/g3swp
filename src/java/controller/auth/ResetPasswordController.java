@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import message.Message;
@@ -53,10 +54,11 @@ public class ResetPasswordController extends HttpServlet {
         UserDAO userDAO = new UserDAO();
         String userId = userDAO.getUserIdByTokenRequest(token, "ResetPassword");
         String email = userDAO.getEmailByUserId(userId);
-        //if exist token and not expiry time => allow to reset password
-        if (tokenForgetDAO.isExistToken(token)) {
+        //if exist token (reset password) and not expiry time => allow to reset password
+        if (tokenForgetDAO.isExistToken(token, "ResetPassword")) {
             request.setAttribute("email", email);
-            request.setAttribute("token", token);
+            HttpSession session = request.getSession();
+            session.setAttribute("token", token);
             request.getRequestDispatcher("reset-password.jsp").forward(request, response);
         } else {
             //token is not exits or expiry time => not allow to reset password
@@ -81,36 +83,45 @@ public class ResetPasswordController extends HttpServlet {
             throws ServletException, IOException {
         //list message errors
         Map<String, String> listMSG = new HashMap<>();
-        String token = request.getParameter("token");
+        HttpSession session = request.getSession();
+        String token = (String) session.getAttribute("token");
         String email = request.getParameter("email");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
-
         //token is not used and not expirytime
         TokenDAO tokenForgetDAO = new TokenDAO();
-        if (tokenForgetDAO.getEmailByToken(token) == null) {
-            listMSG.put("msgToken", Message.MSG103);
+        if (tokenForgetDAO.getEmailByToken(token, "ResetPassword") == null) {
+            listMSG.put("msgToken", Message.MSG101);
+            request.setAttribute("listMSG", listMSG);
+            session.removeAttribute("token");
+            request.getRequestDispatcher("request-password.jsp").forward(request, response);
+            return;
         }
         //validator new password and confirm password
         PasswordService passwordService = new PasswordService();
-        if (newPassword == null) {
+        if (newPassword == null || newPassword.trim().isEmpty()) {
             listMSG.put("msgPassword", Message.MSG04);
         } else {
             InputValidator inputValidator = new InputValidator();
-            if (inputValidator.isPassword(newPassword) != null) {
-                listMSG.put("msgPassword", inputValidator.isPassword(newPassword));
-            };
-        }
-        if (newPassword != null && confirmPassword != null && !passwordService.isPasswordMatch(newPassword, confirmPassword)) {
-            listMSG.put("msgConfirmPassword", Message.MSG07);
+            if (inputValidator.isPassword(newPassword.trim()) != null) {
+                listMSG.put("msgPassword", inputValidator.isPassword(newPassword.trim()));
+            }
+            if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+                listMSG.put("msgConfirmPassword", Message.MSG20);
+            } else {
+                if (newPassword != null && confirmPassword != null && !passwordService.isPasswordMatch(newPassword, confirmPassword)) {
+                    listMSG.put("msgConfirmPassword", Message.MSG07);
+                }
+            }
         }
 
         //if not have erros => reset password
         if (listMSG.isEmpty()) {
+            session.removeAttribute("token");
             //reset password
             PasswordDAO passwordDAO = new PasswordDAO();
             passwordDAO.resetPassword(email, newPassword);
-            //after reset password => token is not reused
+            //after reset password => token can not reused
             tokenForgetDAO.setTokenIsUsed(token, "ResetPassword");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {

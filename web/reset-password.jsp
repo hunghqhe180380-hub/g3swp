@@ -61,7 +61,8 @@
                     <div>
                         <input class="input" type="email" name="email"
                                placeholder="Email address"
-                               value="${requestScope.email}">
+                               value="${requestScope.email}"
+                               readonly="true">
                         <span class="errors">${listMSG.msgEmail}</span>
                     </div>
 
@@ -100,15 +101,16 @@
                         <input class="input" type="password" name="confirmPassword" placeholder="Confirm password">
                         <span class="errors">${listMSG.msgConfirmPassword}</span>
                     </div>
-
+                    <!-- Token -->
+                    <input type="text" name="token" value="${sessionScope.token}" hidden="true" readonly="true">
                     <button class="btn-submit" type="submit">Reset password</button>
 
                     <div class="bottom">
                         <a href="${ctx}/login">← Back to login</a>
                     </div>
 
-                    <c:if test="${not empty requestScope.MSG99}">
-                        <div class="msg-global">${requestScope.MSG99}</div>
+                    <c:if test="${not empty requestScope.listMSG.msgToken}">
+                        <div class="msg-global">${requestScope.listMSG.msgToken}</div>
                     </c:if>
                 </form>
 

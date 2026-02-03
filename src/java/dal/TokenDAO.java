@@ -27,7 +27,7 @@ public class TokenDAO extends DBContext {
         return formattedDate;
     }
 
-    public boolean insertTokenForget(Token tokenForget, String action) {
+    public boolean insertToTokenDB(Token tokenForget, String action) {
         try {
             String sql = "INSERT INTO [dbo].[Token]\n"
                     + "           ([Id]\n"
@@ -61,15 +61,16 @@ public class TokenDAO extends DBContext {
     }
 
     //valid token exist and not expiry time and IsUSed = 0
-    public boolean isExistToken(String token) {
+    public boolean isExistToken(String token, String action) {
         try {
             String sql = "SELECT [Token]\n"
                     + "  FROM [POETWebDB].[dbo].[Token]\n"
                     + "WHERE [Token] = ? and [IsUsed] = 0\n"
                     + "And ExpiryTime > GetDate()\n"
-                    + "And [Action] = 'ResetPassword'";
+                    + "And [Action] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, token);
+            statement.setObject(2, action);
             resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (Exception e) {
@@ -78,16 +79,19 @@ public class TokenDAO extends DBContext {
         return false;
     }
 
-    public String getEmailByToken(String token) {
+    //token have not used and expirytime
+    public String getEmailByToken(String token, String action) {
         try {
             String sql = "SELECT [Email]\n"
                     + "  FROM [POETWebDB].[dbo].[Token]\n"
                     + "  where Token = ?\n"
+                    //token is not expiry time to use
                     + "  And [ExpiryTime] > GETDATE()\n"
                     + "  And [IsUsed] = 0\n"
-                    + "And [Action] = 'ResetPassword'";
+                    + "And [Action] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, token);
+            statement.setObject(2, action);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getString("Email");
@@ -98,6 +102,28 @@ public class TokenDAO extends DBContext {
         return null;
     }
 
+    //get email by token expiried time
+    public String getEmailByTokenExpiryTime(String token, String action) {
+        try {
+            String sql = "SELECT [Email]\n"
+                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  where [ExpiryTime] < GETDATE()\n"
+                    + "And [Token] = ?\n"
+                    + "  And [Action] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, token);
+            statement.setObject(2, action);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("Email");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //set token is used
     public boolean setTokenIsUsed(String token, String action) {
         try {
             String sql = "UPDATE [dbo].[Token]\n"

@@ -4,6 +4,8 @@
  */
 package controller.auth;
 
+import dal.PasswordDAO;
+import dal.TokenDAO;
 import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,9 +13,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import message.Message;
+import model.Token;
+import util.EmailService;
 import validation.InputValidator;
 
 /**
@@ -34,10 +40,7 @@ public class VerifyEmailController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-       
     }
-
-   
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -51,8 +54,43 @@ public class VerifyEmailController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //list message errors
+        Map<String, String> listMSG = new HashMap<>();
         String token = request.getParameter("token");
-        //check time expiry token and action have to = "VerifyEmail"
+        //token is not used and not expirytime
+        TokenDAO tokenDAO = new TokenDAO();
+        String email = tokenDAO.getEmailByToken(token, "VerifyEmail");
+        boolean confirmedEmail = false;
+        if (email == null) {
+            //if email is null
+            //thay mean token(action=verify email) is expiried time
+            //in this time, need to take email by token expired time
+            email = tokenDAO.getEmailByTokenExpiryTime(token, "VerifyEmail");
+            //check email conifmed?
+            //if confirmed => login
+            UserDAO userDAO = new UserDAO();
+            System.out.println("Emailll: " + email);
+            if (userDAO.isConfirmEmail(email)) {
+                HttpSession session = request.getSession();
+                session.setAttribute("msgVeriyEmail", Message.MSG104);
+                response.sendRedirect("login");
+                return;
+            }
+            listMSG.put("msgToken", Message.MSG103);
+            request.setAttribute("listMSG", listMSG);
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("verify-email.jsp").forward(request, response);
+            return;
+        }
+        //if have not erros => reset password
+        if (listMSG.isEmpty()) {
+            UserDAO userDAO = new UserDAO();
+            userDAO.setConfimedEmail(email);
+            System.out.println(Message.MSG104);
+            HttpSession session = request.getSession();
+            session.setAttribute("msgVeriyEmail", Message.MSG104);
+            response.sendRedirect("login");
+        }
     }
 
     /**
@@ -66,29 +104,34 @@ public class VerifyEmailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
-    }
-    
-    
-     private Map<String, String> validator(String userName) {
-        
-        Map<String, String> errors = new HashMap<>();
-        InputValidator inputValidator = new InputValidator();
-        // userName is blank ? return : continue
-        if (userName.isEmpty()) {
-            errors.put("msgUserName", Message.MSG01);
-            return errors;
-        }
-        // valid input username
-        if (!userName.contains("@") && inputValidator.isUserName(userName) != null) {
-            errors.put("msgUserName", inputValidator.isUserName(userName.trim()));
-        }
+        //list message errors
+        Map<String, String> listMSG = new HashMap<>();
+        //get email from request
+        String email = request.getParameter("email");
+        //There's no need to check if the email has been confirmed,
+        //because if the token has expired or already been used, 
+        //user can't be able to access this page.
+        UserDAO userDAO = new UserDAO();
+        String userID = userDAO.getUserIdByEmail(email);
+        //send email
+        EmailService emailService = new EmailService();
+        //generate new token
+        String newToken = emailService.generateToken();
+        Token token = new Token(email,
+                userID,
+                false,
+                newToken,
+                emailService.setExpriryDateTime());
 
-        // email
-        if (userName.contains("@") && inputValidator.isEmail(userName) != null) {
-            errors.put("msgUserName", inputValidator.isEmail(userName.trim()));
-        }
-        return errors;
+        String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
+        //insert newToken with action=VerifyEmail into Database
+        TokenDAO tokenDAO = new TokenDAO();
+        tokenDAO.insertToTokenDB(token, "VerifyEmail");
+        emailService.sendEmail(email, linkVerifyEmail, userDAO.getUserNameByEmail(email), "VerifyEmail");
+        //send link to this email 
+        listMSG.put("msgToken", Message.MSG104);
+        request.setAttribute("listMSG", listMSG);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**

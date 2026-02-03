@@ -71,7 +71,18 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect("login.jsp");
+        HttpSession session = request.getSession();
+        if (session != null) {
+            request.setAttribute("userName", session.getAttribute("userName"));
+            request.setAttribute("listMSG", session.getAttribute("listMSG"));
+            request.setAttribute("user", session.getAttribute("user"));
+            request.setAttribute("msgVeriyEmail", session.getAttribute("msgVeriyEmail"));
+            session.removeAttribute("userName");
+            session.removeAttribute("listMSG");
+            session.removeAttribute("user");
+            session.removeAttribute("msgVeriyEmail");
+        }
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -85,6 +96,7 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String userName = request.getParameter("userName");
         String password = request.getParameter("password");
 
@@ -97,18 +109,18 @@ public class LoginController extends HttpServlet {
             //check user exist in database
             if (userLogin == null) {
                 listMSG.put("msgInvalidUser", Message.MSG05);
-                request.setAttribute("userName", userName);
-                request.setAttribute("listMSG", listMSG);
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                session.setAttribute("userName", userName);
+                session.setAttribute("listMSG", listMSG);
+                response.sendRedirect("login");
                 return;
             }
             //email is confirmed to login
             if (userLogin.getEmailConfirm() == 1) {
                 //login success => save user's session
-                HttpSession session = request.getSession();
+
                 session.setAttribute("user", userLogin);
                 //route user by this role
-                request.getRequestDispatcher("/View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
                 return;
             } else {
                 String email = "";
@@ -132,15 +144,15 @@ public class LoginController extends HttpServlet {
                         emailService.setExpriryDateTime());
                 //send link to this email 
                 TokenDAO tokenForgetDAO = new TokenDAO();
-                boolean isInsert = tokenForgetDAO.insertTokenForget(newTokenForgetPassword, "VerifyEmail");
+                boolean isInsert = tokenForgetDAO.insertToTokenDB(newTokenForgetPassword, "VerifyEmail");
                 boolean isSend = emailService.sendEmail(email, linkVerifyEmail, userName, "VerifyEmail");
                 //send link to this email 
-                request.setAttribute("msgVeriyEmail", Message.MSG99);
+                session.setAttribute("msgVeriyEmail", Message.MSG99);
             }
         }
-        request.setAttribute("userName", userName);
-        request.setAttribute("listMSG", listMSG);
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        session.setAttribute("userName", userName);
+        session.setAttribute("listMSG", listMSG);
+        response.sendRedirect("login");
         return;
     }
 

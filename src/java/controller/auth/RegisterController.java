@@ -4,6 +4,7 @@
  */
 package controller.auth;
 
+import dal.TokenDAO;
 import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,12 +12,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import message.Message;
+import model.Token;
 import model.User;
+import util.EmailService;
 import validation.InputValidator;
 
 /**
@@ -69,7 +74,24 @@ public class RegisterController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/register.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        if (session != null) {
+            request.setAttribute("msgVeriyEmail", session.getAttribute("msgVeriyEmail"));
+            request.setAttribute("listMSG", session.getAttribute("listMSG"));
+            request.setAttribute("userName", session.getAttribute("userName"));
+            request.setAttribute("fullName", session.getAttribute("fullName"));
+            request.setAttribute("email", session.getAttribute("email"));
+            request.setAttribute("phoneNumber", session.getAttribute("phoneNumber"));
+            request.setAttribute("password", session.getAttribute("password"));
+            session.removeAttribute("msgVeriyEmail");
+            session.removeAttribute("listMSG");
+            session.removeAttribute("userName");
+            session.removeAttribute("fullName");
+            session.removeAttribute("email");
+            session.removeAttribute("phoneNumber");
+            session.removeAttribute("password");
+        }
+        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
     //confirm email when register
@@ -94,33 +116,49 @@ public class RegisterController extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber").trim();
         String password = request.getParameter("password").trim();
         String confirmPassword = request.getParameter("confirmPassword").trim();
-
+        HttpSession session = request.getSession();
         //list message errors
         Map<String, String> listMSG = validator(userName, fullName, email, phoneNumber, password, confirmPassword);
         //if validator is true => allow to register account        
         String userID = userDAO.generateID();
         String accCode = userDAO.generateAccCode();
+        //encrypte password
         if (listMSG.isEmpty()) {
-            User newUser = new User(userID,
+            User user = new User(userID,
                     userName,
                     fullName,
                     email,
                     phoneNumber,
                     password,
                     accCode);
-            userDAO.isRegister(newUser);
+            //inser new user into database
+            User newUser = userDAO.isRegister(user);
+            System.out.println(newUser);
             //verify email to done register
-            //tạm thời chưa làm register, đợi mofify lại database đã 
-            //còn confirm email chưa làm 
-            request.getRequestDispatcher("home.jsp").forward(request, response);
+            EmailService emailService = new EmailService();
+            //genarate token
+            String newToken = emailService.generateToken();
+            String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
+            Token token = new Token(email,
+                    user.getUserID(),
+                    false,
+                    newToken,
+                    emailService.setExpriryDateTime());
+            //send link to this email
+            TokenDAO tokenDAO = new TokenDAO();
+            boolean isInsert = tokenDAO.insertToTokenDB(token, "VerifyEmail");
+            boolean isSend = emailService.sendEmail(email, linkVerifyEmail, userName, "VerifyEmail");
+            //send link to this email 
+            session.setAttribute("msgVeriyEmail", Message.MSG98);
+            response.sendRedirect("login");
         } else {
             //if input wrong format => back to register (require user have to reinput)
             getInformation(request, response,
                     userName, fullName,
                     email, phoneNumber,
                     password);
-            request.setAttribute("listMSG", listMSG);
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            session.setAttribute("listMSG", listMSG);
+            response.sendRedirect("register");
         }
     }
 
@@ -129,12 +167,12 @@ public class RegisterController extends HttpServlet {
             String email, String phoneNumber,
             String password)
             throws ServletException, IOException {
-
-        request.setAttribute("userName", userName);
-        request.setAttribute("fullName", fullName);
-        request.setAttribute("email", email);
-        request.setAttribute("phoneNumber", phoneNumber);
-        request.setAttribute("password", password);
+        HttpSession session = request.getSession();
+        session.setAttribute("userName", userName);
+        session.setAttribute("fullName", fullName);
+        session.setAttribute("email", email);
+        session.setAttribute("phoneNumber", phoneNumber);
+        session.setAttribute("password", password);
     }
 
     private Map<String, String> validator(
@@ -171,6 +209,15 @@ public class RegisterController extends HttpServlet {
         // confirm password
         if (isConfirmPassword(password, confirmPassword) != null) {
             errors.put("msgConfirmPassword", isConfirmPassword(password.trim(), confirmPassword.trim()));
+        }
+
+        //check exist
+        UserDAO userDAO = new UserDAO();
+        if (userDAO.isExistEmail(email)) {
+            errors.put("msgEmail", Message.MSG12);
+        }
+        if (userDAO.isExistUserName(userName)) {
+            errors.put("msgUserName", Message.MSG00);
         }
         return errors;
     }

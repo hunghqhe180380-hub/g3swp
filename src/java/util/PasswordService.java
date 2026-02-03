@@ -26,7 +26,7 @@ public class PasswordService{
     
     //check password and confirm password is match?
     public boolean isPasswordMatch(String newPassword, String confirmPassword){
-        return newPassword.trim().contains(confirmPassword.trim());
+        return newPassword.trim().equals(confirmPassword.trim());
     }
     
 }

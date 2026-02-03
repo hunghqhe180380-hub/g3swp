@@ -58,7 +58,7 @@ public class InputValidator {
         return null; // valid
     }
 
-    public static String isPassword(String password) {
+    public String isPassword(String password) {
 
         // null or empty
         if (password == null || password.trim().isEmpty()) {
@@ -66,9 +66,9 @@ public class InputValidator {
         }
 
         // length 8 - 20
-//        if (password.length() < 8 || password.length() > 20) {
-//            return Message.MSG06;
-//        }
+        if (password.length() < 8 || password.length() > 20) {
+            return Message.MSG06;
+        }
 
         boolean hasUpper = false;
         boolean hasDigit = false;
@@ -97,15 +97,15 @@ public class InputValidator {
             return msg.MSG11;
         }
 
-        //have aleast 4 character
-        if (username.length() < 4) {
+        //have aleast 4 character and <10
+        if (username.length() < 4 || username.length() > 20) {
             return msg.MSG08;
         }
 
         //containing only letters, digits, dots, hyphens, or underscores.
         for (int i = 0; i < username.length(); i++) {
             char c = username.charAt(i);
-
+            
             boolean isLetter = Character.isLetter(c);
             boolean isDigit = Character.isDigit(c);
             boolean isAllowedSpecial

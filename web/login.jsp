@@ -111,10 +111,7 @@
                 </form>
                 <c:if test="${not empty requestScope.msgVeriyEmail}">
                     <div class="msg-global">
-                        <form action="verify-email" method="POST">
-                            <input type="text" name="userName" value="${requestScope.userName}" readonly="true" hidden="true">
-                            ${requestScope.msgVeriyEmail}<input type="submit" value="Click here">
-                        </form>
+                            ${requestScope.msgVeriyEmail}
                     </div>
                 </c:if>
                 <div class="page-footer">

@@ -183,8 +183,12 @@ public class UserDAO extends DBContext {
         if (!isExistEmail(user.getEmail()) && !isExistUserName(user.getUserName())
                 && !isExistAccID(user.getUserID())
                 && !isExistAccountCode(user.getAccountCode())) {
-            InserIntoUserDB(user);
-            setRoleNewUser(user.getUserID());
+            //encrypt password then insert to database
+            PasswordService passwordService = new PasswordService();
+            String password = passwordService.encryptPassword(user.getPassword());
+            user.setPassword(password);
+            System.out.println("DBInsertUser: " + InserIntoUserDB(user));
+            System.out.println("DB SetRoleNewUSer: " + setRoleNewUser(user.getUserID()));
         } else {
             return null;
         }
@@ -192,7 +196,7 @@ public class UserDAO extends DBContext {
     }
 
     //set role for new account (default role: Student)
-    public void setRoleNewUser(String userID) {
+    public boolean setRoleNewUser(String userID) {
 
         try {
             String sql
@@ -202,15 +206,16 @@ public class UserDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userID);
             statement.setObject(2, "b7f22aea-e296-482e-987d-60b18cee7dac");
-
             statement.executeUpdate();
+            return resultSet.next();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     //insert new account's information to database
-    public void InserIntoUserDB(User user) {
+    public boolean InserIntoUserDB(User user) {
         try {
             String sql = "INSERT INTO [dbo].[Users]\n"
                     + "           ([Id]\n"
@@ -256,9 +261,11 @@ public class UserDAO extends DBContext {
             statement.setObject(9, user.getPassword());
             statement.setObject(10, user.getPhoneNumber());
             statement.executeUpdate();
+            return resultSet.next();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     //generate user ID
@@ -338,7 +345,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    private boolean isExistUserName(String userName) {
+    public boolean isExistUserName(String userName) {
         try {
             String sql = "SELECT [UserName]\n"
                     + "  FROM [POETWebDB].[dbo].[Users]"
@@ -553,21 +560,54 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
-    
+
     //get email by user name
-    public String getEmailByUserName(String userName){
+    public String getEmailByUserName(String userName) {
         try {
             String sql = "";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userName);
             resultSet = statement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return resultSet.getString("Email");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean isConfirmEmail(String email) {
+        try {
+            String sql = "SELECT[Email],[EmailConfirmed]\n"
+                    + "                  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "                    where [Email] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, email);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getBoolean("EmailConfirmed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //set confirmed email
+    public boolean setConfimedEmail(String email) {
+        try {
+            String sql = "UPDATE [dbo].[Users]\n"
+                    + "SET [EmailConfirmed] = 1\n"
+                    + "Where [Email] = ?\n";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, email);
+            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 
