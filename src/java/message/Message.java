@@ -10,6 +10,7 @@ package message;
  */
 public class Message {
 
+    public static final String MSG00 = "Username is already exist.";
     public static final String MSG01 = "Email or username is required.";
     public static final String MSG02 = "Invalid email format.";
     public static final String MSG03 = "Full name may contain only letters and spaces.";
@@ -33,7 +34,7 @@ public class Message {
     public static final String MSG25 = "Email is exist.";
 
     // Full name validation
-    public static final String MSG20 = "Full name is required.";
+//  public static final String MSG20 = "Full name is required.";
     public static final String MSG21 = "Full name must be between 4 and 50 characters.";
     public static final String MSG22 = "Full name may contain only letters and single spaces between words.";
 

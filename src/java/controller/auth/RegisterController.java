@@ -180,7 +180,7 @@ public class RegisterController extends HttpServlet {
 
         if (password == null || password.trim().isEmpty()
                 || confirmPassword == null || confirmPassword.trim().isEmpty()) {
-            return Message.MSG07; // Password is required
+            return Message.MSG04; // Password is required
         }
 
         if (!password.equals(confirmPassword)) {
