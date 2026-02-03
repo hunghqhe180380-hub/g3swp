@@ -22,7 +22,7 @@ public class EnrollmentDAO extends DBContext {
     protected ResultSet resultSet;
 
     public List<Enrollment> getEnrollmentByClassId(String classId) {
-        String sql = "SELECT a.*,b.FullName,b.UserName,b.Email FROM [Enrollments] as a\n"
+        String sql = "SELECT a.*,b.* FROM [Enrollments] as a\n"
                 + "JOIN [Users] as b ON a.UserId = b.Id\n"
                 + "WHERE a.ClassId =?";
         List<Enrollment> list = new ArrayList<>();
@@ -38,6 +38,7 @@ public class EnrollmentDAO extends DBContext {
                 enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
                 enroll.setJoinedAt(resultSet.getTimestamp("JoinedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                enroll.setStatus(resultSet.getInt("Status"));
                 list.add(enroll);
             }
             resultSet.close();
@@ -69,6 +70,7 @@ public class EnrollmentDAO extends DBContext {
                 enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
                 enroll.setJoinedAt(resultSet.getTimestamp("JoinedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                enroll.setStatus(resultSet.getInt("Status"));
                 list.add(enroll);
             }
             resultSet.close();
@@ -91,6 +93,24 @@ public class EnrollmentDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    
+    public void changeStudentStatus(String userId, String classId, String status) {
+        if(status.equals("0")) status = "1";
+        else status = "0";
+        String sql = "UPDATE [Enrollments]\n"
+                + "SET [Status] = ?\n"
+                + "WHERE userId =? and classId =?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(2, userId);
+            statement.setObject(3, classId);
+            statement.setObject(1, status);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Classroom getClassInfoByClassId(String classId) {
         String sql = "SELECT a.Name,"
@@ -101,9 +121,9 @@ public class EnrollmentDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             resultSet = statement.executeQuery();
-            if (resultSet.next()) {                
+            if (resultSet.next()) {
                 cl.setName(resultSet.getString("Name"));
-                cl.setSum(resultSet.getInt("TotalStudent"));                
+                cl.setSum(resultSet.getInt("TotalStudent"));
             }
             resultSet.close();
             statement.close();

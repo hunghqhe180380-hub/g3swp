@@ -4,30 +4,32 @@
  */
 package model;
 
-
 /**
  *
  * @author BINH
  */
 public class Enrollment {
+
     private int id;
     private int classId;
     private String userId;
     private String roleInClass;
     private String joinedAt;
+    private int status;
     private User user;
 
     public Enrollment() {
     }
 
-    public Enrollment(int id, int classId, String userId, String roleInClass, String joinedAt, User user) {
+    public Enrollment(int id, int classId, String userId, String roleInClass, String joinedAt, int status, User user) {
         this.id = id;
         this.classId = classId;
         this.userId = userId;
         this.roleInClass = roleInClass;
         this.joinedAt = joinedAt;
+        this.status = status;
         this.user = user;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -75,6 +77,14 @@ public class Enrollment {
 
     public void setUser(User user) {
         this.user = user;
-    }        
-        
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
 }

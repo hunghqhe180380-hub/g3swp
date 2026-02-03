@@ -77,7 +77,7 @@ public class DeleteUserController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String userId = request.getParameter("userId");
-        String pageIndex = request.getParameter("pageIndex");
+        String pageIndex = request.getParameter("pageIndex");        
         dao.deleteUser(userId);
         response.sendRedirect(request.getContextPath() + "/admin/user-list?index=" + pageIndex);
     }

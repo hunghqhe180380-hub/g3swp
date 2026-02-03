@@ -81,7 +81,7 @@ public class StudentListController extends HttpServlet {
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
         request.setAttribute("enrolls", enrolls);
-        request.getRequestDispatcher("/View/" + user.getRole() + "/student-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/classroom/student-list.jsp").forward(request, response);
     }
 
     /**

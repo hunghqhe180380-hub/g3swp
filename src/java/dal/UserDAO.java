@@ -52,7 +52,7 @@ public class UserDAO extends DBContext {
                         + "  on a.Id = b.UserId\n"
                         + "  join [dbo].[Roles] as c\n"
                         + "  on b.RoleId = c.Id\n "
-                        + "Where " + query;
+                        + "Where " + query + " and isDeleted = 0";
 
                 statement = connection.prepareStatement(sql);
                 statement.setObject(1, name);
@@ -422,6 +422,7 @@ public class UserDAO extends DBContext {
 //                user.setConcurrencyStamp(resultSet.getString("Id"));
                 user.setPhoneNumber(resultSet.getString("PhoneNumber"));
                 user.setRole(resultSet.getString("RoleName"));
+                user.setIsDeleted(resultSet.getInt("isDeleted"));
                 list.add(user);
             }
             resultSet.close();
@@ -437,6 +438,26 @@ public class UserDAO extends DBContext {
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeUserStatus(String userId, String status) {
+        if (status.equals("0")) {
+            status = "1";
+        } else {
+            status = "0";
+        }
+        String sql = "UPDATE [Users] \n"
+                + "SET [isDeleted] = ?\n"
+                + "WHERE Id = ?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(2, userId);
+            statement.setObject(1, status);
             statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
@@ -493,6 +514,7 @@ public class UserDAO extends DBContext {
                 user.setPassword(resultSet.getString("PasswordHash"));
                 user.setPhoneNumber(resultSet.getString("PhoneNumber"));
                 user.setRole(resultSet.getString("RoleName"));
+                user.setIsDeleted(resultSet.getInt("isDeleted"));
                 list.add(user);
             }
             resultSet.close();

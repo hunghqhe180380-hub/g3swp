@@ -240,6 +240,15 @@ a{ text-decoration:none; color: inherit; }
     background: rgba(239,68,68,0.10);
 }
 
+.btn-act--green {
+    border-color: rgba(34, 197, 94, 0.55);    
+    color: #16a34a; 
+}
+
+.btn-act--green:hover {    
+    background: rgba(34, 197, 94, 0.10);
+}
+
 /* Empty state */
 .empty{
     padding: 36px 16px !important;

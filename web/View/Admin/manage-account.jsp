@@ -57,6 +57,7 @@
                                 <th>Email</th>
                                 <th>Roles</th>
                                 <th>Account</th>
+                                <th class="th-actions">Status</th>
                                 <th class="th-actions"></th>
                             </tr>
                         </thead>
@@ -80,7 +81,27 @@
                                     </td>
 
                                     <td class="code"><c:out value="${user.accountCode}"/></td>
+                                    
+                                    <td class="actions">
+                                        <c:if test="${user.isDeleted == 0}">
+                                            <form action="${ctx}/admin/soft-delete-user" method="post">
+                                                <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
+                                                <input type="hidden" name="status" value="<c:out value="${user.isDeleted}"/>">
+                                                <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                <button class="btn-act btn-act--red" type="submit">Deactive</button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${user.isDeleted == 1}">
+                                            <form action="${ctx}/admin/soft-delete-user" method="post">
+                                                <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
+                                                <input type="hidden" name="status" value="<c:out value="${user.isDeleted}"/>">
+                                                <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                <button class="btn-act btn-act--green" type="submit">Active</button>
+                                            </form>
+                                        </c:if>
 
+                                    </td>
+                                    
                                     <td class="actions">
                                         <c:choose>
                                             <c:when test="${user.role == 'Admin'}">
@@ -106,7 +127,6 @@
                                                             </c:when>
                                                         </c:choose>
                                                     </form>
-
                                                     <form action="${ctx}/admin/delete-user" method="post">
                                                         <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
                                                         <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">

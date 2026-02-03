@@ -77,7 +77,7 @@
                             <h3>Manage Classes</h3>
                             <p>View, delete classes and manage materials, assignments, students.</p>
 
-                            <a class="btn-open" href="${ctx}/admin/class-list">Open</a>
+                            <a class="btn-open" href="${ctx}/classroom/manage/class-list">Open</a>
                         </div>
                     </section>
                 </div>

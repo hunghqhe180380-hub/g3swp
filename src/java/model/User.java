@@ -19,6 +19,7 @@ public class User {
     private String password;
     private String accountCode;
     private int emailConfirm;
+    private int isDeleted;
 
     public User() {
     }
@@ -45,7 +46,7 @@ public class User {
     
     //constructor all info
 
-    public User(String urlImgProfile, String userID, String role, String userName, String fullName, String email, String phoneNumber, String password, String accountCode, int emailConfirm) {
+    public User(String urlImgProfile, String userID, String role, String userName, String fullName, String email, String phoneNumber, String password, String accountCode, int emailConfirm, int isDeleted) {
         this.urlImgProfile = urlImgProfile;
         this.userID = userID;
         this.role = role;
@@ -56,6 +57,7 @@ public class User {
         this.password = password;
         this.accountCode = accountCode;
         this.emailConfirm = emailConfirm;
+        this.isDeleted = isDeleted;
     }
     
 
@@ -151,7 +153,13 @@ public class User {
     public void setUrlImgProfile(String urlImgProfile) {
         this.urlImgProfile = urlImgProfile;
     }
-    
-    
+
+    public int getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(int isDeleted) {
+        this.isDeleted = isDeleted;
+    }        
     
 }

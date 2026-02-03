@@ -86,6 +86,14 @@
         <servlet-name>DeleteMaterialController</servlet-name>
         <servlet-class>controller.material.DeleteMaterialController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SoftDeleteUserController</servlet-name>
+        <servlet-class>controller.admin.SoftDeleteUserController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SoftKickStudentController</servlet-name>
+        <servlet-class>controller.classroom.SoftKickStudentController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -165,6 +173,14 @@
     <servlet-mapping>
         <servlet-name>DeleteMaterialController</servlet-name>
         <url-pattern>/material/manage/delete-material</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SoftDeleteUserController</servlet-name>
+        <url-pattern>/admin/soft-delete-user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SoftKickStudentController</servlet-name>
+        <url-pattern>/classroom/manage/soft-kick-student</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

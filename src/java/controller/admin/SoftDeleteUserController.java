@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.classroom;
+package controller.admin;
 
-import dal.EnrollmentDAO;
+import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,12 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author BINH
  */
-public class KickStudentController extends HttpServlet {
+public class SoftDeleteUserController extends HttpServlet {
 
-    private EnrollmentDAO dao;
+    private UserDAO dao;
 
     public void init() {
-        dao = new EnrollmentDAO();
+        dao = new UserDAO();
     }
 
     /**
@@ -41,10 +41,10 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet SoftDeleteUserController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SoftDeleteUserController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -75,10 +75,11 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String classId = request.getParameter("classId");
         String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
-        response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
+        String pageIndex = request.getParameter("pageIndex");
+        String status = request.getParameter("status");
+        dao.changeUserStatus(userId, status);
+        response.sendRedirect(request.getContextPath() + "/admin/user-list?index=" + pageIndex);
     }
 
     /**
