@@ -19,5 +19,35 @@
         <a href="${pageContext.request.contextPath}/home">Home</a> ||
         <a href="${pageContext.request.contextPath}/account/dashboard">Dashboard</a> ||
         <a href="${pageContext.request.contextPath}/logout">Logout</a>  
+
+        <div style="display: flex">
+            <div>
+                <table border="1">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a href="${pageContext.request.contextPath}/account/profile">Profile</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#">Email</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#">Password</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <div>
+
+            </div>
+        </div>
+
+
     </body>
 </html>

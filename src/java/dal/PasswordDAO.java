@@ -46,7 +46,7 @@ public class PasswordDAO extends DBContext {
         }
         try {
             String sql = "Select [PasswordHash]\n"
-                    + "From [POETWebDB].[dbo].[Users]\n"
+                    + "From [dbo].[Users]\n"
                     + condition;
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userName);

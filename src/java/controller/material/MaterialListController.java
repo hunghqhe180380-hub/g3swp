@@ -76,7 +76,6 @@ public class MaterialListController extends HttpServlet {
             materials = dao.getMaterialByClassId(classId);
             search = "";
         }
-
         request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);

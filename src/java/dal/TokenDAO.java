@@ -64,7 +64,7 @@ public class TokenDAO extends DBContext {
     public boolean isExistToken(String token, String action) {
         try {
             String sql = "SELECT [Token]\n"
-                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  FROM [dbo].[Token]\n"
                     + "WHERE [Token] = ? and [IsUsed] = 0\n"
                     + "And ExpiryTime > GetDate()\n"
                     + "And [Action] = ?";
@@ -83,7 +83,7 @@ public class TokenDAO extends DBContext {
     public String getEmailByToken(String token, String action) {
         try {
             String sql = "SELECT [Email]\n"
-                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  FROM [dbo].[Token]\n"
                     + "  where Token = ?\n"
                     //token is not expiry time to use
                     + "  And [ExpiryTime] > GETDATE()\n"
@@ -106,7 +106,7 @@ public class TokenDAO extends DBContext {
     public String getEmailByTokenExpiryTime(String token, String action) {
         try {
             String sql = "SELECT [Email]\n"
-                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  FROM [dbo].[Token]\n"
                     + "  where [ExpiryTime] < GETDATE()\n"
                     + "And [Token] = ?\n"
                     + "  And [Action] = ?";

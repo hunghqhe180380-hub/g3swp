@@ -90,6 +90,9 @@ public class ForgotPasswordController extends HttpServlet {
             EmailService serviceEmail = new EmailService();
             String newToken = serviceEmail.generateToken();
             String linkReset = "http://localhost:8080/POET/reset-password?token=" + newToken;
+            System.out.println("EmailRS: " + email);
+            System.out.println("UserIDRs: " + userID);
+            System.out.println("NewTokenRs: " + newToken);
             Token newTokenForgetPassword = new Token(
                     email,
                     userID,

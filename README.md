@@ -2,6 +2,12 @@
 
 # POET - Java Web Project
 
+## Development environment
+- JDK 8+
+- Apache Tomcat 10
+- Port: 8080
+- URL: http://localhost:8080/POET
+
 ## Tech Stack
 - Java Servlet (Jakarta EE)
 - JSP + JSTL

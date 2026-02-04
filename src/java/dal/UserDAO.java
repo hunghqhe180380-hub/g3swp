@@ -297,7 +297,7 @@ public class UserDAO extends DBContext {
     boolean isExistAccID(String userID) {
         try {
             String sql = "SELECT [Id]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]"
+                    + "  FROM [dbo].[Users]"
                     + "  Where [Id] = ? ";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userID);
@@ -314,7 +314,7 @@ public class UserDAO extends DBContext {
     public boolean isExistAccountCode(String accountCode) {
         try {
             String sql = "SELECT [AccountCode]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]"
+                    + "  FROM [dbo].[Users]"
                     + "  Where [AccountCode] = ? ";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, accountCode);
@@ -331,7 +331,7 @@ public class UserDAO extends DBContext {
     public boolean isExistEmail(String email) {
         try {
             String sql = "SELECT [Email]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]"
+                    + "  FROM [dbo].[Users]"
                     + "  Where [Email] = ? ";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
@@ -348,7 +348,7 @@ public class UserDAO extends DBContext {
     public boolean isExistUserName(String userName) {
         try {
             String sql = "SELECT [UserName]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]"
+                    + "  FROM [dbo].[Users]"
                     + "  Where [UserName] = ? ";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userName);
@@ -469,7 +469,7 @@ public class UserDAO extends DBContext {
         String userID = "";
         try {
             String sql = "SELECT  [Id]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  FROM [dbo].[Users]\n"
                     + "  Where Email = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
@@ -529,7 +529,7 @@ public class UserDAO extends DBContext {
         String userName = "";
         try {
             String sql = "SELECT [UserName]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  FROM [dbo].[Users]\n"
                     + "  Where Email = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
@@ -547,7 +547,7 @@ public class UserDAO extends DBContext {
     public String getUserIdByTokenRequest(String token, String action) {
         try {
             String sql = "SELECT [UserId]\n"
-                    + "  FROM [POETWebDB].[dbo].[Token]\n"
+                    + "  FROM [dbo].[Token]\n"
                     + "  Where [IsUsed] = 0\n"
                     + "  And [Action] = ?\n"
                     + "  And [Token] = ?\n"
@@ -569,7 +569,7 @@ public class UserDAO extends DBContext {
     public String getEmailByUserId(String userID) {
         try {
             String sql = "SELECT [Email]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  FROM [dbo].[Users]\n"
                     + "  where [Id] = ? ";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userID);
@@ -602,7 +602,7 @@ public class UserDAO extends DBContext {
     public boolean isConfirmEmail(String email) {
         try {
             String sql = "SELECT[Email],[EmailConfirmed]\n"
-                    + "                  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "                  FROM [dbo].[Users]\n"
                     + "                    where [Email] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
