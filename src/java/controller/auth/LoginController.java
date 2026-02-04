@@ -104,8 +104,8 @@ public class LoginController extends HttpServlet {
         Map<String, String> listMSG = validator(userName, password);
         if (listMSG.isEmpty()) {
             //if UserName/Email and Password input right format => continue
+            //session have : useID, role, userName, isConfimedEmail 
             User userLogin = userDAO.isLogin(userName, password);
-
             //check user exist in database
             if (userLogin == null) {
                 listMSG.put("msgInvalidUser", Message.MSG05);

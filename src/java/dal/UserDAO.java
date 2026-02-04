@@ -130,24 +130,26 @@ public class UserDAO extends DBContext {
 
     //get user's infor by user's ID
     public User getUserInforByID(String userID) {
+        //userID, userName, fullName, email, phoneNumber, accountCode
         try {
-            String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"
-                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
-                    + "  on a.Id = b.UserId\n"
-                    + "  join [dbo].[Roles] as c\n"
-                    + "  on b.RoleId = c.Id\n"
-                    + "  where a.Id = ? ";
+            String sql = "select a.AvatarUrl, a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.AccountCode\n"
+                    + "                  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
+                    + "                  on a.Id = b.UserId\n"
+                    + "              join [dbo].[Roles] as c\n"
+                    + "               on b.RoleId = c.Id\n"
+                    + "Where a.id = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userID);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new User(userID,
-                        resultSet.getString("RoleName"),
+                return new User(resultSet.getString("AvatarUrl"),
+                        userID,
+                        resultSet.getNString("RoleName"),
                         resultSet.getString("UserName"),
                         resultSet.getString("FullName"),
                         resultSet.getString("Email"),
                         resultSet.getString("PhoneNumber"),
-                        resultSet.getString("PasswordHash"));
+                        resultSet.getString("AccountCode"));
             }
         } catch (Exception e) {
             e.printStackTrace();
