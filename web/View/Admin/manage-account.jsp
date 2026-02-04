@@ -9,7 +9,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-
+<c:set var="fnState" value="${param.txtFullName != null ? param.txtFullName : '0'}"/>
+<c:set var="roleState" value="${param.txtRole != null ? param.txtRole : '0'}"/>
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,15 +48,39 @@
                                placeholder="Search name/username/email...">
                         <button class="search__btn" type="submit">Search</button>
                     </form>
+                    <form action="${ctx}/admin/user-list" method="get" id="frmSort" hidden>                        
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">
+                        <input type="hidden" id="txtRole" name="txtRole" value="<c:out value="${param.txtRole != null ? param.txtRole : 0}"/>">
+                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
+                    </form>
                 </div>
 
                 <div class="card">
                     <table class="table">
                         <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Roles</th>
+                            <tr>                                
+                                <th onclick="sort('FullName')" style="cursor:pointer">
+                                    Name
+                                    <span id="iconFullName">
+                                        <c:choose>
+                                            <c:when test="${fnState == '1'}">▲</c:when>
+                                            <c:when test="${fnState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
+                                <th>Email</th>                                
+                                <th onclick="sort('Role')" style="cursor:pointer">
+                                    Role
+                                    <span id="iconRole">
+                                        <c:choose>
+                                            <c:when test="${roleState == '1'}">▲</c:when>
+                                            <c:when test="${roleState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
+
                                 <th>Account</th>
                                 <th class="th-actions">Status</th>
                                 <th class="th-actions"></th>
@@ -81,13 +106,13 @@
                                     </td>
 
                                     <td class="code"><c:out value="${user.accountCode}"/></td>
-                                    
+
                                     <td class="actions">
                                         <c:if test="${user.isDeleted == 0}">
                                             <form action="${ctx}/admin/soft-delete-user" method="post">
                                                 <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
                                                 <input type="hidden" name="status" value="<c:out value="${user.isDeleted}"/>">
-                                                <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
                                                 <button class="btn-act btn-act--red" type="submit">Deactive</button>
                                             </form>
                                         </c:if>
@@ -95,13 +120,13 @@
                                             <form action="${ctx}/admin/soft-delete-user" method="post">
                                                 <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
                                                 <input type="hidden" name="status" value="<c:out value="${user.isDeleted}"/>">
-                                                <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
                                                 <button class="btn-act btn-act--green" type="submit">Active</button>
                                             </form>
                                         </c:if>
 
                                     </td>
-                                    
+
                                     <td class="actions">
                                         <c:choose>
                                             <c:when test="${user.role == 'Admin'}">
@@ -112,7 +137,7 @@
                                                 <div class="btncol">
                                                     <form action="${ctx}/admin/change-role" method="post">
                                                         <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
-                                                        <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                        <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
 
                                                         <c:choose>
                                                             <c:when test="${user.role == 'Student'}">
@@ -129,7 +154,7 @@
                                                     </form>
                                                     <form action="${ctx}/admin/delete-user" method="post">
                                                         <input type="hidden" name="userId" value="<c:out value="${user.userID}"/>">
-                                                        <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                        <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
                                                         <button class="btn-act btn-act--red" type="submit">Delete</button>
                                                     </form>
                                                 </div>
@@ -150,32 +175,83 @@
                     </table>
                 </div>
 
-                <div class="pager">
-                    <c:set var="mark" value="${empty search ? '?': '&'}" />
+                <div class="pager">                    
                     <c:url var="basePath" value="/admin/user-list">
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>
+                        <c:param name="txtFullName" value="${fnState}"/>
+                        <c:param name="txtRole" value="${roleState}"/>
                     </c:url>
 
                     <c:if test="${page.index!=0}">
-                        <a class="pg" href="${basePath}${mark}index=0">&laquo;</a>
-                        <a class="pg" href="${basePath}${mark}index=${page.index-1}">&lsaquo;</a>
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
                     </c:if>
 
                     <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
                         <a class="pg ${index==page.index ? 'is-active' : ''}"
-                           href="${basePath}${mark}index=${index}">
+                           href="${basePath}&index=${index}">
                             ${index+1}
                         </a>
                     </c:forEach>
 
                     <c:if test="${page.index!=page.totalPage-1}">
-                        <a class="pg" href="${basePath}${mark}index=${page.index+1}">&rsaquo;</a>
-                        <a class="pg" href="${basePath}${mark}index=${page.totalPage-1}">&raquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
                     </c:if>
                 </div>
             </div>
         </main>
     </body>
 </html>
+<style>
+    th:hover {
+        background-color: #f3f3f3;
+    }
+    th span {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+</style>
+<script>
+    function sort(x) {
+        reset(x);
+
+        let el = document.getElementById("txt" + x);
+        let state = parseInt(el.value);
+        if (isNaN(state))
+            state = 0;
+
+        let newState = (state + 1) % 3;
+        el.value = newState;
+
+        updateIcon(x, newState);
+        document.getElementById("pageIndex").value = 0;        
+        document.getElementById("frmSort").submit();
+    }
+
+    function reset(x) {
+        ["FullName", "Role"].forEach(f => {
+            if (f !== x) {
+                document.getElementById("txt" + f).value = 0;
+                updateIcon(f, 0);
+            }
+        });
+    }
+    function updateIcon(field, state) {
+        const icon = document.getElementById("icon" + field);
+        if (!icon)
+            return;
+        switch (state) {
+            case 1:
+                icon.textContent = "▲";
+                break;
+            case 2:
+                icon.textContent = "▼";
+                break;
+            default:
+                icon.textContent = "⇅";
+        }
+    }
+</script>

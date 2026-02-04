@@ -89,7 +89,7 @@
 
                                             <form action="${ctx}/classroom/manage/delete-class" method="post">
                                                 <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
-                                                <input type="hidden" name="pageIndex" value="<c:out value="${page.index}"/>">
+                                                <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
                                                 <button class="btn-mini btn-mini--danger" type="submit">Delete</button>
                                             </form>
                                         </div>
