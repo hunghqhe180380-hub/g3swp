@@ -4,6 +4,7 @@
  */
 package controller.account;
 
+import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -35,12 +36,21 @@ public class ProfileController extends HttpServlet {
         User userLogin = (User) session.getAttribute("user");
 
         //check user login ? continue : back to login
-        if (session == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        if (session == null || userLogin == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-
         String userRole = userLogin.getRole();
+        UserDAO userDAO = new UserDAO();
+        ////userID, userName, fullName, email, phoneNumber, accountCode
+        User user = userDAO.getUserInforByID(userLogin.getUserID());
+        //session have : userID, userName, role, email, phone 
+        request.setAttribute("user", user);
+//        System.out.println("Email: " + user.getEmail());
+//        System.out.println("UserNameLg: " + user.getUserName());
+//        System.out.println("Accoun Code: " + user.getAccountCode());
+//        System.out.println("Full Name: " + user.getFullName());
+//        System.out.println("Phone Number: " + user.getPhoneNumber());
         switch (userRole.toLowerCase()) {
             case "student":
                 request.getRequestDispatcher("/View/Student/profile.jsp").forward(request, response);
@@ -82,7 +92,13 @@ public class ProfileController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        //this function use to change profile
+        String newUserName = request.getParameter("userName");
+        String newAccountCode = request.getParameter("accounCode");
+        String newFullName = request.getParameter("fullName");
+        String newPhoneNumber = request.getParameter("phoneNumber");
+        // allow to update avatar
+
     }
 
     /**

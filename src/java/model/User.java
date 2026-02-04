@@ -59,6 +59,20 @@ public class User {
         this.emailConfirm = emailConfirm;
         this.isDeleted = isDeleted;
     }
+
+    //constructer to get infomation of profile this user
+    public User(String urlImgProfile, String userID, String role, String userName, String fullName, String email, String phoneNumber, String accountCode) {
+        this.urlImgProfile = urlImgProfile;
+        this.userID = userID;
+        this.role = role;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.accountCode = accountCode;
+    }
+    
+    
     
 
     
@@ -73,6 +87,8 @@ public class User {
         this.password = password;
         this.accountCode = accountCode;
     }
+    
+    
 
     public String getUserID() {
         return userID;
