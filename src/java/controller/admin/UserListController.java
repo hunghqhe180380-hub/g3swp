@@ -67,53 +67,15 @@ public class UserListController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String searchUser = request.getParameter("search");
-        List<User> users;
-        if (searchUser != null && !searchUser.trim().isEmpty()) {
-            users = dao.getUserInforByName(searchUser);
-        } else {
-            users = dao.getAllUsers();
-            searchUser = "";
-        }
-        int fnState = 0;
-        int roleState = 0;
-        try {
-            fnState = Integer.parseInt(request.getParameter("txtFullName"));
-            roleState = Integer.parseInt(request.getParameter("txtRole"));
-        } catch (Exception e) {
-        }
-        if (fnState != 0) {
-            Comparator<User> cmp
-                    = Comparator.comparing(User::getFullName, String.CASE_INSENSITIVE_ORDER);
-
-            if (fnState == 2) {
-                cmp = cmp.reversed();
-            }
-            Collections.sort(users, cmp);
-
-        } else if (roleState != 0) {
-            Comparator<User> cmp
-                    = Comparator.comparing(User::getRole, String.CASE_INSENSITIVE_ORDER);
-
-            if (roleState == 2) {
-                cmp = cmp.reversed();
-            }
-            Collections.sort(users, cmp);
-        }
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
-        int size = users.size();
-        request.setAttribute("nrpp", nrpp);
-        int index = 0;
-        try {
-            index = Integer.parseInt(request.getParameter("index"));
-            index = index < 0 ? 0 : index;
-        } catch (Exception e) {
-            index = 0;
-        }
-        PagingUtil page = new PagingUtil(size, nrpp, index);
-        page.calc();
+        String[] roles = request.getParameterValues("txtRole");
+        List<User> users = dao.getAllUsers(searchUser, roles);
+        sort(request, response, users);
+        paging(request, response, users);
         request.setAttribute("search", searchUser);
+        if (roles != null) {
+            request.setAttribute("roleList", java.util.Arrays.asList(roles));
+        }
         request.setAttribute("users", users);
-        request.setAttribute("page", page);
         request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
     }
 
@@ -129,6 +91,41 @@ public class UserListController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+    }
+
+    private void sort(HttpServletRequest request, HttpServletResponse response, List<User> users)
+            throws ServletException, IOException {
+        int fnState = 0;
+        try {
+            fnState = Integer.parseInt(request.getParameter("txtFullName"));
+        } catch (Exception e) {
+        }
+        if (fnState != 0) {
+            Comparator<User> cmp
+                    = Comparator.comparing(User::getFullName, String.CASE_INSENSITIVE_ORDER);
+
+            if (fnState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(users, cmp);
+        }
+    }
+
+    private void paging(HttpServletRequest request, HttpServletResponse response, List<User> users)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
+        int size = users.size();
+        request.setAttribute("nrpp", nrpp);
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     /**

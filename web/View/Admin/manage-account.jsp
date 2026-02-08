@@ -46,12 +46,27 @@
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
                                placeholder="Search name/username/email...">
+                        <c:forEach items="${roleList}" var="r">
+                            <input type="hidden" name="txtRole" value="${r}">
+                        </c:forEach>
                         <button class="search__btn" type="submit">Search</button>
                     </form>
                     <form action="${ctx}/admin/user-list" method="get" id="frmSort" hidden>                        
-                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">
-                        <input type="hidden" id="txtRole" name="txtRole" value="<c:out value="${param.txtRole != null ? param.txtRole : 0}"/>">
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                        
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        <c:forEach items="${roleList}" var="r">
+                            <input type="hidden" name="txtRole" value="${r}">
+                        </c:forEach>
                         <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
+                    </form>
+                    <form action="${ctx}/admin/user-list" method="get" id="frmFilter">
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                        
+                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">
+
+                        <input type="checkbox" name="txtRole" value="Admin" ${roleList.contains('Admin') ? 'checked' : ''} onchange="this.form.submit()"> Admin
+                        <input type="checkbox" name="txtRole" value="Teacher" ${roleList.contains('Teacher') ? 'checked' : ''} onchange="this.form.submit()"> Teacher
+                        <input type="checkbox" name="txtRole" value="Student" ${roleList.contains('Student') ? 'checked' : ''} onchange="this.form.submit()"> Student
                     </form>
                 </div>
 
@@ -70,17 +85,7 @@
                                     </span>
                                 </th>
                                 <th>Email</th>                                
-                                <th onclick="sort('Role')" style="cursor:pointer">
-                                    Role
-                                    <span id="iconRole">
-                                        <c:choose>
-                                            <c:when test="${roleState == '1'}">▲</c:when>
-                                            <c:when test="${roleState == '2'}">▼</c:when>
-                                            <c:otherwise>⇅</c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </th>
-
+                                <th>Role</th>
                                 <th>Account</th>
                                 <th class="th-actions">Status</th>
                                 <th class="th-actions"></th>
@@ -180,8 +185,10 @@
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>
+                        <c:forEach items="${roleList}" var="r">
+                            <c:param name="txtRole" value="${r}"/>
+                        </c:forEach>
                         <c:param name="txtFullName" value="${fnState}"/>
-                        <c:param name="txtRole" value="${roleState}"/>
                     </c:url>
 
                     <c:if test="${page.index!=0}">
@@ -227,12 +234,12 @@
         el.value = newState;
 
         updateIcon(x, newState);
-        document.getElementById("pageIndex").value = 0;        
+        document.getElementById("pageIndex").value = 0;
         document.getElementById("frmSort").submit();
     }
 
     function reset(x) {
-        ["FullName", "Role"].forEach(f => {
+        ["FullName"].forEach(f => {
             if (f !== x) {
                 document.getElementById("txt" + f).value = 0;
                 updateIcon(f, 0);
@@ -253,5 +260,8 @@
             default:
                 icon.textContent = "⇅";
         }
+    }
+    function filter() {
+        document.getElementById("frmFilter").submit();
     }
 </script>

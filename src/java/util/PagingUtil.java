@@ -107,9 +107,4 @@ public class PagingUtil {
         pageEnd = pageEnd<0?0:pageEnd;
     }
     
-    public static void main(String[] args) {
-        UserDAO dao = new UserDAO();
-        int size = dao.getAllUsers().size();
-        System.out.println(size);        
-    }
 }

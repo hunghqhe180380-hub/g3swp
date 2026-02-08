@@ -402,13 +402,40 @@ public class UserDAO extends DBContext {
         }
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(String search, String[] roles) {
         String sql = "SELECT a.*,c.Name as RoleName from [Users] as a\n"
                 + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
-                + "JOIN [Roles] as c on b.RoleId = c.Id";
+                + "JOIN [Roles] as c on b.RoleId = c.Id\n"
+                + "Where 1=1 ";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND (LOWER(a.FullName) LIKE ? OR LOWER(a.UserName) LIKE ? OR LOWER(a.Email) LIKE ?)";
+        }
+        boolean hasRoles = (roles != null && roles.length > 0);
+        if (hasRoles) {
+            sql += (" AND c.Name IN (");
+            for (int i = 0; i < roles.length; i++) {
+                sql += ("?");
+                if (i < roles.length - 1) {
+                    sql += (",");
+                }
+            }
+            sql += (") ");
+        }
         List<User> list = new ArrayList<>();
         try {
             statement = connection.prepareStatement(sql);
+            int paramIndex = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                String pattern = "%" + search.toLowerCase() + "%";
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
+            }            
+            if (hasRoles) {
+                for (String r : roles) {
+                    statement.setObject(paramIndex++, r);
+                }
+            }
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
@@ -420,8 +447,6 @@ public class UserDAO extends DBContext {
                 user.setEmail(resultSet.getString("Email"));
                 user.setEmailConfirm(resultSet.getInt("EmailConfirmed"));
                 user.setPassword(resultSet.getString("PasswordHash"));
-//                user.setSecurityStamp(resultSet.getString("SecurityStamp"));
-//                user.setConcurrencyStamp(resultSet.getString("Id"));
                 user.setPhoneNumber(resultSet.getString("PhoneNumber"));
                 user.setRole(resultSet.getString("RoleName"));
                 user.setIsDeleted(resultSet.getInt("isDeleted"));
@@ -466,7 +491,7 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
-    
+
     public String getUserIdByEmail(String email) {
         String userID = "";
         try {
@@ -483,48 +508,6 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return userID;
-    }
-
-    /**
-     * get user information even param just a character
-     *
-     * @param name an email/fullname/username
-     * @return a list of user
-     */
-    public List<User> getUserInforByName(String name) {
-        String sql = "SELECT a.*, c.Name as RoleName FROM [Users] as a\n"
-                + "JOIN [UserRoles] as b on a.Id = b.UserId\n"
-                + "JOIN [Roles] as c on b.RoleId = c.Id\n"
-                + "WHERE LOWER(a.FullName) LIKE ? OR LOWER(a.UserName) LIKE ? OR LOWER(a.Email) LIKE ?";
-        List<User> list = new ArrayList<>();
-        try {
-            statement = connection.prepareStatement(sql);
-            String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";
-            statement.setObject(1, searchPattern);
-            statement.setObject(2, searchPattern);
-            statement.setObject(3, searchPattern);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                User user = new User();
-                user.setUserID(resultSet.getString("Id"));
-                user.setFullName(resultSet.getString("FullName"));
-                user.setAccountCode(resultSet.getString("AccountCode"));
-                user.setUrlImgProfile(resultSet.getString("AvatarUrl"));
-                user.setUserName(resultSet.getString("UserName"));
-                user.setEmail(resultSet.getString("Email"));
-                user.setEmailConfirm(resultSet.getInt("EmailConfirmed"));
-                user.setPassword(resultSet.getString("PasswordHash"));
-                user.setPhoneNumber(resultSet.getString("PhoneNumber"));
-                user.setRole(resultSet.getString("RoleName"));
-                user.setIsDeleted(resultSet.getInt("isDeleted"));
-                list.add(user);
-            }
-            resultSet.close();
-            statement.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     public String getUserNameByEmail(String email) {
