@@ -9,7 +9,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-
+<c:set var="clState" value="${param.txtClassName != null ? param.txtClassName : '0'}"/>
+<c:set var="teState" value="${param.txtTeacherName != null ? param.txtTeacherName : '0'}"/>
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,6 +48,25 @@
                                placeholder="Search class/teacher/code...">
                         <button class="search__btn search__btn--primary" type="submit">Search</button>
                     </form>
+                               
+                    <form action="${ctx}/classroom/manage/class-list" method="get" id="frmSort" hidden>                        
+                        <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>">                        
+                        <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        
+                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
+                    </form>
+                    
+                    <form action="${ctx}/classroom/manage/class-list" method="get" id="frmFilter">
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>"> 
+                        <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
+                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">
+
+                        <input type="checkbox" name="txtRole" value="Admin" ${roleList.contains('Admin') ? 'checked' : ''} onchange="this.form.submit()"> Admin
+                        <input type="checkbox" name="txtRole" value="Teacher" ${roleList.contains('Teacher') ? 'checked' : ''} onchange="this.form.submit()"> Teacher
+                        <input type="checkbox" name="txtRole" value="Student" ${roleList.contains('Student') ? 'checked' : ''} onchange="this.form.submit()"> Student
+                    </form>
                 </div>
 
                 <!-- TABLE -->
@@ -54,9 +74,27 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Class</th>
-                                <th>Code</th>
-                                <th>Teacher</th>
+                                <th onclick="sort('ClassName')" style="cursor:pointer">
+                                    Class
+                                    <span id="iconClassName">
+                                        <c:choose>
+                                            <c:when test="${clState == '1'}">▲</c:when>
+                                            <c:when test="${clState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
+                                <th>Code</th>                                
+                                <th onclick="sort('TeacherName')" style="cursor:pointer">
+                                    Teacher
+                                    <span id="iconTeacherName">
+                                        <c:choose>
+                                            <c:when test="${teState == '1'}">▲</c:when>
+                                            <c:when test="${teState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
                                 <th>Students</th>
                                 <th>Created</th>                                
                                 <th class="th-actions"></th>
@@ -108,32 +146,86 @@
                 </div>
 
                 <!-- PAGING -->
-                <div class="pager">
-                    <c:set var="mark" value="${empty search ? '?': '&'}" />
+                <div class="pager">                    
                     <c:url var="basePath" value="/classroom/manage/class-list">
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>
+                        <c:param name="txtClassName" value="${clState}"/>
+                        <c:param name="txtTeacherName" value="${teState}"/>
                     </c:url>
 
                     <c:if test="${page.index!=0}">
-                        <a class="pg" href="${basePath}${mark}index=0">&laquo;</a>
-                        <a class="pg" href="${basePath}${mark}index=${page.index-1}">&lsaquo;</a>
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
                     </c:if>
 
                     <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
                         <a class="pg ${index==page.index ? 'is-active' : ''}"
-                           href="${basePath}${mark}index=${index}">
+                           href="${basePath}&index=${index}">
                             ${index+1}
                         </a>
                     </c:forEach>
 
                     <c:if test="${page.index!=page.totalPage-1}">
-                        <a class="pg" href="${basePath}${mark}index=${page.index+1}">&rsaquo;</a>
-                        <a class="pg" href="${basePath}${mark}index=${page.totalPage-1}">&raquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
                     </c:if>
                 </div>
             </div>
         </main>
     </body>
 </html>
+<style>
+    th:hover {
+        background-color: #f3f3f3;
+    }
+    th span {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+</style>
+<script>
+    function sort(x) {
+        reset(x);
+
+        let el = document.getElementById("txt" + x);
+        let state = parseInt(el.value);
+        if (isNaN(state))
+            state = 0;
+
+        let newState = (state + 1) % 3;
+        el.value = newState;
+
+        updateIcon(x, newState);
+        document.getElementById("pageIndex").value = 0;
+        document.getElementById("frmSort").submit();
+    }
+
+    function reset(x) {
+        ["ClassName","TeacherName"].forEach(f => {
+            if (f !== x) {
+                document.getElementById("txt" + f).value = 0;
+                updateIcon(f, 0);
+            }
+        });
+    }
+    function updateIcon(field, state) {
+        const icon = document.getElementById("icon" + field);
+        if (!icon)
+            return;
+        switch (state) {
+            case 1:
+                icon.textContent = "▲";
+                break;
+            case 2:
+                icon.textContent = "▼";
+                break;
+            default:
+                icon.textContent = "⇅";
+        }
+    }
+    function filter() {
+        document.getElementById("frmFilter").submit();
+    }
+</script>

@@ -69,8 +69,8 @@ public class UserListController extends HttpServlet {
         String searchUser = request.getParameter("search");
         String[] roles = request.getParameterValues("txtRole");
         List<User> users = dao.getAllUsers(searchUser, roles);
-        sort(request, response, users);
-        paging(request, response, users);
+        sort(request, users);
+        paging(request, users);
         request.setAttribute("search", searchUser);
         if (roles != null) {
             request.setAttribute("roleList", java.util.Arrays.asList(roles));
@@ -93,7 +93,7 @@ public class UserListController extends HttpServlet {
         processRequest(request, response);
     }
 
-    private void sort(HttpServletRequest request, HttpServletResponse response, List<User> users)
+    private void sort(HttpServletRequest request, List<User> users)
             throws ServletException, IOException {
         int fnState = 0;
         try {
@@ -111,7 +111,7 @@ public class UserListController extends HttpServlet {
         }
     }
 
-    private void paging(HttpServletRequest request, HttpServletResponse response, List<User> users)
+    private void paging(HttpServletRequest request, List<User> users)
             throws ServletException, IOException {
         int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
         int size = users.size();

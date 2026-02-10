@@ -10,7 +10,6 @@
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="fnState" value="${param.txtFullName != null ? param.txtFullName : '0'}"/>
-<c:set var="roleState" value="${param.txtRole != null ? param.txtRole : '0'}"/>
 <!DOCTYPE html>
 <html>
     <head>
