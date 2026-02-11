@@ -11,11 +11,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.Classroom;
-import model.User;
 import util.PagingUtil;
 
 /**
@@ -94,9 +95,11 @@ public class ClassListController extends HttpServlet {
             throws ServletException, IOException {
         int clState = 0;
         int teState = 0;
+        int tiState = 0;
         try {
             clState = Integer.parseInt(request.getParameter("txtClassName"));
             teState = Integer.parseInt(request.getParameter("txtTeacherName"));
+            tiState = Integer.parseInt(request.getParameter("txtCreateAt"));
         } catch (Exception e) {
         }
         if (clState != 0) {
@@ -112,6 +115,18 @@ public class ClassListController extends HttpServlet {
                     = Comparator.comparing(Classroom::getTeacherName, String.CASE_INSENSITIVE_ORDER);
 
             if (teState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(classes, cmp);
+        } else if (tiState != 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            Comparator<Classroom> cmp = (c1, c2) -> {
+                LocalDateTime time1 = LocalDateTime.parse(c1.getCreatedAt(), formatter);
+                LocalDateTime time2 = LocalDateTime.parse(c2.getCreatedAt(), formatter);
+                return time1.compareTo(time2);
+            };
+
+            if (tiState == 2) {
                 cmp = cmp.reversed();
             }
             Collections.sort(classes, cmp);

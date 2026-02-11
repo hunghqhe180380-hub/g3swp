@@ -11,6 +11,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="clState" value="${param.txtClassName != null ? param.txtClassName : '0'}"/>
 <c:set var="teState" value="${param.txtTeacherName != null ? param.txtTeacherName : '0'}"/>
+<c:set var="tiState" value="${param.txtCreateAt != null ? param.txtCreateAt : '0'}"/>
 <!DOCTYPE html>
 <html>
     <head>
@@ -52,6 +53,7 @@
                     <form action="${ctx}/classroom/manage/class-list" method="get" id="frmSort" hidden>                        
                         <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>">                        
                         <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
+                        <input type="hidden" id="txtCreateAt" name="txtCreateAt" value="<c:out value="${param.txtCreateAt != null ? param.txtCreateAt : 0}"/>">                        
                         <input type="hidden" name="search" value="<c:out value="${search}"/>">
                         
                         <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
@@ -61,6 +63,7 @@
                         <input type="hidden" name="search" value="<c:out value="${search}"/>">
                         <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>"> 
                         <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
+                        <input type="hidden" id="txtCreateAt" name="txtCreateAt" value="<c:out value="${param.txtCreateAt != null ? param.txtCreateAt : 0}"/>">                        
                         <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">
 
                         <input type="checkbox" name="txtRole" value="Admin" ${roleList.contains('Admin') ? 'checked' : ''} onchange="this.form.submit()"> Admin
@@ -95,8 +98,17 @@
                                         </c:choose>
                                     </span>
                                 </th>
-                                <th>Students</th>
-                                <th>Created</th>                                
+                                <th>Students</th>                                
+                                <th onclick="sort('CreateAt')" style="cursor:pointer">
+                                    Created
+                                    <span id="iconCreateAt">
+                                        <c:choose>
+                                            <c:when test="${tiState == '1'}">▲</c:when>
+                                            <c:when test="${tiState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
                                 <th class="th-actions"></th>
                             </tr>
                         </thead>
@@ -153,6 +165,7 @@
                         </c:if>
                         <c:param name="txtClassName" value="${clState}"/>
                         <c:param name="txtTeacherName" value="${teState}"/>
+                        <c:param name="txtCreateAt" value="${tiState}"/>
                     </c:url>
 
                     <c:if test="${page.index!=0}">
@@ -203,7 +216,7 @@
     }
 
     function reset(x) {
-        ["ClassName","TeacherName"].forEach(f => {
+        ["ClassName","TeacherName","CreateAt"].forEach(f => {
             if (f !== x) {
                 document.getElementById("txt" + f).value = 0;
                 updateIcon(f, 0);
