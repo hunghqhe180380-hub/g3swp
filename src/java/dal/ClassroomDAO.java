@@ -25,7 +25,8 @@ public class ClassroomDAO extends DBContext {
         String sql = "select a.*,b.FullName as TeacherName,"
                 + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
                 + "from [Classrooms] as a\n"
-                + "join [Users] as b on a.TeacherId = b.Id";
+                + "join [Users] as b on a.TeacherId = b.Id\n"
+                + "where 1=1";
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ? OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
         }
@@ -73,6 +74,5 @@ public class ClassroomDAO extends DBContext {
             e.printStackTrace();
         }
     }
-    
 
 }

@@ -12,6 +12,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.*;
 
@@ -64,23 +68,50 @@ public class MaterialListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //int index = Integer.parseInt(request.getParameter("index"));
         String classId = request.getParameter("classId");
         String search = request.getParameter("search");
         Classroom cl = dao.getClassInfoByClassId(classId);
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
-        List<Material> materials;
-        if (search != null && !search.trim().isEmpty()) {
-            materials = dao.getMaterialByName(search, classId);
-        } else {
-            materials = dao.getMaterialByClassId(classId);
-            search = "";
-        }
-        request.setAttribute("classes", cl);
-        request.setAttribute("classId", classId);
+        List<Material> materials = dao.getMaterialByClassId(search, classId); 
+        sort(request, materials);
+        request.setAttribute("classes", cl);                      
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
         request.getRequestDispatcher("/View/material/material-list.jsp").forward(request, response);
+    }
+    
+    private void sort(HttpServletRequest request, List<Material> materials)
+            throws ServletException, IOException {        
+        int tlState = 0;
+        int tiState = 0;
+        try {            
+            tlState = Integer.parseInt(request.getParameter("txtTitle"));
+            tiState = Integer.parseInt(request.getParameter("txtCreated"));
+        } catch (Exception e) {
+        }
+        if (tlState != 0) {
+            Comparator<Material> cmp
+                    = Comparator.comparing(Material::getTitle, String.CASE_INSENSITIVE_ORDER);
+
+            if (tlState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(materials, cmp);
+        } else if (tiState != 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            Comparator<Material> cmp = (c1, c2) -> {
+                LocalDateTime time1 = LocalDateTime.parse(c1.getCreatedAt(), formatter);
+                LocalDateTime time2 = LocalDateTime.parse(c2.getCreatedAt(), formatter);
+                return time1.compareTo(time2);
+            };
+
+            if (tiState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(materials, cmp);
+        }
     }
 
     /**

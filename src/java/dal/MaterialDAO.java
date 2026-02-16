@@ -21,15 +21,24 @@ public class MaterialDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Material> getMaterialByClassId(String classId) {
+    public List<Material> getMaterialByClassId(String search, String classId) {
         String sql = "SELECT * FROM [Materials] WHERE ClassId=?";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND (LOWER(Title) LIKE ? OR LOWER(Provider) LIKE ?)";
+        }
         List<Material> list = new ArrayList<>();
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
+            int paramIndex = 2;
+            if (search != null && !search.trim().isEmpty()) {
+                String pattern = "%" + search.toLowerCase() + "%";
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);                
+            }
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                Material material = new Material();  
+                Material material = new Material();
                 material.setId(resultSet.getInt("Id"));
                 material.setTitle(resultSet.getString("Title"));
                 material.setProvider(resultSet.getString("Provider"));
@@ -45,7 +54,7 @@ public class MaterialDAO extends DBContext {
     }
 
     public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.Name,"
+        String sql = "SELECT a.* ,"
                 + "(SELECT COUNT(*) FROM [Materials] WHERE ClassId = a.Id) as TotalMaterial\n"
                 + "FROM [Classrooms] as a WHERE a.Id = ?";
         Classroom cl = new Classroom();
@@ -53,7 +62,8 @@ public class MaterialDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             resultSet = statement.executeQuery();
-            if (resultSet.next()) {                
+            if (resultSet.next()) {
+                cl.setId(resultSet.getInt("Id"));
                 cl.setName(resultSet.getString("Name"));
                 cl.setSum(resultSet.getInt("TotalMaterial"));
             }
@@ -65,32 +75,32 @@ public class MaterialDAO extends DBContext {
         return cl;
     }
 
-    public List<Material> getMaterialByName(String name, String classId) {
-        String sql = "SELECT Title,Provider,CreatedAt FROM [Materials] "
-                + "WHERE (LOWER(Title) LIKE ? OR LOWER(Provider) LIKE ?) and ClassId =?";
-        List<Material> list = new ArrayList<>();
-        try {
-            statement = connection.prepareStatement(sql);
-            String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";
-            statement.setObject(1, searchPattern);
-            statement.setObject(2, searchPattern);
-            statement.setObject(3, classId);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Material material = new Material();                
-                material.setId(resultSet.getInt("Id"));
-                material.setTitle(resultSet.getString("Title"));
-                material.setProvider(resultSet.getString("Provider"));
-                material.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-                list.add(material);
-            }
-            resultSet.close();
-            statement.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
+//    public List<Material> getMaterialByName(String name, String classId) {
+//        String sql = "SELECT Title,Provider,CreatedAt FROM [Materials] "
+//                + "WHERE (LOWER(Title) LIKE ? OR LOWER(Provider) LIKE ?) and ClassId =?";
+//        List<Material> list = new ArrayList<>();
+//        try {
+//            statement = connection.prepareStatement(sql);
+//            String searchPattern = "%" + (name == null ? "" : name.toLowerCase()) + "%";
+//            statement.setObject(1, searchPattern);
+//            statement.setObject(2, searchPattern);
+//            statement.setObject(3, classId);
+//            resultSet = statement.executeQuery();
+//            while (resultSet.next()) {
+//                Material material = new Material();
+//                material.setId(resultSet.getInt("Id"));
+//                material.setTitle(resultSet.getString("Title"));
+//                material.setProvider(resultSet.getString("Provider"));
+//                material.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+//                list.add(material);
+//            }
+//            resultSet.close();
+//            statement.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
 
     public void deleteMaterialById(String id, String classId) {
         String sql = "delete from [Materials] where Id =? and classId =?";

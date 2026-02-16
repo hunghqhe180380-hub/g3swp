@@ -9,6 +9,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<c:set var="tiState" value="${param.txtCreated != null ? param.txtCreated : '0'}"/>
+<c:set var="tlState" value="${param.txtTitle != null ? param.txtTitle : '0'}"/>
 
 <!DOCTYPE html>
 <html>
@@ -46,8 +48,8 @@
                     <form class="search" action="${ctx}/material/view/material-list" method="get">
                         <span class="search__icon" aria-hidden="true">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
-                                <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </span>
 
@@ -55,9 +57,16 @@
                                value="<c:out value='${search}'/>"
                                placeholder="Search by title, kind...">
 
-                        <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+                        <input type="hidden" name="classId" value="<c:out value='${classes.id}'/>">
 
                         <button class="search__btn" type="submit">Search</button>
+                    </form>
+
+                    <form action="${ctx}/material/view/material-list" method="get" id="frmSort" hidden>                                                
+                        <input type="hidden" id="txtTitle" name="txtTitle" value="<c:out value="${param.txtTitle != null ? param.txtTitle : 0}"/>">                        
+                        <input type="hidden" id="txtCreated" name="txtCreated" value="<c:out value="${param.txtCreated != null ? param.txtCreated : 0}"/>">                        
+                        <input type="hidden" name="classId" value="<c:out value='${classes.id}'/>">
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">                                             
                     </form>
 
                     <div class="showing">
@@ -73,9 +82,9 @@
                             <div class="empty">
                                 <div class="empty__icon" aria-hidden="true">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                        <path d="M6 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2Z"
-                                              stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                                        <path d="M6 18h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M6 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2Z"
+                                          stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                    <path d="M6 18h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
 
@@ -88,10 +97,28 @@
                             <!-- TABLE -->
                             <table class="table">
                                 <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Kind</th>
-                                        <th>Created</th>
+                                    <tr>                                        
+                                        <th onclick="sort('Title')" style="cursor:pointer">
+                                            Title
+                                            <span id="iconTitle">
+                                                <c:choose>
+                                                    <c:when test="${tlState == '1'}">▲</c:when>
+                                                    <c:when test="${tlState == '2'}">▼</c:when>
+                                                    <c:otherwise>⇅</c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </th>
+                                        <th>Kind</th>                                        
+                                        <th onclick="sort('Created')" style="cursor:pointer">
+                                            Created
+                                            <span id="iconCreated">
+                                                <c:choose>
+                                                    <c:when test="${tiState == '1'}">▲</c:when>
+                                                    <c:when test="${tiState == '2'}">▼</c:when>
+                                                    <c:otherwise>⇅</c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </th>
                                         <th class="th-actions"></th>
                                     </tr>
                                 </thead>
@@ -116,7 +143,7 @@
                                             <td class="actions">
                                                 <form action="${ctx}/material/manage/delete-material" method="post">
                                                     <input type="hidden" name="Id" value="<c:out value='${material.id}'/>">
-                                                    <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+                                                    <input type="hidden" name="classId" value="<c:out value='${classes.id}'/>">
                                                     <button class="btn-danger" type="submit">Delete</button>
                                                 </form>
                                             </td>
@@ -131,4 +158,55 @@
         </main>
     </body>
 </html>
+<style>
+    th:hover {
+        background-color: #f3f3f3;
+    }
+    th span {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+</style>
+<script>
+    function sort(x) {
+        reset(x);
 
+        let el = document.getElementById("txt" + x);
+        let state = parseInt(el.value);
+        if (isNaN(state))
+            state = 0;
+
+        let newState = (state + 1) % 3;
+        el.value = newState;
+
+        updateIcon(x, newState);        
+        document.getElementById("frmSort").submit();
+    }
+
+    function reset(x) {
+        ["Title", "Created"].forEach(f => {
+            if (f !== x) {
+                document.getElementById("txt" + f).value = 0;
+                updateIcon(f, 0);
+            }
+        });
+    }
+    function updateIcon(field, state) {
+        const icon = document.getElementById("icon" + field);
+        if (!icon)
+            return;
+        switch (state) {
+            case 1:
+                icon.textContent = "▲";
+                break;
+            case 2:
+                icon.textContent = "▼";
+                break;
+            default:
+                icon.textContent = "⇅";
+        }
+    }
+    function filter() {
+        document.getElementById("frmFilter").submit();
+    }
+</script>
