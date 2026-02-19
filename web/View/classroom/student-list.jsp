@@ -9,7 +9,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-
+<c:set var="fnState" value="${param.txtFullName != null ? param.txtFullName : '0'}"/>
+<c:set var="tiState" value="${param.txtJoined != null ? param.txtJoined : '0'}"/>
 <!DOCTYPE html>
 <html>
     <head>
@@ -58,6 +59,16 @@
                         <button class="search__btn" type="submit">Search</button>
                     </form>
 
+                    <form action="${ctx}/classroom/view/student-list" method="get" id="frmSort" hidden>                        
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                        
+                        <input type="hidden" id="txtJoined" name="txtJoined" value="<c:out value="${param.txtJoined != null ? param.txtJoined : '0'}"/>">                        
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+                        <!--  <c:forEach items="${roleList}" var="r">
+                            <input type="hidden" name="txtRole" value="${r}">
+                        </c:forEach>        -->                                     
+                    </form>
+
                     <div class="showing">
                         <c:set var="shown" value="${empty enrolls ? 0 : fn:length(enrolls)}"/>
                         Showing <strong><c:out value="${shown}"/></strong> of <c:out value="${classes.sum}"/>
@@ -68,11 +79,29 @@
                 <div class="card">
                     <table class="table">
                         <thead>
-                            <tr>
-                                <th>Name</th>
+                            <tr>                                
+                                <th onclick="sort('FullName')" style="cursor:pointer">
+                                    Name
+                                    <span id="iconFullName">
+                                        <c:choose>
+                                            <c:when test="${fnState == '1'}">▲</c:when>
+                                            <c:when test="${fnState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
                                 <th>User</th>
-                                <th>Email</th>
-                                <th>Joined</th>
+                                <th>Email</th>                                
+                                <th onclick="sort('Joined')" style="cursor:pointer">
+                                    Joined
+                                    <span id="iconJoined">
+                                        <c:choose>
+                                            <c:when test="${tiState == '1'}">▲</c:when>
+                                            <c:when test="${tiState == '2'}">▼</c:when>
+                                            <c:otherwise>⇅</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </th>
                                 <th class="th-actions">Status</th>
                                 <th class="th-actions"></th>
                             </tr>
@@ -170,3 +199,55 @@
         </main>
     </body>
 </html>
+<style>
+    th:hover {
+        background-color: #f3f3f3;
+    }
+    th span {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+</style>
+<script>
+    function sort(x) {
+        reset(x);
+
+        let el = document.getElementById("txt" + x);
+        let state = parseInt(el.value);
+        if (isNaN(state))
+            state = 0;
+
+        let newState = (state + 1) % 3;
+        el.value = newState;
+
+        updateIcon(x, newState);
+        document.getElementById("frmSort").submit();
+    }
+
+    function reset(x) {
+        ["FullName", "Joined"].forEach(f => {
+            if (f !== x) {
+                document.getElementById("txt" + f).value = 0;
+                updateIcon(f, 0);
+            }
+        });
+    }
+    function updateIcon(field, state) {
+        const icon = document.getElementById("icon" + field);
+        if (!icon)
+            return;
+        switch (state) {
+            case 1:
+                icon.textContent = "▲";
+                break;
+            case 2:
+                icon.textContent = "▼";
+                break;
+            default:
+                icon.textContent = "⇅";
+        }
+    }
+    function filter() {
+        document.getElementById("frmFilter").submit();
+    }
+</script>

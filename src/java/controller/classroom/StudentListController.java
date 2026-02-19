@@ -12,6 +12,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.*;
 
@@ -69,19 +73,45 @@ public class StudentListController extends HttpServlet {
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
         Classroom cl = enrollDAO.getClassInfoByClassId(classId);
-        List<Enrollment> enrolls;
-        if (search != null && !search.trim().isEmpty()) {
-            enrolls = enrollDAO.getUserInforByName(search, classId);
-        } else {
-            enrolls = enrollDAO.getEnrollmentByClassId(classId);
-            search = "";
-        }
-
+        List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId); 
+        sort(request, enrolls);
         request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
         request.setAttribute("enrolls", enrolls);
         request.getRequestDispatcher("/View/classroom/student-list.jsp").forward(request, response);
+    }
+
+    private void sort(HttpServletRequest request, List<Enrollment> enrolls)
+            throws ServletException, IOException {
+        int fnState = 0;
+        int tiState = 0;
+        try {
+            fnState = Integer.parseInt(request.getParameter("txtFullName"));
+            tiState = Integer.parseInt(request.getParameter("txtJoined"));
+        } catch (Exception e) {
+        }
+        if (fnState != 0) {
+            Comparator<Enrollment> cmp
+                    = Comparator.comparing(e -> e.getUser().getFullName(), String.CASE_INSENSITIVE_ORDER);
+
+            if (fnState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(enrolls, cmp);
+        } else if (tiState != 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            Comparator<Enrollment> cmp = (c1, c2) -> {
+                LocalDateTime time1 = LocalDateTime.parse(c1.getJoinedAt(), formatter);
+                LocalDateTime time2 = LocalDateTime.parse(c2.getJoinedAt(), formatter);
+                return time1.compareTo(time2);
+            };
+
+            if (tiState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(enrolls, cmp);
+        }
     }
 
     /**
