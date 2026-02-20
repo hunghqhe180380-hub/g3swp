@@ -21,12 +21,23 @@ public class EnrollmentDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Enrollment> getEnrollmentByClassId(String search, String classId) {
+    public List<Enrollment> getEnrollmentByClassId(String search, String classId, String[] status) {
         String sql = "SELECT a.*,b.* FROM [Enrollments] as a\n"
-                + "JOIN [Users] as b ON a.UserId = b.Id\n"
+                + "JOIN [Users] as b ON a.UserId = b.Id\n"                
                 + "WHERE a.ClassId =?";
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?)";
+        }
+        boolean hasStatus = (status != null && status.length > 0);
+        if (hasStatus) {
+            sql += (" AND a.Status IN (");
+            for (int i = 0; i < status.length; i++) {
+                sql += ("?");
+                if (i < status.length - 1) {
+                    sql += (",");
+                }
+            }
+            sql += (") ");
         }
         List<Enrollment> list = new ArrayList<>();
         try {
@@ -38,6 +49,11 @@ public class EnrollmentDAO extends DBContext {
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
+            }
+            if (hasStatus) {
+                for (String s : status) {
+                    statement.setObject(paramIndex++, s);
+                }
             }
             resultSet = statement.executeQuery();
             while (resultSet.next()) {

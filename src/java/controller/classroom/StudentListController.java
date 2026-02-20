@@ -73,12 +73,16 @@ public class StudentListController extends HttpServlet {
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
         Classroom cl = enrollDAO.getClassInfoByClassId(classId);
-        List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId); 
+        String[] status = request.getParameterValues("txtStatus");
+        List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId, status);
         sort(request, enrolls);
         request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
         request.setAttribute("enrolls", enrolls);
+        if (status != null) {
+            request.setAttribute("statusList", java.util.Arrays.asList(status));
+        }
         request.getRequestDispatcher("/View/classroom/student-list.jsp").forward(request, response);
     }
 

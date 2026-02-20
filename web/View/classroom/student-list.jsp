@@ -64,9 +64,17 @@
                         <input type="hidden" id="txtJoined" name="txtJoined" value="<c:out value="${param.txtJoined != null ? param.txtJoined : '0'}"/>">                        
                         <input type="hidden" name="search" value="<c:out value="${search}"/>">
                         <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
-                        <!--  <c:forEach items="${roleList}" var="r">
-                            <input type="hidden" name="txtRole" value="${r}">
-                        </c:forEach>        -->                                     
+                        <c:forEach items="${statusList}" var="s">
+                            <input type="hidden" name="txtStatus" value="${s}">
+                        </c:forEach>                                   
+                    </form>
+
+                    <form action="${ctx}/classroom/view/student-list" method="get" id="frmFilter">
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                                                
+                        <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+                        <input type="checkbox" name="txtStatus" value="0" ${statusList.contains('0') ? 'checked' : ''} onchange="this.form.submit()"> Active
+                        <input type="checkbox" name="txtStatus" value="1" ${statusList.contains('1') ? 'checked' : ''} onchange="this.form.submit()"> Deactive                       
                     </form>
 
                     <div class="showing">
