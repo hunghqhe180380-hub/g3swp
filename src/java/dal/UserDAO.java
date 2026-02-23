@@ -617,30 +617,30 @@ public class UserDAO extends DBContext {
         return false;
     }
     
-    public void updateProfile(String userId, String fullName, String phoneNumber, String avatarUrl) {
-        String sql;
+    public int updateProfile(String userId, String fullName, String phoneNumber, String avatarUrl) {
         boolean updateAvatar = (avatarUrl != null && !avatarUrl.isBlank());
 
-        if (updateAvatar) {
-            sql = "UPDATE [dbo].[Users] SET [FullName] = ?, [PhoneNumber] = ?, [AvatarUrl] = ? WHERE [Id] = ?";
-        } else {
-            sql = "UPDATE [dbo].[Users] SET [FullName] = ?, [PhoneNumber] = ? WHERE [Id] = ?";
-        }
+        String sql = updateAvatar
+                ? "UPDATE [dbo].[Users] SET [FullName]=?, [PhoneNumber]=?, [AvatarUrl]=? WHERE [Id]=?"
+                : "UPDATE [dbo].[Users] SET [FullName]=?, [PhoneNumber]=? WHERE [Id]=?";
+
+        fullName = (fullName == null) ? "" : fullName.trim();
+        phoneNumber = (phoneNumber == null) ? "" : phoneNumber.trim();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, fullName);
+            ps.setString(2, phoneNumber);
+
             if (updateAvatar) {
-                ps.setString(1, fullName);
-                ps.setString(2, phoneNumber);
                 ps.setString(3, avatarUrl);
                 ps.setString(4, userId);
             } else {
-                ps.setString(1, fullName);
-                ps.setString(2, phoneNumber);
                 ps.setString(3, userId);
             }
-            ps.executeUpdate();
+
+            return ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("updateProfile failed: " + e.getMessage(), e);
         }
     }
 }

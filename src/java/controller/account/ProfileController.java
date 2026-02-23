@@ -17,14 +17,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import model.User;
 
-/**
- *
- * @author hung2
- */
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,
-        maxFileSize = 5 * 1024 * 1024,
-        maxRequestSize = 6 * 1024 * 1024
+        fileSizeThreshold = 1024 * 1024,      // 1MB
+        maxFileSize = 5 * 1024 * 1024,        // 5MB
+        maxRequestSize = 6 * 1024 * 1024      // 6MB
 )
 public class ProfileController extends HttpServlet {
 
@@ -69,7 +65,9 @@ public class ProfileController extends HttpServlet {
 
         request.setAttribute("user", user);
         request.setAttribute("tab", tab);
-        request.setAttribute("showHome", true);
+
+        // Profile page: tắt CTA teacher
+        request.setAttribute("hideTeacherCTA", true);
 
         request.getRequestDispatcher(viewByRole(userLogin.getRole())).forward(request, response);
     }
@@ -97,31 +95,42 @@ public class ProfileController extends HttpServlet {
 
         try {
             if ("profile".equals(tab)) {
+                request.setCharacterEncoding("UTF-8");
+
                 String fullName = request.getParameter("fullName");
                 String phoneNumber = request.getParameter("phoneNumber");
 
-                // avatar
-                String savedAvatarUrl = null;
-                Part avatarPart = request.getPart("avatar"); // name="avatar" trong JSP
+                
+                User current = userDAO.getUserInforByID(userLogin.getUserID());
+                String savedAvatarUrl = (current != null) ? current.getUrlImgProfile() : null;
 
+                // ==== avatar upload ====
+                Part avatarPart = request.getPart("avatar"); // name="avatar" trong JSP
                 if (avatarPart != null && avatarPart.getSize() > 0) {
                     String submitted = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
+
                     String ext = "";
                     int dot = submitted.lastIndexOf('.');
                     if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
 
                     boolean ok = ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".webp");
-                    if (ok) {
-                        String uploadDir = request.getServletContext().getRealPath("/uploads/avatars/");
-                        File dir = new File(uploadDir);
-                        if (!dir.exists()) dir.mkdirs();
-
-                        String newName = "avt_" + userLogin.getUserID() + "_" + System.currentTimeMillis() + ext;
-                        avatarPart.write(uploadDir + File.separator + newName);
-
-                        // AvatarUrl trong DB nên lưu đường dẫn web-relative
-                        savedAvatarUrl = "/uploads/avatars/" + newName;
+                    if (!ok) {
+                        response.sendRedirect(request.getContextPath() + "/account/profile?tab=profile");
+                        return;
                     }
+
+                    // Lưu vào /uploads/avatars
+                    String uploadDir = getServletContext().getRealPath("") + File.separator
+                            + "uploads" + File.separator + "avatars";
+                    File dir = new File(uploadDir);
+                    if (!dir.exists()) dir.mkdirs();
+
+                    String newName = "avt_" + userLogin.getUserID() + "_" + System.currentTimeMillis() + ext;
+                    String fullPath = uploadDir + File.separator + newName;
+
+                    avatarPart.write(fullPath);
+
+                    savedAvatarUrl = "uploads/avatars/" + newName;
                 }
 
                 // Update DB

@@ -1,39 +1,49 @@
 <%-- 
     Document   : header
-    Created on : Feb 18, 2026, 3:41:18 AM
-    Author     : tuana
-    Common Header (shared for Student / Teacher dashboards)
+    Created on : Feb 18, 2026
+    Common Header (shared)
     Usage:
       <jsp:include page="/View/common/header.jsp" />
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-<%-- ===== Resolve avatar path safely (không nổ EL nếu field không tồn tại) ===== --%>
-<c:set var="avatarPath" value="" />
+<%-- ===== Resolve avatar path safely ===== --%>
+<c:set var="rawAvatar" value="" />
 
+<%-- Prefer session user avatar --%>
 <c:catch var="ignore1">
-  <c:if test="${not empty sessionScope.user and not empty sessionScope.user.urlImgProfile}">
-    <c:set var="avatarPath" value="${sessionScope.user.urlImgProfile}" />
-  </c:if>
+    <c:if test="${not empty sessionScope.user and not empty sessionScope.user.urlImgProfile}">
+        <c:set var="rawAvatar" value="${sessionScope.user.urlImgProfile}" />
+    </c:if>
 </c:catch>
 
-<c:if test="${empty avatarPath}">
-  <c:catch var="ignore2">
-    <c:if test="${not empty sessionScope.user and not empty sessionScope.user.avatarUrl}">
-      <c:set var="avatarPath" value="${sessionScope.user.avatarUrl}" />
-    </c:if>
-  </c:catch>
+<%-- Fallback --%>
+<c:if test="${empty rawAvatar}">
+    <c:catch var="ignore2">
+        <c:if test="${not empty requestScope.user and not empty requestScope.user.urlImgProfile}">
+            <c:set var="rawAvatar" value="${requestScope.user.urlImgProfile}" />
+        </c:if>
+    </c:catch>
 </c:if>
 
-<c:if test="${empty avatarPath}">
-  <c:catch var="ignore3">
-    <c:if test="${not empty sessionScope.user and not empty sessionScope.user.image}">
-      <c:set var="avatarPath" value="${sessionScope.user.image}" />
-    </c:if>
-  </c:catch>
+<%-- Build final avatar src --%>
+<c:set var="avatarSrc" value="${ctx}/uploads/avatars/avatarDefault.png" />
+<c:if test="${not empty rawAvatar}">
+    <c:choose>
+        <c:when test="${fn:startsWith(rawAvatar,'http://') or fn:startsWith(rawAvatar,'https://')}">
+            <c:set var="avatarSrc" value="${rawAvatar}" />
+        </c:when>
+        <c:when test="${fn:startsWith(rawAvatar,'/')}">
+            <c:set var="avatarSrc" value="${ctx}${rawAvatar}" />
+        </c:when>
+        <c:otherwise>
+            <c:set var="avatarSrc" value="${ctx}/${rawAvatar}" />
+        </c:otherwise>
+    </c:choose>
 </c:if>
 
 <style>
@@ -88,10 +98,8 @@
   width: 34px;
   height: 34px;
   border-radius: 999px;
-  display:grid;
-  place-items:center;
+  display:block;
   background: #eef2ff;
-  color: #334155;
   border: 1px solid #e2e8f0;
   object-fit: cover;
 }
@@ -249,17 +257,10 @@
         <div class="user-menu" tabindex="0">
           <div class="user-trigger" aria-haspopup="true" aria-expanded="false">
 
-            <c:choose>
-              <c:when test="${not empty avatarPath}">
-                <img class="avatar" src="${ctx}/${avatarPath}" alt="Avatar" />
-              </c:when>
-              <c:otherwise>
-                <img class="avatar" src="${ctx}/uploads/avatars/avatarDefault.png" alt="Avatar" />
-              </c:otherwise>
-            </c:choose>
+            <img class="avatar" src="${avatarSrc}" alt="Avatar" />
 
             <span class="user-name">
-              <c:out value="${empty sessionScope.user.userName ? sessionScope.user.fullName : sessionScope.user.userName}" />
+              <c:out value="${not empty sessionScope.user.fullName ? sessionScope.user.fullName : sessionScope.user.userName}" />
             </span>
             <span class="caret" aria-hidden="true">▾</span>
           </div>

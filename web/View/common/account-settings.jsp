@@ -178,9 +178,9 @@
           <div class="preview-title">Preview</div>
 
           <img id="previewAvatar" class="preview-avatar"
-               src="${ctx}/uploads/avatars/avatarDefault.png"
+               src="${ctx}/${empty requestScope.user.urlImgProfile ? 'uploads/avatars/avatarDefault.png' : requestScope.user.urlImgProfile}"
                alt="avatar"/>
-
+          
           <div class="preview-line"></div>
 
           <div class="preview-row">
