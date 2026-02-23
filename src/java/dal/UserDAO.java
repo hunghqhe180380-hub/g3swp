@@ -616,6 +616,33 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
+    
+    public void updateProfile(String userId, String fullName, String phoneNumber, String avatarUrl) {
+        String sql;
+        boolean updateAvatar = (avatarUrl != null && !avatarUrl.isBlank());
+
+        if (updateAvatar) {
+            sql = "UPDATE [dbo].[Users] SET [FullName] = ?, [PhoneNumber] = ?, [AvatarUrl] = ? WHERE [Id] = ?";
+        } else {
+            sql = "UPDATE [dbo].[Users] SET [FullName] = ?, [PhoneNumber] = ? WHERE [Id] = ?";
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (updateAvatar) {
+                ps.setString(1, fullName);
+                ps.setString(2, phoneNumber);
+                ps.setString(3, avatarUrl);
+                ps.setString(4, userId);
+            } else {
+                ps.setString(1, fullName);
+                ps.setString(2, phoneNumber);
+                ps.setString(3, userId);
+            }
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 //sql query string to get some importan user's information

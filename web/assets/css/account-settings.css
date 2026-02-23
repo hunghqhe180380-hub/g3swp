@@ -1,0 +1,303 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2026, 4:20:29 AM
+    Author     : tuana
+*/
+
+:root{
+  --bg: #f7f9fc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --blue: #1677ff;
+}
+
+.acc-page{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.acc-page *{ box-sizing: border-box; }
+.acc-page html, .acc-page body{ height:100%; }
+
+/* ✅ không cho CSS page đụng vào header */
+.acc-page header .logo-img{
+  height: 34px !important;
+  width: auto !important;
+  display:block;
+}
+
+/* ===== Layout ===== */
+.acc-page .acc-main{ padding: 34px 0 70px; }
+.acc-page .acc-container{
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+.acc-page .acc-title{
+  font-size: 44px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  margin: 0 0 16px;
+}
+
+.acc-page .acc-divider{
+  height: 1px;
+  background: #cfd8ea;
+  margin-bottom: 26px;
+}
+
+.acc-page .acc-grid{
+  display: grid;
+  grid-template-columns: 280px 1fr 380px;
+  gap: 26px;
+  align-items: start;
+}
+
+/* ===== Sidebar ===== */
+.acc-page .acc-side{ padding-top: 8px; }
+.acc-page .acc-menu{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+
+.acc-page .acc-tab{
+  text-align:left;
+  padding: 16px 18px;
+  border-radius: 10px;
+  font-weight: 900;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #1d4ed8;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.acc-page .acc-tab:hover{
+  background: rgba(22,119,255,.08);
+  border-color: rgba(22,119,255,.18);
+}
+
+.acc-page .acc-tab.active{
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 14px 26px rgba(22,119,255,.25);
+}
+
+/* ===== Cards ===== */
+.acc-page .acc-card{
+  background: var(--card);
+  border: 1px solid #e6edfb;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(2,6,23,.05);
+}
+
+.acc-page .acc-card.pad{ padding: 22px; }
+
+/* ===== Tabs ===== */
+.acc-page .tab-panel{ display:none; }
+.acc-page .tab-panel.is-active{ display:block; }
+
+.acc-page .acc-subtitle{
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  margin: 6px 0 18px;
+}
+
+/* ===== Form ===== */
+.acc-page .acc-form{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.acc-page .acc-form .full{ grid-column: 1 / -1; }
+
+.acc-page .acc-label{
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.acc-page .acc-input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #d7e0f3;
+  background: #fff;
+  outline: none;
+  font-size: 15px;
+  transition: .15s ease;
+}
+
+.acc-page .acc-input:focus{
+  border-color: rgba(22,119,255,.6);
+  box-shadow: 0 0 0 4px rgba(22,119,255,.12);
+}
+
+.acc-page .acc-input.readonly{
+  background: #eef2f7;
+  color: #334155;
+}
+
+.acc-page .acc-help{
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.acc-page .acc-actions{
+  margin-top: 14px;
+  display:flex;
+  gap: 12px;
+  align-items:center;
+}
+
+.acc-page .acc-btn{
+  border:none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.acc-page .acc-btn.primary{
+  color:#fff;
+  background: linear-gradient(90deg,#4f46e5,#06b6d4);
+  box-shadow: 0 14px 24px rgba(79,70,229,.20);
+}
+
+.acc-page .acc-btn.primary:hover{ transform: translateY(-1px); }
+
+.acc-page .acc-btn.ghost{
+  background: #f3f4f6;
+  color: #0f172a;
+}
+
+/* ===== Email/Password inner grid ===== */
+.acc-page .two-col{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap: 18px;
+  align-items:start;
+}
+
+.acc-page .tip-card{
+  background: #f3f7ff;
+  border: 1px solid #e3eeff;
+}
+
+.acc-page .tip-title{
+  font-weight: 900;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.acc-page .tip-list{
+  margin: 0 0 0 18px;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.acc-page .chip{
+  display:inline-flex;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+.acc-page .chip.ok{
+  background: #eafaf1;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* ===== Password eye ===== */
+.acc-page .pw-wrap{ position: relative; }
+.acc-page .pw-eye{
+  position:absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+}
+
+.acc-page .strength-bar{
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  margin: 10px 0 6px;
+}
+
+/* ===== Preview ===== */
+.acc-page .preview-title{
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.acc-page .preview-avatar{
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  display:block;
+  margin: 6px auto 16px;
+}
+
+.acc-page .preview-line{
+  height: 1px;
+  background: #d7dbe3;
+  opacity: .9;
+  margin: 14px 0;
+}
+
+.acc-page .preview-row{
+  display:flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e5e7eb;
+  gap: 10px;
+}
+
+.acc-page .preview-row:last-child{ border-bottom: none; }
+
+.acc-page .preview-k{
+  color: #64748b;
+  font-weight: 700;
+}
+
+.acc-page .preview-v{
+  font-weight: 900;
+  text-align: right;
+}
+
+.acc-page .preview-v.pink{ color:#ff4da6; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px){
+  .acc-page .acc-grid{ grid-template-columns: 260px 1fr; }
+  .acc-page .preview-col{ grid-column: 1 / -1; }
+  .acc-page .two-col{ grid-template-columns: 1fr; }
+}
+@media (max-width: 720px){
+  .acc-page .acc-grid{ grid-template-columns: 1fr; }
+  .acc-page .acc-form{ grid-template-columns: 1fr; }
+}
