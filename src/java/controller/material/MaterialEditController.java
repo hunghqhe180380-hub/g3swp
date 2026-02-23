@@ -17,7 +17,7 @@ import java.util.UUID;
 import model.Classroom;
 import model.Material;
 import model.User;
-import util.MaterialValidator;
+import validation.MaterialValidator;
 
 /**
  * Handles Edit material.
@@ -60,7 +60,7 @@ public class MaterialEditController extends HttpServlet {
         request.setAttribute("material",  m);
         request.setAttribute("classId",   m.getClassId());
         request.setAttribute("className", cls.getName());
-        request.getRequestDispatcher("/view/material/edit.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/material/edit.jsp").forward(request, response);
     }
 
     // ── POST: process edit ────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ public class MaterialEditController extends HttpServlet {
             request.setAttribute("classId",   m.getClassId());
             request.setAttribute("className", cls.getName());
             request.setAttribute("errors",    v.getAllErrors());
-            request.getRequestDispatcher("/view/material/edit.jsp").forward(request, response);
+            request.getRequestDispatcher("/View/material/edit.jsp").forward(request, response);
             return;
         }
 
@@ -218,7 +218,7 @@ public class MaterialEditController extends HttpServlet {
 
     private boolean isOwner(Classroom cls, User user) {
         return user != null && user.getUserID() != null
-                && (user.getUserID().equals(cls.getTeacherId()) || user.getRole().equalsIgnoreCase("Admin"));
+                && user.getUserID().equals(cls.getTeacherId());
     }
 
     private int parseId(String s) {
