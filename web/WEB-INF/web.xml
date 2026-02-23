@@ -87,6 +87,14 @@
         <servlet-class>controller.material.DeleteMaterialController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>MaterialUploadController</servlet-name>
+        <servlet-class>controller.material.MaterialUploadController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MaterialEditController</servlet-name>
+        <servlet-class>controller.material.MaterialEditController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>SoftDeleteUserController</servlet-name>
         <servlet-class>controller.admin.SoftDeleteUserController</servlet-class>
     </servlet>
@@ -173,6 +181,14 @@
     <servlet-mapping>
         <servlet-name>DeleteMaterialController</servlet-name>
         <url-pattern>/material/manage/delete-material</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MaterialUploadController</servlet-name>
+        <url-pattern>/material/manage/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MaterialEditController</servlet-name>
+        <url-pattern>/material/manage/edit</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SoftDeleteUserController</servlet-name>
