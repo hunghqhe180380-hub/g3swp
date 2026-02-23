@@ -74,7 +74,7 @@ public class ClassListController extends HttpServlet {
         paging(request, classes);
         request.setAttribute("search", search);
         request.setAttribute("classes", classes);
-        request.getRequestDispatcher("/View/classroom/manage-classroom.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/classroom/list-admin.jsp").forward(request, response);
     }
 
     /**

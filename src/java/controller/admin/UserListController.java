@@ -76,7 +76,7 @@ public class UserListController extends HttpServlet {
             request.setAttribute("roleList", java.util.Arrays.asList(roles));
         }
         request.setAttribute("users", users);
-        request.getRequestDispatcher("/View/Admin/manage-account.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/Admin/list-account.jsp").forward(request, response);
     }
 
     /**

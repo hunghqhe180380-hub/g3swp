@@ -83,7 +83,7 @@ public class StudentListController extends HttpServlet {
         if (status != null) {
             request.setAttribute("statusList", java.util.Arrays.asList(status));
         }
-        request.getRequestDispatcher("/View/classroom/student-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/classroom/student-admin.jsp").forward(request, response);
     }
 
     private void sort(HttpServletRequest request, List<Enrollment> enrolls)
