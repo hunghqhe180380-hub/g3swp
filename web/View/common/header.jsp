@@ -271,7 +271,7 @@
             <div class="user-dropdown-title">
               <c:out value="${empty sessionScope.user.userName ? sessionScope.user.fullName : sessionScope.user.userName}" />
             </div>
-            <a class="user-dropdown-item" href="${ctx}/profile">Profile</a>
+            <a class="user-dropdown-item" href="${ctx}/account/profile">Profile</a>
             <a class="user-dropdown-item" href="${ctx}/logout">Log out</a>
           </div>
         </div>

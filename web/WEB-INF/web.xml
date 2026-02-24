@@ -205,8 +205,4 @@
         <param-name>nrpp</param-name>
         <param-value>5</param-value>
     </context-param>
-    <servlet-mapping>
-    <servlet-name>ProfileController</servlet-name>
-    <url-pattern>/profile</url-pattern>
-    </servlet-mapping>
 </web-app>

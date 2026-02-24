@@ -430,7 +430,7 @@ public class UserDAO extends DBContext {
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
-            }            
+            }
             if (hasRoles) {
                 for (String r : roles) {
                     statement.setObject(paramIndex++, r);
@@ -616,7 +616,7 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-    
+
     public int updateProfile(String userId, String fullName, String phoneNumber, String avatarUrl) {
         boolean updateAvatar = (avatarUrl != null && !avatarUrl.isBlank());
 
@@ -643,8 +643,26 @@ public class UserDAO extends DBContext {
             throw new RuntimeException("updateProfile failed: " + e.getMessage(), e);
         }
     }
-}
 
+    //get url image path from fb
+    public String getAvatarUrlByUserID(String userID) {
+        try {
+            String sql = "SELECT [AvatarUrl]\n"
+                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "\n"
+                    + "  where Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userID);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("AvatarUrl");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"
 //                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
