@@ -648,7 +648,7 @@ public class UserDAO extends DBContext {
     public String getAvatarUrlByUserID(String userID) {
         try {
             String sql = "SELECT [AvatarUrl]\n"
-                    + "  FROM [POETWebDB].[dbo].[Users]\n"
+                    + "  FROM [dbo].[Users]\n"
                     + "\n"
                     + "  where Id = ?";
             statement = connection.prepareStatement(sql);
