@@ -62,4 +62,10 @@ public class Message {
 
     //log in 
     public static final String MSG200 = "Incorrect username/email or password.";
+    
+    //msg create new class room
+    public static final String MSG301 = "Class name is required.";
+    public static final String MSG302 = "Subject is required.";
+    public static final String MSG303 = "Student limit is required.";
+    public static final String MSG304 = "Student limit must be > 0 and <= 100.";
 }

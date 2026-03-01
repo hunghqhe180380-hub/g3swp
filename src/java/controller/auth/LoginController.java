@@ -117,12 +117,13 @@ public class LoginController extends HttpServlet {
             //email is confirmed to login
             if (userLogin.getEmailConfirm() == 1) {
                 //login success => save user's session
+                //get avatar url
                 userLogin.setUrlImgProfile(userDAO.getAvatarUrlByUserID(userLogin.getUserID()));
                 System.out.println("getavt: " + userDAO.getAvatarUrlByUserID(userLogin.getUserID()));
                 System.out.println("userLogin.setUrlImgProfile: " + userLogin.getUrlImgProfile());
-                session.setAttribute("user", userLogin);
+               session.setAttribute("user", userLogin);
                 //route user by this role
-                request.getRequestDispatcher("View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("route").forward(request, response);
                 return;
             } else {
                 String email = "";

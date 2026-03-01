@@ -41,53 +41,53 @@
                     <div class="stat">
                         <div class="stat-icon" aria-hidden="true">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <path d="M4 7h16v12H4V7Z" stroke="currentColor" stroke-width="2"/>
-                                <path d="M7 7V5h10v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M4 7h16v12H4V7Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 7V5h10v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
                         <div>
                             <div class="stat-label">Joined Classes</div>
-                            <div class="stat-value">${empty requestScope.joinedClasses ? 3 : requestScope.joinedClasses}</div>
+                            <div class="stat-value">${sessionScope.classList.size()}</div>
                         </div>
                     </div>
 
                     <div class="stat">
                         <div class="stat-icon" aria-hidden="true">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <path d="M7 4h10v16H7V4Z" stroke="currentColor" stroke-width="2"/>
-                                <path d="M9 8h6M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M9 16h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M7 4h10v16H7V4Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M9 8h6M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 16h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
                         <div>
                             <div class="stat-label">Assignments Due</div>
-                            <div class="stat-value">${empty requestScope.assignmentsDue ? 0 : requestScope.assignmentsDue}</div>
+                            <div class="stat-value">${empty requestScope.assignmentsDue ? "Error" : requestScope.assignmentsDue}</div>
                         </div>
                     </div>
 
                     <div class="stat">
                         <div class="stat-icon" aria-hidden="true">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="2"/>
-                                <path d="M9 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M9 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M9 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
                         <div>
                             <div class="stat-label">Materials</div>
-                            <div class="stat-value">${empty requestScope.materials ? 9 : requestScope.materials}</div>
+                            <div class="stat-value">${empty session.materials ? "Error" : requestScope.materials}</div>
                         </div>
                     </div>
 
                     <div class="stat">
                         <div class="stat-icon" aria-hidden="true">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <path d="M4 12h7l2-4 3 8 2-4h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M4 12h7l2-4 3 8 2-4h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div>
                             <div class="stat-label">Classes Active This Week</div>
-                            <div class="stat-value">${empty requestScope.activeThisWeek ? 0 : requestScope.activeThisWeek}</div>
+                            <div class="stat-value">${empty session.activeThisWeek ? "Error" : requestScope.activeThisWeek}</div>
                         </div>
                     </div>
                 </section>
@@ -99,8 +99,8 @@
                         <div class="class-tools">
                             <div class="searchbox">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
+                                <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                 </svg>
                                 <input type="text" placeholder="Search classes..." />
                             </div>
@@ -109,41 +109,27 @@
                         </div>
                     </div>
 
-                    <div class="classes">
-                        <!-- Demo cards -->
-                        <a class="class-card" href="#">
-                            <div class="class-banner"></div>
-                            <div class="class-body">
-                                <h3 class="class-title">Lớp D1</h3>
-                                <div class="class-meta">
-                                    Subject : Toán Học<br>
-                                    19 students enrolled
-                                </div>
-                            </div>
-                        </a>
-
-                        <a class="class-card" href="#">
-                            <div class="class-banner"></div>
-                            <div class="class-body">
-                                <h3 class="class-title">Lớp D1</h3>
-                                <div class="class-meta">
-                                    Subject : Tiếng Anh, Ngữ Văn<br>
-                                    23 students enrolled
-                                </div>
-                            </div>
-                        </a>
-
-                        <a class="class-card" href="#">
-                            <div class="class-banner orange"></div>
-                            <div class="class-body">
-                                <h3 class="class-title">Lớp A1</h3>
-                                <div class="class-meta">
-                                    Subject : Tiếng Anh<br>
-                                    15 students enrolled
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+                    <!-- Class List -->
+                    <c:if test="${not empty sessionScope.classList}">
+                        <c:forEach items="${sessionScope.classList}" var="cls">
+                            <div class="classes">
+                                <!-- Demo cards -->
+                                <a class="class-card" href="#">
+                                    <div class="class-banner"></div>
+                                    <div class="class-body">
+                                        <h3 class="class-title">${cls.name}</h3>
+                                        <div class="class-meta">
+                                            Subject : ${cls.subject}<br>
+                                            Student : ${cls.sum}/${cls.maxStudent}
+                                        </div>
+                                    </div>
+                                </a>
+                            </c:forEach>
+                        </div>
+                    </c:if>
+                    <c:if test="${empty sessionScope.classList}">
+                        <h1>Have not joined any class yet!</h1>
+                    </c:if>
                 </section>
 
             </div>
