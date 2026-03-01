@@ -25,7 +25,7 @@
 
 <body class="acc-page">
   <c:set var="hideTeacherCTA" value="true" scope="request"/>
-  <jsp:include page="/View/common/header.jsp" />
+  <jsp:include page="/view/common/header.jsp" />
 
   <main class="acc-main">
     <div class="acc-container">

@@ -69,12 +69,12 @@ public class ClassListController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String search = request.getParameter("search");
-        List<Classroom> classes = dao.getAllClassroom(search);
+        List<Classroom> classes = dao.getAllClassBySearch(search);
         sort(request, classes);
         paging(request, classes);
         request.setAttribute("search", search);
         request.setAttribute("classes", classes);
-        request.getRequestDispatcher("/View/classroom/list-admin.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/classroom/list-admin.jsp").forward(request, response);
     }
 
     /**

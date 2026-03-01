@@ -21,7 +21,7 @@ public class ClassroomDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Classroom> getAllClassroom(String search) {
+    public List<Classroom> getAllClassBySearch(String search) {
         String sql = "select a.*,b.FullName as TeacherName,"
                 + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
                 + "from [Classrooms] as a\n"
@@ -61,6 +61,61 @@ public class ClassroomDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }    
+
+    public List<Classroom> getClassInfoByEnrollment() {
+        List<Classroom> list = new ArrayList<>();
+        return list;
+    }
+
+    public boolean updateClassroom(Classroom classes) {
+        String sql = "update [Classrooms] set\n"
+                + "Name = ?, Subject = ?, MaxStudents = ?\n"
+                + "where Id = ?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classes.getName());
+            statement.setObject(2, classes.getSubject());
+            statement.setObject(3, classes.getMaxStudent());
+            statement.setObject(4, classes.getId());
+            int rows = statement.executeUpdate();
+            statement.close();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Classroom getClassInfoByClassId(String classId) {
+        String sql = "SELECT a.*,b.FullName,"
+                + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
+                + "FROM [Classrooms] as a\n"
+                + "JOIN [Users] as b ON a.TeacherId = b.Id\n"
+                + "WHERE a.Id = ?";
+
+        Classroom cl = new Classroom();
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                cl.setId(resultSet.getInt("Id"));
+                cl.setName(resultSet.getString("Name"));
+                cl.setClassCode(resultSet.getString("ClassCode"));
+                cl.setSubject(resultSet.getString("Subject"));
+                cl.setTeacherId(resultSet.getString("TeacherId"));
+                cl.setTeacherName(resultSet.getString("FullName"));
+                cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                cl.setMaxStudent(resultSet.getInt("MaxStudents"));
+                cl.setSum(resultSet.getInt("TotalStudent"));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cl;
     }
 
     public void deleteClassroom(String classId) {

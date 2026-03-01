@@ -103,12 +103,17 @@
         <servlet-class>controller.classroom.SoftKickStudentController</servlet-class>
     </servlet>
     <servlet>
+
         <servlet-name>RouteByRoleController</servlet-name>
         <servlet-class>controller.auth.RouteByRoleController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateClassController</servlet-name>
         <servlet-class>controller.teacher.CreateClassController</servlet-class>
+
+        <servlet-name>EditClassController</servlet-name>
+        <servlet-class>controller.classroom.EditClassController</servlet-class>
+
     </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
@@ -207,12 +212,16 @@
         <url-pattern>/classroom/manage/soft-kick-student</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+ 
         <servlet-name>RouteByRoleController</servlet-name>
         <url-pattern>/route</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateClassController</servlet-name>
         <url-pattern>/create</url-pattern>
+ 
+        <servlet-name>EditClassController</servlet-name>
+        <url-pattern>/classroom/manage/edit</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

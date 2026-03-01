@@ -32,16 +32,16 @@ public class ProfileController extends HttpServlet {
     }
 
     private String viewByRole(String role) {
-        if (role == null) return "/View/Student/profile.jsp";
+        if (role == null) return "/view/student/profile.jsp";
         switch (role.toLowerCase()) {
             case "student":
-                return "/View/Student/profile.jsp";
+                return "/view/student/profile.jsp";
             case "teacher":
-                return "/View/Teacher/profile.jsp";
+                return "/view/teacher/profile.jsp";
             case "admin":
-                return "/View/Admin/profile.jsp";
+                return "/view/admin/profile.jsp";
             default:
-                return "/View/Student/profile.jsp";
+                return "/view/student/profile.jsp";
         }
     }
 

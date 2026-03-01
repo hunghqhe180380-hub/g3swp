@@ -24,7 +24,7 @@
     </head>
     <body class="dash-page">
 
-        <jsp:include page="/View/common/header.jsp" />
+        <jsp:include page="/view/common/header.jsp" />
 
         <main class="dash-main">
             <div class="dash-container">

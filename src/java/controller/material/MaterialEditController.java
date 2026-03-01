@@ -60,7 +60,7 @@ public class MaterialEditController extends HttpServlet {
         request.setAttribute("material",  m);
         request.setAttribute("classId",   m.getClassId());
         request.setAttribute("className", cls.getName());
-        request.getRequestDispatcher("/View/material/edit.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/material/edit.jsp").forward(request, response);
     }
 
     // ── POST: process edit ────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ public class MaterialEditController extends HttpServlet {
             request.setAttribute("classId",   m.getClassId());
             request.setAttribute("className", cls.getName());
             request.setAttribute("errors",    v.getAllErrors());
-            request.getRequestDispatcher("/View/material/edit.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/material/edit.jsp").forward(request, response);
             return;
         }
 

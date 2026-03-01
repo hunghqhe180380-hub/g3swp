@@ -5,4 +5,4 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/View/common/account-settings.jsp" />
+<jsp:include page="/view/common/account-settings.jsp" />

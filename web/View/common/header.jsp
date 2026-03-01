@@ -3,7 +3,7 @@
     Created on : Feb 18, 2026
     Common Header (shared)
     Usage:
-      <jsp:include page="/View/common/header.jsp" />
+      <jsp:include page="/view/common/header.jsp" />
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

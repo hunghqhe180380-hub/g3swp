@@ -106,7 +106,7 @@ public class MaterialDAO extends DBContext {
 
     /**
      * Insert a new material row.
-     * Mirrors C# Create POST logic: sets all fields including file/url/note metadata.
+     * sets all fields including file/url/note metadata.
      */
     public boolean insertMaterial(Material m) {
         String sql = "INSERT INTO [Materials] "
@@ -145,7 +145,7 @@ public class MaterialDAO extends DBContext {
 
     /**
      * Update an existing material row.
-     * Mirrors C# Edit POST logic: updates editable fields + file/url/note metadata.
+     * updates editable fields + file/url/note metadata.
      */
     public boolean updateMaterial(Material m) {
         String sql = "UPDATE [Materials] SET "
