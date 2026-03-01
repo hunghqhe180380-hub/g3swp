@@ -122,7 +122,7 @@ public class LoginController extends HttpServlet {
                 System.out.println("userLogin.setUrlImgProfile: " + userLogin.getUrlImgProfile());
                 session.setAttribute("user", userLogin);
                 //route user by this role
-                request.getRequestDispatcher("View/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("view/" + userLogin.getRole() + "/dashboard.jsp").forward(request, response);
                 return;
             } else {
                 String email = "";

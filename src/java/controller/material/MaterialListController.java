@@ -80,9 +80,9 @@ public class MaterialListController extends HttpServlet {
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
 //        if (user.getRole().equalsIgnoreCase("admin")) {
-//            request.getRequestDispatcher("/View/material/list-admin.jsp").forward(request, response);
+//            request.getRequestDispatcher("/view/material/list-admin.jsp").forward(request, response);
 //        } else {
-            request.getRequestDispatcher("/View/material/list-user.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/material/list-user.jsp").forward(request, response);
         //}
     }
 

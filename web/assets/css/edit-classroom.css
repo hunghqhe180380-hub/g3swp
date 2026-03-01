@@ -1,0 +1,207 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 1, 2026, 4:26:55 PM
+    Author     : BINH
+*/
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #f3f6fb;
+    color: #0f172a;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(90deg, #6366f1, #22d3ee);
+    color: #fff;
+    padding: 18px 0;
+}
+
+.header__inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.header__label {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 4px;
+}
+
+.header__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* ===== PAGE ===== */
+.page {
+    max-width: 900px;
+    margin: 28px auto;
+    padding: 0 22px;
+}
+
+/* ===== FORM CARD ===== */
+.form-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(2, 6, 23, 0.07);
+    padding: 24px;
+}
+
+/* ===== FORM GRID ===== */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+input:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* ===== INPUT WITH ICON ===== */
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+}
+
+.input-group:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.input-group__icon {
+    padding: 0 10px;
+    color: #6b7280;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
+.input-group input {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.input-group input:focus {
+    box-shadow: none;
+}
+
+/* ===== HINTS & ERRORS ===== */
+.form-hint {
+    font-size: 12.5px;
+    color: #6b7280;
+}
+
+.error-text {
+    font-size: 12.5px;
+    color: #dc2626;
+}
+
+/* ===== BUTTONS ===== */
+.btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.15s ease;
+    font-family: inherit;
+}
+
+.btn-save {
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    color: #fff;
+    border: none;
+}
+
+.btn-save:hover {
+    filter: brightness(0.95);
+}
+
+.btn-back {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #1f2937;
+}
+
+.btn-back:hover {
+    background: #eef2f7;
+}
+
+.btn-back-header {
+    background: rgba(255, 255, 255, 0.92);
+    color: #0f172a;
+    border: none;
+}
+
+.btn-back-header:hover {
+    background: #fff;
+}

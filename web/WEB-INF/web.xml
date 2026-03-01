@@ -102,6 +102,10 @@
         <servlet-name>SoftKickStudentController</servlet-name>
         <servlet-class>controller.classroom.SoftKickStudentController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditClassController</servlet-name>
+        <servlet-class>controller.classroom.EditClassController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -197,6 +201,10 @@
     <servlet-mapping>
         <servlet-name>SoftKickStudentController</servlet-name>
         <url-pattern>/classroom/manage/soft-kick-student</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditClassController</servlet-name>
+        <url-pattern>/classroom/manage/edit</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

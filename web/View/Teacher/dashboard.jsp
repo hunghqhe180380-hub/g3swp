@@ -14,13 +14,14 @@
     </head>
     <body>
 
-        <jsp:include page="/View/common/header.jsp" />
+        <jsp:include page="/view/common/header.jsp" />
 
         <br>
         <h1>You are ${sessionScope.user.role}!</h1>
         <a href="${pageContext.request.contextPath}/home">Home</a> ||
         <a href="${pageContext.request.contextPath}/account/profile">View Profile</a> ||
         <a href="${pageContext.request.contextPath}/logout">Logout</a>  
+        <a href="${pageContext.request.contextPath}/classroom/manage/edit?classId=22">Edit</a>  
         
     </body>
 </html>
