@@ -61,7 +61,7 @@ public class ClassroomDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
-    }    
+    }
 
     public List<Classroom> getClassInfoByEnrollment() {
         List<Classroom> list = new ArrayList<>();
@@ -128,6 +128,24 @@ public class ClassroomDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    //get class id by it's code
+    public String getClassIdByCode(String classCode) {
+        try {
+            String sql = "SELECT  [Id]\n"
+                    + "  FROM [POETWebDB].[dbo].[Classrooms]\n"
+                    + "  where ClassCode = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classCode);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("Id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

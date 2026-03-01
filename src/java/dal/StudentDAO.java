@@ -38,6 +38,7 @@ public class StudentDAO extends DBContext {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Classroom cls = new Classroom();
+                cls.setClassCode(userId);
                 cls.setName(resultSet.getString("Name"));
                 cls.setSubject(resultSet.getString("Subject"));
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
@@ -48,6 +49,52 @@ public class StudentDAO extends DBContext {
             e.printStackTrace();
         }
         return listClassroom;
+    }
+
+    //check student already join class?
+    public boolean isJoinedClass(String userId, String classCode) {
+        ClassroomDAO clsDAO = new ClassroomDAO();
+        String classId = clsDAO.getClassIdByCode(classCode);
+        try {
+            String sql = "SELECT[ClassId]\n"
+                    + "      ,[UserId]\n"
+                    + "  FROM [dbo].[Enrollments]\n"
+                    + "  where UserId = ? and ClassId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            statement.setObject(2, classId);
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        return false;
+    }
+
+    //join class
+    public void joinClass(String classId, String userId) {
+        try {
+            String sql = "INSERT INTO [dbo].[Enrollments]\n"
+                    + "           ([ClassId]\n"
+                    + "           ,[UserId]\n"
+                    + "           ,[RoleInClass]\n"
+                    + "           ,[JoinedAt]\n"
+                    + "           ,[Status])\n"
+                    + "     VALUES\n"
+                    + "           (?\n"
+                    + "           ,?\n"
+                    + "           ,'Student'\n"
+                    + "           ,GETDATE()\n"
+                    + "           ,0)";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            statement.setObject(2, userId);
+            statement.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 //    private Classroom getClassById(String classId) {

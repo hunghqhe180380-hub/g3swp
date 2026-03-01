@@ -62,7 +62,7 @@ public class CreateClassController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("View/Teacher/create_class.jsp").forward(request, response);
+        request.getRequestDispatcher("view/classroom/create_class.jsp").forward(request, response);
     }
 
     /**
@@ -80,35 +80,42 @@ public class CreateClassController extends HttpServlet {
         String subject = request.getParameter("subject");
         String studentLimit = request.getParameter("studentLimit");
         System.out.println("student limit: " + studentLimit.length());
-        Map<String, String> listMSG = validator(className, subject, studentLimit);
+        HttpSession session = request.getSession();
+        User teacher = (User) session.getAttribute("user");
+        Map<String, String> listMSG = validator(teacher.getUserID(), className, subject, studentLimit);
         if (listMSG.size() > 0) {
             request.setAttribute("className", className);
             request.setAttribute("subject", subject);
             request.setAttribute("studentLimit", studentLimit);
             request.setAttribute("listMSG", listMSG);
-            request.getRequestDispatcher("View/Teacher/create_class.jsp").forward(request, response);
+            request.getRequestDispatcher("view/classroom/create_class.jsp").forward(request, response);
             return;
         } else {
             TeacherDAO techerDAO = new TeacherDAO();
-            HttpSession session = request.getSession();
             User user = (User) session.getAttribute("user");
             techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
-            request.getRequestDispatcher("/account/dashboard").forward(request, response);
+            request.getRequestDispatcher("route").forward(request, response);
         }
     }
+    
 
+    //validation 
     private Map<String, String> validator(
+            String teacherID,
             String className,
             String subject,
             String studentLimitRaw) {
-
+        TeacherDAO teacherDAO = new TeacherDAO();
         Map<String, String> errors = new HashMap<>();
 
         // className is blank ? return : continue
         if (className.isEmpty()) {
             errors.put("msgClassName", Message.MSG301);
         }
-
+        // className of teachers unique
+        if(teacherDAO.isExistClassName(teacherID, className)){
+            errors.put("msgClassName", Message.MSG305);
+        }
         // subject is blank ? return : continue
         if (subject.isEmpty()) {
             errors.put("msgSubject", Message.MSG302);

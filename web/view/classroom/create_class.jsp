@@ -18,7 +18,7 @@
     </head>
     <body class="dash-page">
 
-        <jsp:include page="/View/common/header.jsp" />
+        <jsp:include page="/view/common/header.jsp" />
         <h1>Create Classroom</h1>
         <form action="create" method="POST">
             <table border="1">

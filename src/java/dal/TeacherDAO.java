@@ -22,9 +22,9 @@ public class TeacherDAO extends DBContext {
 
     //create new class
     public void createNewClass(String className,
-             String subject,
-             String teacherId,
-             String studentLimit) {
+            String subject,
+            String teacherId,
+            String studentLimit) {
         try {
             String sql = "INSERT INTO [dbo].[Classrooms]\n"
                     + "           ([Name]\n"
@@ -52,57 +52,74 @@ public class TeacherDAO extends DBContext {
         }
     }
 
+    //check class name exist
+    public boolean isExistClassName(String teacherId, String className) {
+        String sql = "SELECT 1 FROM [dbo].[Classrooms] "
+                + "WHERE TeacherId = ? AND Name = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, teacherId);
+            ps.setString(2, className);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     //generate class code
     private String generateClassCode() {
 
         Random random = new Random();
 
-        // 2 chữ cái in hoa
+        // 3 chữ cái in hoa
         char firstLetter = (char) ('A' + random.nextInt(26));
         char secondLetter = (char) ('A' + random.nextInt(26));
+        char thirdLetter = (char) ('A' + random.nextInt(26));
 
         // 3 chữ số (000 - 999)
         int number = random.nextInt(1000);
 
-        return "" + firstLetter + secondLetter + String.format("%03d", number);
+        return "" + firstLetter + secondLetter + thirdLetter + String.format("%03d", number);
     }
 
     public List<Classroom> getClassListByTeacherId(String teacherId) {
 
-    List<Classroom> listClass = new ArrayList<>();
+        List<Classroom> listClass = new ArrayList<>();
 
-    String sql = "SELECT c.Id, c.Name, c.Subject, c.MaxStudents, "
-            + "COUNT(e.UserId) AS TotalStudents "
-            + "FROM Classrooms c "
-            + "LEFT JOIN Enrollments e "
-            + "ON c.Id = e.ClassId AND e.Status = 0 "
-            + "WHERE c.TeacherId = ? "
-            + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents";
+        String sql = "SELECT c.Id, c.Name, c.Subject, c.MaxStudents, "
+                + "COUNT(e.UserId) AS TotalStudents "
+                + "FROM Classrooms c "
+                + "LEFT JOIN Enrollments e "
+                + "ON c.Id = e.ClassId AND e.Status = 0 "
+                + "WHERE c.TeacherId = ? "
+                + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents";
 
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        statement.setString(1, teacherId);
-        ResultSet rs = statement.executeQuery();
-        while (rs.next()) {
-            Classroom cls = new Classroom();
+            statement.setString(1, teacherId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Classroom cls = new Classroom();
 
-            cls.setId(rs.getInt("Id"));
-            cls.setName(rs.getString("Name"));
-            cls.setSubject(rs.getString("Subject"));
-            cls.setMaxStudent(rs.getInt("MaxStudents"));
-            cls.setSum(rs.getInt("TotalStudents"));
-            listClass.add(cls);
+                cls.setId(rs.getInt("Id"));
+                cls.setName(rs.getString("Name"));
+                cls.setSubject(rs.getString("Subject"));
+                cls.setMaxStudent(rs.getInt("MaxStudents"));
+                cls.setSum(rs.getInt("TotalStudents"));
+                listClass.add(cls);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+
+        return listClass;
     }
 
-    return listClass;
-}
-    
 // check exist class by (is created by this teacher)
-    
-
 //get number sutdent joined this class 
     public int getSumStudentEnrolledByClassId(int classId) {
         int total = 0;
