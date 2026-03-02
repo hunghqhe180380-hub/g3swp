@@ -73,4 +73,5 @@ public class Message {
     public static final String MSG311 = "Class code not exist.";
     public static final String MSG312 = "This lass is full.";
     public static final String MSG313 = "You already joined this class.";
+    public static final String MSG314 = "This class is full slot. Can not join.";
 }

@@ -119,6 +119,30 @@ public class TeacherDAO extends DBContext {
         return listClass;
     }
 
+    //check class is full slot?
+    public boolean isClassFull(String classCode) {
+        try {
+            String sql = "SELECT c.ClassCode, c.Id, c.Name, c.Subject, c.MaxStudents, \n"
+                    + "                COUNT(e.UserId) AS TotalStudents\n"
+                    + "                FROM Classrooms c \n"
+                    + "                LEFT JOIN Enrollments e \n"
+                    + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
+                    + "                Where c.ClassCode = ? \n"
+                    + "                GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classCode);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) { 
+                int max = resultSet.getInt("MaxStudents");
+                int sum = resultSet.getInt("TotalStudents");
+                return sum >= max; 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 // check exist class by (is created by this teacher)
 //get number sutdent joined this class 
     public int getSumStudentEnrolledByClassId(int classId) {

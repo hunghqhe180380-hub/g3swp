@@ -6,6 +6,7 @@ package controller.student;
 
 import dal.ClassroomDAO;
 import dal.StudentDAO;
+import dal.TeacherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -112,9 +113,11 @@ public class JoinClassController extends HttpServlet {
             errors.put("msgClassCode", Message.MSG310);
             return errors;
         }
+        
+         ClassroomDAO clsDAO = new ClassroomDAO();
         // class code exist?
         if (classCode != null) {
-            ClassroomDAO clsDAO = new ClassroomDAO();
+           
             if (clsDAO.getClassIdByCode(classCode) == null) {
                 errors.put("msgClassCode", Message.MSG311);
                 return errors;
@@ -125,6 +128,10 @@ public class JoinClassController extends HttpServlet {
                     errors.put("msgClassCode", Message.MSG313);
                 }
                 //check class is full or not?
+                TeacherDAO teacherDAO = new TeacherDAO();
+                if(teacherDAO.isClassFull(classCode) == true){
+                    errors.put("msgClassCode", Message.MSG314);
+                };
             }
 
         }

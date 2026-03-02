@@ -116,7 +116,7 @@
                         <c:forEach items="${sessionScope.classList}" var="cls">
                             <div class="classes">
                                 <!-- Demo cards -->
-                                <a class="class-card" href="${ctx}/classroom/manage/edit">
+                                <a class="class-card" href="#">
                                     <div class="class-banner"></div>
                                     <div class="class-body">
                                         <h3 class="class-title">${cls.name}</h3>
