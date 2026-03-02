@@ -26,9 +26,11 @@ import model.*;
 public class StudentListController extends HttpServlet {
 
     private EnrollmentDAO enrollDAO;
+    private ClassroomDAO classDAO;
 
     public void init() {
         enrollDAO = new EnrollmentDAO();
+        classDAO = new ClassroomDAO();
     }
 
     /**
@@ -72,7 +74,7 @@ public class StudentListController extends HttpServlet {
         String search = request.getParameter("search");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
-        Classroom cl = enrollDAO.getClassInfoByClassId(classId);
+        Classroom cl = classDAO.getClassInfoByClassId(classId);
         String[] status = request.getParameterValues("txtStatus");
         List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId, status);
         sort(request, enrolls);
@@ -83,7 +85,7 @@ public class StudentListController extends HttpServlet {
         if (status != null) {
             request.setAttribute("statusList", java.util.Arrays.asList(status));
         }
-        request.getRequestDispatcher("/View/classroom/student-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/classroom/student-admin.jsp").forward(request, response);
     }
 
     private void sort(HttpServletRequest request, List<Enrollment> enrolls)

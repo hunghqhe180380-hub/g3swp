@@ -77,7 +77,7 @@ public class DeleteMaterialController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
-        String materialId = request.getParameter("Id");
+        String materialId = request.getParameter("id");
         dao.deleteMaterialById(materialId, classId);
         response.sendRedirect(request.getContextPath()+"/material/view/material-list?classId="+classId);
     }

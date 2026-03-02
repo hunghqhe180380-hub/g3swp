@@ -42,14 +42,14 @@ public class DashboardController extends HttpServlet {
         
         String userRole = userLogin.getRole();
         switch (userRole) {
-            case "Student":
-                request.getRequestDispatcher("/View/Student/dashboard.jsp").forward(request, response);
+            case "Student":                
+                request.getRequestDispatcher("/view/student/dashboard.jsp").forward(request, response);
                 break;
             case "Teacher":
-                request.getRequestDispatcher("/View/Teacher/dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/teacher/dashboard.jsp").forward(request, response);
                 break;
             case "Admin":
-                request.getRequestDispatcher("/View/Admin/dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
                 break;
             default:
                 throw new AssertionError();

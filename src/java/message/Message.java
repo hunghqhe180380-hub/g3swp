@@ -62,4 +62,15 @@ public class Message {
 
     //log in 
     public static final String MSG200 = "Incorrect username/email or password.";
+    
+    //msg create new class room
+    public static final String MSG301 = "Class name is required.";
+    public static final String MSG302 = "Subject is required.";
+    public static final String MSG303 = "Student limit is required.";
+    public static final String MSG304 = "Student limit must be > 0 and <= 100.";
+    public static final String MSG305 = "You already have this class name.";
+    public static final String MSG310 = "Class code is required.";
+    public static final String MSG311 = "Class code not exist.";
+    public static final String MSG312 = "This lass is full.";
+    public static final String MSG313 = "You already joined this class.";
 }

@@ -139,28 +139,7 @@ public class EnrollmentDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.Name,"
-                + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
-                + "FROM [Classrooms] as a WHERE a.Id = ?";
-        Classroom cl = new Classroom();
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classId);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                cl.setName(resultSet.getString("Name"));
-                cl.setSum(resultSet.getInt("TotalStudent"));
-            }
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return cl;
-    }
+    }    
 
     public boolean isUnenroll(String userId, String classId) {
         boolean enroll = false;

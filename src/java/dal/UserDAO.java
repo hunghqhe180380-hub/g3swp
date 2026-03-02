@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import util.PasswordService;
+import model.Classroom;
 
 /**
  *
@@ -430,7 +431,7 @@ public class UserDAO extends DBContext {
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
                 statement.setObject(paramIndex++, pattern);
-            }            
+            }
             if (hasRoles) {
                 for (String r : roles) {
                     statement.setObject(paramIndex++, r);
@@ -616,8 +617,53 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-}
 
+    public int updateProfile(String userId, String fullName, String phoneNumber, String avatarUrl) {
+        boolean updateAvatar = (avatarUrl != null && !avatarUrl.isBlank());
+
+        String sql = updateAvatar
+                ? "UPDATE [dbo].[Users] SET [FullName]=?, [PhoneNumber]=?, [AvatarUrl]=? WHERE [Id]=?"
+                : "UPDATE [dbo].[Users] SET [FullName]=?, [PhoneNumber]=? WHERE [Id]=?";
+
+        fullName = (fullName == null) ? "" : fullName.trim();
+        phoneNumber = (phoneNumber == null) ? "" : phoneNumber.trim();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, fullName);
+            ps.setString(2, phoneNumber);
+
+            if (updateAvatar) {
+                ps.setString(3, avatarUrl);
+                ps.setString(4, userId);
+            } else {
+                ps.setString(3, userId);
+            }
+
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("updateProfile failed: " + e.getMessage(), e);
+        }
+    }
+
+    //get url image path from fb
+    public String getAvatarUrlByUserID(String userID) {
+        try {
+            String sql = "SELECT [AvatarUrl]\n"
+                    + "  FROM [dbo].[Users]\n"
+                    + "\n"
+                    + "  where Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userID);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("AvatarUrl");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"
 //                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"

@@ -74,19 +74,23 @@ public class MaterialListController extends HttpServlet {
         Classroom cl = dao.getClassInfoByClassId(classId);
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
-        List<Material> materials = dao.getMaterialByClassId(search, classId); 
+        List<Material> materials = dao.getMaterialByClassId(search, classId);
         sort(request, materials);
-        request.setAttribute("classes", cl);                      
+        request.setAttribute("classes", cl);
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
-        request.getRequestDispatcher("/View/material/material-list.jsp").forward(request, response);
+//        if (user.getRole().equalsIgnoreCase("admin")) {
+//            request.getRequestDispatcher("/view/material/list-admin.jsp").forward(request, response);
+//        } else {
+            request.getRequestDispatcher("/view/material/list-user.jsp").forward(request, response);
+        //}
     }
-    
+
     private void sort(HttpServletRequest request, List<Material> materials)
-            throws ServletException, IOException {        
+            throws ServletException, IOException {
         int tlState = 0;
         int tiState = 0;
-        try {            
+        try {
             tlState = Integer.parseInt(request.getParameter("txtTitle"));
             tiState = Integer.parseInt(request.getParameter("txtCreated"));
         } catch (Exception e) {
