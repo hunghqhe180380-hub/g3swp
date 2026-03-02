@@ -41,31 +41,65 @@
                 <div class="section-head">
                     <h2 class="section-title">Accounts <span class="count">(${fn:length(users)})</span></h2>
 
-                    <form class="search" action="${ctx}/admin/user-list" method="get">
+                    <form class="search" action="${ctx}/admin/user-list" method="get" id="frmSearch">
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
                                placeholder="Search name/username/email...">
-                        <c:forEach items="${roleList}" var="r">
-                            <input type="hidden" name="txtRole" value="${r}">
-                        </c:forEach>
-                        <button class="search__btn" type="submit">Search</button>
-                    </form>
-                    <form action="${ctx}/admin/user-list" method="get" id="frmSort" hidden>                        
-                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                        
-                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
-                        <c:forEach items="${roleList}" var="r">
-                            <input type="hidden" name="txtRole" value="${r}">
-                        </c:forEach>
-                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
-                    </form>
-                    <form action="${ctx}/admin/user-list" method="get" id="frmFilter">
-                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
-                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                        
-                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">
 
-                        <input type="checkbox" name="txtRole" value="Admin" ${roleList.contains('Admin') ? 'checked' : ''} onchange="this.form.submit()"> Admin
-                        <input type="checkbox" name="txtRole" value="Teacher" ${roleList.contains('Teacher') ? 'checked' : ''} onchange="this.form.submit()"> Teacher
-                        <input type="checkbox" name="txtRole" value="Student" ${roleList.contains('Student') ? 'checked' : ''} onchange="this.form.submit()"> Student
+                        <!-- Arrow button -->
+                        <button class="search__btn search__btn--arrow" type="button" id="btnFilter" aria-label="Filter">
+                            ▾
+                        </button>
+
+                        <button class="search__btn" type="submit">Search</button>
+
+                        <!-- Dropdown filters -->
+                        <div class="search__dropdown" id="filterDropdown" hidden>
+                            <div class="dd-title">Role</div>
+                            <label class="dd-item">
+                                <input type="checkbox" name="txtRole" value="Admin"
+                                       ${roleList != null && roleList.contains('Admin') ? 'checked' : ''}>
+                                <span>Admin</span>
+                            </label>
+                            <label class="dd-item">
+                                <input type="checkbox" name="txtRole" value="Teacher"
+                                       ${roleList != null && roleList.contains('Teacher') ? 'checked' : ''}>
+                                <span>Teacher</span>
+                            </label>
+                            <label class="dd-item">
+                                <input type="checkbox" name="txtRole" value="Student"
+                                       ${roleList != null && roleList.contains('Student') ? 'checked' : ''}>
+                                <span>Student</span>
+                            </label>
+
+                            <div class="dd-divider"></div>
+
+                            <div class="dd-title">Status</div>
+                            <label class="dd-item">
+                                <input type="checkbox" name="txtStatus" value="Active"
+                                       ${statusList != null && statusList.contains('Active') ? 'checked' : ''}>
+                                <span>Active</span>
+                            </label>
+                            <label class="dd-item">
+                                <input type="checkbox" name="txtStatus" value="Deactive"
+                                       ${statusList != null && statusList.contains('Deactive') ? 'checked' : ''}>
+                                <span>Deactive</span>
+                            </label>
+                        </div>
+                    </form>
+
+                    <form action="${ctx}/admin/user-list" method="get" id="frmSort" hidden>
+                        <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">
+                        <input type="hidden" name="search" value="<c:out value="${search}"/>">
+
+                        <c:forEach items="${roleList}" var="r">
+                            <input type="hidden" name="txtRole" value="${r}">
+                        </c:forEach>
+                        <c:forEach items="${statusList}" var="s">
+                            <input type="hidden" name="txtStatus" value="${s}">
+                        </c:forEach>
+
+                        <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">
                     </form>
                 </div>
 
@@ -188,6 +222,9 @@
                             <c:param name="txtRole" value="${r}"/>
                         </c:forEach>
                         <c:param name="txtFullName" value="${fnState}"/>
+                        <c:forEach items="${statusList}" var="s">
+                            <c:param name="txtStatus" value="${s}"/>
+                        </c:forEach>
                     </c:url>
 
                     <c:if test="${page.index!=0}">
@@ -260,7 +297,27 @@
                 icon.textContent = "⇅";
         }
     }
-    function filter() {
-        document.getElementById("frmFilter").submit();
-    }
+
+    (function () {
+        const btn = document.getElementById('btnFilter');
+        const dd = document.getElementById('filterDropdown');
+        if (!btn || !dd)
+            return;
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            dd.hidden = !dd.hidden;
+        });
+
+        document.addEventListener('click', function (e) {
+            const inside = e.target.closest('#filterDropdown') || e.target.closest('#btnFilter');
+            if (!inside)
+                dd.hidden = true;
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape')
+                dd.hidden = true;
+        });
+    })();
 </script>

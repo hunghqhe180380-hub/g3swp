@@ -66,15 +66,50 @@ public class UserListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String searchUser = request.getParameter("search");
         String[] roles = request.getParameterValues("txtRole");
+        String[] statuses = request.getParameterValues("txtStatus");
+
         List<User> users = dao.getAllUsers(searchUser, roles);
+
+        // filter by status (Active/Deactive)
+        if (statuses != null && statuses.length > 0) {
+            java.util.List<String> st = java.util.Arrays.asList(statuses);
+
+            users.removeIf(u -> {
+                int isDeleted = u.getIsDeleted();
+                boolean active = (isDeleted == 0);
+
+                boolean wantActive = st.contains("Active");
+                boolean wantDeactive = st.contains("Deactive");
+
+                if (wantActive && wantDeactive) {
+                    return false;
+                }
+                if (wantActive) {
+                    return !active;
+                }
+                if (wantDeactive) {
+                    return active;
+                }
+
+                return false;
+            });
+        }
+
         sort(request, users);
         paging(request, users);
+
         request.setAttribute("search", searchUser);
+
         if (roles != null) {
             request.setAttribute("roleList", java.util.Arrays.asList(roles));
         }
+        if (statuses != null) {
+            request.setAttribute("statusList", java.util.Arrays.asList(statuses));
+        }
+
         request.setAttribute("users", users);
         request.getRequestDispatcher("/view/admin/list-account.jsp").forward(request, response);
     }
