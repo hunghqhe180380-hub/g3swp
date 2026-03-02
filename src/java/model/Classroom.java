@@ -1,140 +1,63 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-import java.time.LocalDateTime;
-
-/**
- *
- * @author BINH
- */
 public class Classroom {
 
-    private int id;
+    private int    id;
     private String name;
     private String classCode;
-    private String subjectId;
-    private String subjectName;
+    private String subject;
     private String teacherId;
-    private String teacherName;
-    private String createdAt;
-    private int maxStudent;
-    private int sum;
-    private String timeExpiryClassCode;
-    private int status;
+    private String teacherName; // joined from Users
+    private String createdAt;   // formatted "dd/MM/yyyy HH:mm"
+    private int    maxStudent;
+    private int    sum;          // enrollment count
 
-    public Classroom() {
+    public Classroom() {}
+
+    public Classroom(String name, String subject, int sum) {
+        this.name    = name;
+        this.subject = subject;
+        this.sum     = sum;
     }
 
-    public Classroom(int id, String name, String classCode, String subjectId, String subjectName, String teacherId, String teacherName, String createdAt, int maxStudent, int sum, String timeExpiryClassCode) {
-        this.id = id;
-        this.name = name;
-        this.classCode = classCode;
-        this.subjectId = subjectId;
-        this.subjectName = subjectName;
-        this.teacherId = teacherId;
+    public Classroom(int id, String name, String classCode, String subject,
+                     String teacherId, String teacherName,
+                     String createdAt, int maxStudent, int sum) {
+        this.id          = id;
+        this.name        = name;
+        this.classCode   = classCode;
+        this.subject     = subject;
+        this.teacherId   = teacherId;
         this.teacherName = teacherName;
-        this.createdAt = createdAt;
-        this.maxStudent = maxStudent;
-        this.sum = sum;
-        this.timeExpiryClassCode = timeExpiryClassCode;
+        this.createdAt   = createdAt;
+        this.maxStudent  = maxStudent;
+        this.sum         = sum;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int    getId()                    { return id; }
+    public void   setId(int id)              { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getName()                  { return name; }
+    public void   setName(String name)       { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getClassCode()             { return classCode; }
+    public void   setClassCode(String c)     { this.classCode = c; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getSubject()               { return subject; }
+    public void   setSubject(String s)       { this.subject = s; }
 
-    public String getClassCode() {
-        return classCode;
-    }
+    public String getTeacherId()             { return teacherId; }
+    public void   setTeacherId(String t)     { this.teacherId = t; }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
-    }
+    public String getTeacherName()           { return teacherName; }
+    public void   setTeacherName(String t)   { this.teacherName = t; }
 
-    public String getSubjectId() {
-        return subjectId;
-    }
+    public String getCreatedAt()             { return createdAt; }
+    public void   setCreatedAt(String c)     { this.createdAt = c; }
 
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
-    }
+    public int    getMaxStudent()            { return maxStudent; }
+    public void   setMaxStudent(int m)       { this.maxStudent = m; }
 
-    public String getSubjectName() {
-        return subjectName;
-    }
-
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
-    }
-
-    public String getTeacherId() {
-        return teacherId;
-    }
-
-    public void setTeacherId(String teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public String getTeacherName() {
-        return teacherName;
-    }
-
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public int getMaxStudent() {
-        return maxStudent;
-    }
-
-    public void setMaxStudent(int maxStudent) {
-        this.maxStudent = maxStudent;
-    }
-
-    public int getSum() {
-        return sum;
-    }
-
-    public void setSum(int sum) {
-        this.sum = sum;
-    }
-
-    public String getTimeExpiryClassCode() {
-        return timeExpiryClassCode;
-    }
-
-    public void setTimeExpiryClassCode(String timeExpiryClassCode) {
-        this.timeExpiryClassCode = timeExpiryClassCode;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
+    public int    getSum()                   { return sum; }
+    public void   setSum(int sum)            { this.sum = sum; }
 }
