@@ -64,11 +64,10 @@ public class EmailService extends DBContext {
         Properties props = new Properties();
         //add host
         props.put("mail.smtp.host", "smtp.gmail.com");
-        //add port 
+        //add port
         props.put("mail.smtp.port", "587");
         //add port auth
         props.put("mail.smtp.auth", "true");
-        //
         props.put("mail.smtp.starttls.enable", "true");
 
         Authenticator authenticator = new Authenticator() {
@@ -81,8 +80,7 @@ public class EmailService extends DBContext {
         //session
         Session session = Session.getInstance(props, authenticator);
 
-        //send doc html
-        try{
+        try {
             MimeMessage msg = new MimeMessage(session);
             msg.addHeader("Content-Type", "text/html; charset=UTF-8");
 
@@ -96,14 +94,20 @@ public class EmailService extends DBContext {
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
 
             boolean isReset = action != null && action.equalsIgnoreCase("resetPassword");
+            boolean isChange = action != null && action.equalsIgnoreCase("ChangeEmail");
 
-            String subject = isReset
-                    ? BRAND_NAME + " | Password Reset Request"
-                    : BRAND_NAME + " | Verify Your Email Address";
+            String subject;
+            if (isReset) {
+                subject = BRAND_NAME + " | Password Reset Request";
+            } else if (isChange) {
+                subject = BRAND_NAME + " | Confirm Email Change";
+            } else {
+                subject = BRAND_NAME + " | Verify Your Email Address";
+            }
             msg.setSubject(subject, "UTF-8");
 
             // HTML content (tham chiếu logo bằng cid)
-            String html = buildEmailHtml(isReset, link, userName, true);
+            String html = buildEmailHtml(isReset, isChange, link, userName, true);
 
             // Tạo multipart/related: html + inline image
             Multipart multipart = new MimeMultipart("related");
@@ -123,22 +127,20 @@ public class EmailService extends DBContext {
                 imagePart.setHeader("Content-ID", "<" + LOGO_CONTENT_ID + ">");
                 imagePart.setDisposition(MimeBodyPart.INLINE);
                 imagePart.setFileName("logo" + getImageExt(LOGO_CLASSPATH));
-
                 multipart.addBodyPart(imagePart);
-            } else {
-                String htmlNoLogo = buildEmailHtml(isReset, link, userName, false);
-                MimeBodyPart htmlPartNoLogo = new MimeBodyPart();
-                htmlPartNoLogo.setContent(htmlNoLogo, "text/html; charset=UTF-8");
 
-                Multipart mp2 = new MimeMultipart("related");
-                mp2.addBodyPart(htmlPartNoLogo);
-                msg.setContent(mp2);
+                msg.setContent(multipart);
                 Transport.send(msg);
                 return true;
             }
 
-            msg.setContent(multipart);
+            String htmlNoLogo = buildEmailHtml(isReset, isChange, link, userName, false);
+            MimeBodyPart htmlPartNoLogo = new MimeBodyPart();
+            htmlPartNoLogo.setContent(htmlNoLogo, "text/html; charset=UTF-8");
 
+            Multipart mp2 = new MimeMultipart("related");
+            mp2.addBodyPart(htmlPartNoLogo);
+            msg.setContent(mp2);
             Transport.send(msg);
             return true;
 
@@ -149,18 +151,27 @@ public class EmailService extends DBContext {
         return false;
     }
 
-    private String buildEmailHtml(boolean isReset, String link, String userName, boolean includeLogo) {
+    private String buildEmailHtml(boolean isReset, boolean isChange, String link, String userName, boolean includeLogo) {
         String safeName = escapeHtml(userName);
         String safeLink = link == null ? "" : link;
 
-        String title = isReset ? "Reset your password" : "Verify your email";
-        String intro = isReset
-                ? "We received a request to reset your password. Click the button below to continue."
-                : "Thanks for signing up. Please confirm your email address to complete your registration.";
-        String buttonText = isReset ? "Reset Password" : "Verify Email";
-        String note = isReset
-                ? "If you didn’t request a password reset, you can safely ignore this email."
-                : "If you didn’t create an account, you can safely ignore this email.";
+        String title, intro, buttonText, note;
+        if (isReset) {
+            title = "Reset your password";
+            intro = "We received a request to reset your password. Click the button below to continue.";
+            buttonText = "Reset Password";
+            note = "If you didn’t request a password reset, you can safely ignore this email.";
+        } else if (isChange) {
+            title = "Confirm your new email";
+            intro = "You requested to change your email address. Click the button below to confirm this change.";
+            buttonText = "Confirm Email Change";
+            note = "If you didn’t request this change, please ignore this email and consider updating your password.";
+        } else {
+            title = "Verify your email";
+            intro = "Thanks for signing up. Please confirm your email address to complete your registration.";
+            buttonText = "Verify Email";
+            note = "If you didn’t create an account, you can safely ignore this email.";
+        }
 
         int year = Year.now().getValue();
 
@@ -184,33 +195,29 @@ public class EmailService extends DBContext {
                 + "              <tr>"
                 + "                <td align=\"left\" style=\"vertical-align:middle;\">" + logoHtml + "</td>"
                 + "                <td align=\"right\" style=\"vertical-align:middle; font-family:Arial, Helvetica, sans-serif; color:#6b7280; font-size:12px;\">"
-                +                  escapeHtml(BRAND_NAME)
+                + escapeHtml(BRAND_NAME)
                 + "                </td>"
                 + "              </tr>"
                 + "            </table>"
                 + "          </td>"
                 + "        </tr>"
-
                 + "        <tr>"
                 + "          <td style=\"padding:28px 24px; font-family:Arial, Helvetica, sans-serif; color:#111827;\">"
                 + "            <h2 style=\"margin:0 0 10px; font-size:20px;\">" + escapeHtml(title) + "</h2>"
                 + "            <p style=\"margin:0 0 10px;\">Hello <b>" + safeName + "</b>,</p>"
                 + "            <p style=\"margin:0 0 18px; color:#374151;\">" + escapeHtml(intro) + "</p>"
-
                 + "            <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin:0 0 18px;\">"
                 + "              <tr>"
                 + "                <td bgcolor=\"#1a73e8\" style=\"border-radius:8px;\">"
                 + "                  <a href=\"" + escapeHtml(safeLink) + "\""
                 + "                     style=\"display:inline-block; padding:12px 18px; color:#ffffff; text-decoration:none; font-weight:600; font-size:14px; font-family:Arial, Helvetica, sans-serif;\">"
-                +                      escapeHtml(buttonText)
+                + escapeHtml(buttonText)
                 + "                  </a>"
                 + "                </td>"
                 + "              </tr>"
                 + "            </table>"
-
                 + "            <p style=\"margin:0 0 8px; color:#6b7280; font-size:13px;\">This link will expire in <b>" + LIMIT_MINUS + " minutes</b>.</p>"
                 + "            <p style=\"margin:0; color:#6b7280; font-size:13px;\">" + escapeHtml(note) + "</p>"
-
                 + "            <hr style=\"border:none; border-top:1px solid #eef1f6; margin:18px 0;\"/>"
                 + "            <p style=\"margin:0; color:#6b7280; font-size:12px;\">If the button doesn’t work, copy and paste this link into your browser:</p>"
                 + "            <p style=\"margin:6px 0 0; font-size:12px; word-break:break-all;\">"
@@ -218,7 +225,6 @@ public class EmailService extends DBContext {
                 + "            </p>"
                 + "          </td>"
                 + "        </tr>"
-
                 + "        <tr>"
                 + "          <td style=\"padding:18px 24px; background:#fbfcfe; border-top:1px solid #eef1f6; font-family:Arial, Helvetica, sans-serif;\">"
                 + "            <p style=\"margin:0; color:#6b7280; font-size:12px;\">"
@@ -230,7 +236,6 @@ public class EmailService extends DBContext {
                 + "            <p style=\"margin:8px 0 0; color:#9ca3af; font-size:12px;\">© " + year + " " + escapeHtml(BRAND_NAME) + ". All rights reserved.</p>"
                 + "          </td>"
                 + "        </tr>"
-
                 + "      </table>"
                 + "    </td></tr>"
                 + "  </table>"
@@ -238,9 +243,10 @@ public class EmailService extends DBContext {
     }
 
     private byte[] loadResourceBytes(String classpath) {
-        // classpath ví dụ: "/assets/logo.png"
         try (InputStream is = EmailService.class.getResourceAsStream(classpath)) {
-            if (is == null) return null;
+            if (is == null) {
+                return null;
+            }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buf = new byte[4096];
             int read;
@@ -255,23 +261,39 @@ public class EmailService extends DBContext {
 
     private String guessImageMimeType(String path) {
         String p = path == null ? "" : path.toLowerCase();
-        if (p.endsWith(".jpg") || p.endsWith(".jpeg")) return "image/jpeg";
-        if (p.endsWith(".gif")) return "image/gif";
-        if (p.endsWith(".webp")) return "image/webp";
+        if (p.endsWith(".jpg") || p.endsWith(".jpeg")) {
+            return "image/jpeg";
+        }
+        if (p.endsWith(".gif")) {
+            return "image/gif";
+        }
+        if (p.endsWith(".webp")) {
+            return "image/webp";
+        }
         return "image/png"; // default
     }
 
     private String getImageExt(String path) {
         String p = path == null ? "" : path.toLowerCase();
-        if (p.endsWith(".jpg")) return ".jpg";
-        if (p.endsWith(".jpeg")) return ".jpeg";
-        if (p.endsWith(".gif")) return ".gif";
-        if (p.endsWith(".webp")) return ".webp";
+        if (p.endsWith(".jpg")) {
+            return ".jpg";
+        }
+        if (p.endsWith(".jpeg")) {
+            return ".jpeg";
+        }
+        if (p.endsWith(".gif")) {
+            return ".gif";
+        }
+        if (p.endsWith(".webp")) {
+            return ".webp";
+        }
         return ".png";
     }
 
     private String escapeHtml(String s) {
-        if (s == null) return "";
+        if (s == null) {
+            return "";
+        }
         return s.replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")

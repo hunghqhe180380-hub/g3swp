@@ -92,8 +92,21 @@
                         <div class="tab-panel" data-panel="email">
                             <h2 class="acc-subtitle">Email</h2>
 
+                            <c:if test="${param.msg == 'sent'}">
+                                <div class="acc-help">A confirmation link has been sent to your new email. Please check your inbox.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'empty'}">
+                                <div class="acc-help" style="color:#dc2626;">Please enter a new email.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'same'}">
+                                <div class="acc-help" style="color:#dc2626;">New email must be different from your current email.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'exists'}">
+                                <div class="acc-help" style="color:#dc2626;">This email is already in use.</div>
+                            </c:if>
+
                             <div class="two-col">
-                                <div class="acc-card pad">
+                                <form class="acc-card pad" method="post" action="${ctx}/account/profile?tab=email">
                                     <div class="acc-label">Current email</div>
                                     <input class="acc-input readonly" type="text"
                                            value="${requestScope.user.email}" readonly>
@@ -106,10 +119,10 @@
                                     </div>
 
                                     <div class="acc-actions" style="margin-top:14px;">
-                                        <button class="acc-btn primary" type="button">Change email</button>
+                                        <button class="acc-btn primary" type="submit">Change email</button>
                                         <button class="acc-btn ghost" type="button" data-go="profile">Back</button>
                                     </div>
-                                </div>
+                                </form>
 
                                 <div class="acc-card pad tip-card">
                                     <div class="tip-title">ⓘ Heads up</div>
@@ -177,9 +190,9 @@
                     <aside class="acc-card pad preview-col" id="previewCol">
                         <div class="preview-title">Preview</div>
 
-                    <img id="previewAvatar" class="preview-avatar"
-                         src="${ctx}${empty requestScope.user.urlImgProfile ? '/uploads/avatars/avatarDefault.png' : requestScope.user.urlImgProfile}"
-                         alt="avatar"/>
+                        <img id="previewAvatar" class="preview-avatar"
+                             src="${ctx}${empty requestScope.user.urlImgProfile ? '/uploads/avatars/avatarDefault.png' : requestScope.user.urlImgProfile}"
+                             alt="avatar"/>
 
                         <div class="preview-line"></div>
 
@@ -227,7 +240,13 @@
                 }
             }
 
-            tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+            tabs.forEach(t => t.addEventListener('click', () => {
+                    const name = t.dataset.tab;
+                    showTab(name);
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('tab', name);
+                    window.history.replaceState({}, '', url);
+                }));
 
             document.addEventListener('click', (e) => {
                 const btn = e.target.closest('[data-go]');
@@ -246,7 +265,12 @@
                 input.type = (input.type === 'password') ? 'text' : 'password';
             });
 
-            showTab('profile');
+            (function () {
+                const params = new URLSearchParams(window.location.search);
+                const qTab = params.get('tab');
+                const initial = (qTab === 'email' || qTab === 'password' || qTab === 'profile') ? qTab : 'profile';
+                showTab(initial);
+            })();
 
             // ===== Live avatar preview =====
             (function () {

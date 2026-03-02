@@ -572,7 +572,7 @@ public class UserDAO extends DBContext {
     //get email by user name
     public String getEmailByUserName(String userName) {
         try {
-            String sql = "";
+            String sql = "SELECT [Email] FROM [dbo].[Users] WHERE [UserName] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userName);
             resultSet = statement.executeQuery();
@@ -610,7 +610,6 @@ public class UserDAO extends DBContext {
                     + "Where [Email] = ?\n";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
-            statement.executeUpdate();
             return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -662,6 +661,22 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean updateEmailByUserId(String userId, String newEmail) {
+        try {
+            String sql = "UPDATE [dbo].[Users]\n"
+                    + "   SET [Email] = ?, [NormalizedEmail] = ?\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newEmail);
+            statement.setObject(2, newEmail.toUpperCase());
+            statement.setObject(3, userId);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 //sql query string to get some importan user's information

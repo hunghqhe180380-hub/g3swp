@@ -1,0 +1,61 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 3, 2026, 4:41:28 AM
+    Author     : tuana
+*/
+.page{
+    min-height: calc(100vh - 80px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 32px 16px;
+    background:#f5f7fb;
+}
+
+.card{
+    width: 100%;
+    max-width: 640px;
+    background:#fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    padding: 28px 26px;
+}
+
+.card h2{
+    margin:0 0 8px;
+    font-size: 28px;
+    font-weight: 800;
+    color:#111827;
+}
+
+.card p{
+    margin:0 0 18px;
+    color:#4b5563;
+    line-height: 1.6;
+}
+
+.actions{
+    display:flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn{
+    display:inline-block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration:none;
+    font-weight: 700;
+    border: 1px solid #e5e7eb;
+    color:#111827;
+    background:#fff;
+}
+
+.btn.primary{
+    border: none;
+    color:#fff;
+    background: #2563eb;
+}

@@ -20,23 +20,32 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import model.User;
+import dal.TokenDAO;
+import model.Token;
+import util.EmailService;
 
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,      // 1MB
-        maxFileSize = 5 * 1024 * 1024,        // 5MB
-        maxRequestSize = 6 * 1024 * 1024      // 6MB
+        fileSizeThreshold = 1024 * 1024, // 1MB
+        maxFileSize = 5 * 1024 * 1024, // 5MB
+        maxRequestSize = 6 * 1024 * 1024 // 6MB
 )
 public class ProfileController extends HttpServlet {
 
     private String normalizeTab(String tab) {
-        if (tab == null || tab.isBlank()) return "profile";
+        if (tab == null || tab.isBlank()) {
+            return "profile";
+        }
         tab = tab.toLowerCase().trim();
-        if (!tab.equals("profile") && !tab.equals("email") && !tab.equals("password")) return "profile";
+        if (!tab.equals("profile") && !tab.equals("email") && !tab.equals("password")) {
+            return "profile";
+        }
         return tab;
     }
 
     private String viewByRole(String role) {
-        if (role == null) return "/view/student/profile.jsp";
+        if (role == null) {
+            return "/view/student/profile.jsp";
+        }
         switch (role.toLowerCase()) {
             case "student":
                 return "/view/student/profile.jsp";
@@ -49,7 +58,9 @@ public class ProfileController extends HttpServlet {
 
     private User getSessionUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null) return null;
+        if (session == null) {
+            return null;
+        }
         return (User) session.getAttribute("user");
     }
 
@@ -74,7 +85,9 @@ public class ProfileController extends HttpServlet {
 
     private Path resolvePersistentAvatarDir() {
         String realRoot = getServletContext().getRealPath("/");
-        if (realRoot == null) return null;
+        if (realRoot == null) {
+            return null;
+        }
 
         File webAppRoot = new File(realRoot); // thường là .../build/web/ hoặc .../wtpwebapps/...
         File buildDir = webAppRoot.getParentFile();       // .../build
@@ -82,25 +95,35 @@ public class ProfileController extends HttpServlet {
 
         if (projectRoot != null) {
             File antWeb = new File(projectRoot, "web" + File.separator + "uploads" + File.separator + "avatars");
-            if (antWeb.exists() || antWeb.mkdirs()) return antWeb.toPath();
+            if (antWeb.exists() || antWeb.mkdirs()) {
+                return antWeb.toPath();
+            }
 
             File mavenWeb = new File(projectRoot, "src" + File.separator + "main" + File.separator + "webapp"
                     + File.separator + "uploads" + File.separator + "avatars");
-            if (mavenWeb.exists() || mavenWeb.mkdirs()) return mavenWeb.toPath();
+            if (mavenWeb.exists() || mavenWeb.mkdirs()) {
+                return mavenWeb.toPath();
+            }
         }
         return null;
     }
 
     private Path resolveDeployedAvatarDir() {
         String deployed = getServletContext().getRealPath("/uploads/avatars");
-        if (deployed == null) return null;
+        if (deployed == null) {
+            return null;
+        }
         File dir = new File(deployed);
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         return dir.toPath();
     }
 
     private boolean isAllowedImageExt(String ext) {
-        if (ext == null) return false;
+        if (ext == null) {
+            return false;
+        }
         ext = ext.toLowerCase();
         return ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".webp");
     }
@@ -132,7 +155,6 @@ public class ProfileController extends HttpServlet {
                 String fullName = request.getParameter("fullName");
                 String phoneNumber = request.getParameter("phoneNumber");
 
-                
                 User current = userDAO.getUserInforByID(userLogin.getUserID());
                 String savedAvatarUrl = (current != null) ? current.getUrlImgProfile() : null;
 
@@ -143,7 +165,9 @@ public class ProfileController extends HttpServlet {
                     String submitted = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
                     String ext = "";
                     int dot = submitted.lastIndexOf('.');
-                    if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
+                    if (dot >= 0) {
+                        ext = submitted.substring(dot).toLowerCase();
+                    }
 
                     if (!isAllowedImageExt(ext)) {
                         response.sendRedirect(request.getContextPath() + "/account/profile?tab=profile");
@@ -152,15 +176,13 @@ public class ProfileController extends HttpServlet {
 
                     String newName = "avt_" + userLogin.getUserID() + "_" + System.currentTimeMillis() + ext;
 
-                    Path persistentDir = resolvePersistentAvatarDir(); // bền vững (source)
-                    Path deployedDir = resolveDeployedAvatarDir();     // runtime deploy
+                    Path persistentDir = resolvePersistentAvatarDir();
+                    Path deployedDir = resolveDeployedAvatarDir();
 
-                    // Nếu không resolve được persistent => fallback chỉ lưu runtime
                     if (persistentDir == null && deployedDir == null) {
                         throw new IllegalStateException("Không xác định được thư mục lưu avatars.");
                     }
 
-                    // Lưu trước vào persistent (nếu có), rồi copy sang deployed (nếu khác)
                     Path persistentFile = (persistentDir != null) ? persistentDir.resolve(newName) : null;
                     Path deployedFile = (deployedDir != null) ? deployedDir.resolve(newName) : null;
 
@@ -174,7 +196,6 @@ public class ProfileController extends HttpServlet {
                             Files.copy(persistentFile, deployedFile, StandardCopyOption.REPLACE_EXISTING);
                         }
                     } else {
-                        // chỉ còn deployed
                         Files.createDirectories(deployedDir);
                         try (InputStream in = avatarPart.getInputStream()) {
                             Files.copy(in, deployedFile, StandardCopyOption.REPLACE_EXISTING);
@@ -190,7 +211,9 @@ public class ProfileController extends HttpServlet {
                 // refresh session user
                 User refreshed = userDAO.getUserInforByID(userLogin.getUserID());
                 HttpSession session = request.getSession(false);
-                if (session != null) session.setAttribute("user", refreshed);
+                if (session != null) {
+                    session.setAttribute("user", refreshed);
+                }
 
                 response.sendRedirect(request.getContextPath() + "/account/profile?tab=profile");
                 return;
@@ -198,8 +221,55 @@ public class ProfileController extends HttpServlet {
 
             // TODO, UI chạy trước
             if ("email".equals(tab)) {
-                // String newEmail = request.getParameter("newEmail");
-                response.sendRedirect(request.getContextPath() + "/account/profile?tab=email");
+                request.setCharacterEncoding("UTF-8");
+
+                String newEmail = request.getParameter("newEmail");
+                if (newEmail == null) {
+                    newEmail = "";
+                }
+                newEmail = newEmail.trim();
+
+                if (newEmail.isBlank()) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=email&err=empty");
+                    return;
+                }
+
+                User current = userDAO.getUserInforByID(userLogin.getUserID());
+                String currentEmail = current != null ? current.getEmail() : null;
+                if (currentEmail != null && newEmail.equalsIgnoreCase(currentEmail)) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=email&err=same");
+                    return;
+                }
+
+                if (userDAO.isExistEmail(newEmail)) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=email&err=exists");
+                    return;
+                }
+
+                EmailService emailService = new EmailService();
+                String tokenStr = emailService.generateToken();
+
+                Token token = new Token(
+                        newEmail,
+                        userLogin.getUserID(),
+                        false,
+                        tokenStr,
+                        emailService.setExpriryDateTime()
+                );
+
+                TokenDAO tokenDAO = new TokenDAO();
+                tokenDAO.insertToTokenDB(token, "ChangeEmail");
+
+                String link = "http://localhost:9999/POET/account/confirm-email-change?token=" + tokenStr;
+
+                emailService.sendEmail(
+                        newEmail,
+                        link,
+                        current != null ? current.getFullName() : "User",
+                        "ChangeEmail"
+                );
+
+                response.sendRedirect(request.getContextPath() + "/account/profile?tab=email&msg=sent");
                 return;
             }
 

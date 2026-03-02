@@ -237,4 +237,12 @@
         <param-name>nrpp</param-name>
         <param-value>5</param-value>
     </context-param>
+    <servlet>
+        <servlet-name>ConfirmEmailChangeController</servlet-name>
+        <servlet-class>controller.account.ConfirmEmailChangeController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConfirmEmailChangeController</servlet-name>
+        <url-pattern>/account/confirm-email-change</url-pattern>
+    </servlet-mapping>
 </web-app>
