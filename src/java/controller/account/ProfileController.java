@@ -14,7 +14,11 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import model.User;
 
 @MultipartConfig(
@@ -59,21 +63,51 @@ public class ProfileController extends HttpServlet {
         }
 
         UserDAO userDAO = new UserDAO();
-        User user = userDAO.getUserInforByID(userLogin.getUserID()); // UUID String
+        User user = userDAO.getUserInforByID(userLogin.getUserID());
 
         request.setAttribute("user", user);
         request.setAttribute("tab", tab);
-
-        // Profile page: tắt CTA teacher
         request.setAttribute("hideTeacherCTA", true);
 
         request.getRequestDispatcher(viewByRole(userLogin.getRole())).forward(request, response);
     }
 
+    private Path resolvePersistentAvatarDir() {
+        String realRoot = getServletContext().getRealPath("/");
+        if (realRoot == null) return null;
+
+        File webAppRoot = new File(realRoot); // thường là .../build/web/ hoặc .../wtpwebapps/...
+        File buildDir = webAppRoot.getParentFile();       // .../build
+        File projectRoot = (buildDir != null) ? buildDir.getParentFile() : null; // .../<project>
+
+        if (projectRoot != null) {
+            File antWeb = new File(projectRoot, "web" + File.separator + "uploads" + File.separator + "avatars");
+            if (antWeb.exists() || antWeb.mkdirs()) return antWeb.toPath();
+
+            File mavenWeb = new File(projectRoot, "src" + File.separator + "main" + File.separator + "webapp"
+                    + File.separator + "uploads" + File.separator + "avatars");
+            if (mavenWeb.exists() || mavenWeb.mkdirs()) return mavenWeb.toPath();
+        }
+        return null;
+    }
+
+    private Path resolveDeployedAvatarDir() {
+        String deployed = getServletContext().getRealPath("/uploads/avatars");
+        if (deployed == null) return null;
+        File dir = new File(deployed);
+        if (!dir.exists()) dir.mkdirs();
+        return dir.toPath();
+    }
+
+    private boolean isAllowedImageExt(String ext) {
+        if (ext == null) return false;
+        ext = ext.toLowerCase();
+        return ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".webp");
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String tab = normalizeTab(request.getParameter("tab"));
         loadUserAndForward(request, response, tab);
     }
@@ -105,33 +139,52 @@ public class ProfileController extends HttpServlet {
                 // ==== avatar upload ====
                 Part avatarPart = request.getPart("avatar"); // name="avatar" trong JSP
                 if (avatarPart != null && avatarPart.getSize() > 0) {
-                    String submitted = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
 
+                    String submitted = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
                     String ext = "";
                     int dot = submitted.lastIndexOf('.');
                     if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
 
-                    boolean ok = ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".webp");
-                    if (!ok) {
+                    if (!isAllowedImageExt(ext)) {
                         response.sendRedirect(request.getContextPath() + "/account/profile?tab=profile");
                         return;
                     }
 
-                    // Lưu vào /uploads/avatars
-                    String uploadDir = getServletContext().getRealPath("") + File.separator
-                            + "uploads" + File.separator + "avatars";
-                    File dir = new File(uploadDir);
-                    if (!dir.exists()) dir.mkdirs();
-
                     String newName = "avt_" + userLogin.getUserID() + "_" + System.currentTimeMillis() + ext;
-                    String fullPath = uploadDir + File.separator + newName;
 
-                    avatarPart.write(fullPath);
+                    Path persistentDir = resolvePersistentAvatarDir(); // bền vững (source)
+                    Path deployedDir = resolveDeployedAvatarDir();     // runtime deploy
 
-                    savedAvatarUrl = "uploads/avatars/" + newName;
+                    // Nếu không resolve được persistent => fallback chỉ lưu runtime
+                    if (persistentDir == null && deployedDir == null) {
+                        throw new IllegalStateException("Không xác định được thư mục lưu avatars.");
+                    }
+
+                    // Lưu trước vào persistent (nếu có), rồi copy sang deployed (nếu khác)
+                    Path persistentFile = (persistentDir != null) ? persistentDir.resolve(newName) : null;
+                    Path deployedFile = (deployedDir != null) ? deployedDir.resolve(newName) : null;
+
+                    if (persistentFile != null) {
+                        Files.createDirectories(persistentDir);
+                        try (InputStream in = avatarPart.getInputStream()) {
+                            Files.copy(in, persistentFile, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                        if (deployedFile != null && !deployedFile.equals(persistentFile)) {
+                            Files.createDirectories(deployedDir);
+                            Files.copy(persistentFile, deployedFile, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } else {
+                        // chỉ còn deployed
+                        Files.createDirectories(deployedDir);
+                        try (InputStream in = avatarPart.getInputStream()) {
+                            Files.copy(in, deployedFile, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+
+                    // Lưu URL dạng tuyệt đối theo context: /uploads/avatars/xxx.png
+                    savedAvatarUrl = "/uploads/avatars/" + newName;
                 }
 
-                // Update DB
                 userDAO.updateProfile(userLogin.getUserID(), fullName, phoneNumber, savedAvatarUrl);
 
                 // refresh session user

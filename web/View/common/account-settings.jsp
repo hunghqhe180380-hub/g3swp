@@ -177,9 +177,9 @@
                     <aside class="acc-card pad preview-col" id="previewCol">
                         <div class="preview-title">Preview</div>
 
-                        <img id="previewAvatar" class="preview-avatar"
-                             src="${ctx}/${empty requestScope.user.urlImgProfile ? 'uploads/avatars/avatarDefault.png' : requestScope.user.urlImgProfile}"
-                             alt="avatar"/>
+                    <img id="previewAvatar" class="preview-avatar"
+                         src="${ctx}${empty requestScope.user.urlImgProfile ? '/uploads/avatars/avatarDefault.png' : requestScope.user.urlImgProfile}"
+                         alt="avatar"/>
 
                         <div class="preview-line"></div>
 

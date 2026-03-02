@@ -9,8 +9,8 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
-<html>
-    <head>
+
+    
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Student Dashboard - POET</title>
@@ -21,7 +21,7 @@
 
         <link rel="stylesheet" href="${ctx}/assets/css/main.css">
         <link rel="stylesheet" href="${ctx}/assets/css/dashboard.css">
-    </head>
+    
     <body class="dash-page">
 
         <jsp:include page="/view/common/header.jsp" />
@@ -141,4 +141,3 @@
             </div>
         </main>
     </body>
-</html>
