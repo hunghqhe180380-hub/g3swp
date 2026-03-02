@@ -106,17 +106,21 @@
                             </div>
 
                             <button class="btn btn-primary join-btn" type="button">
-                                <a href="${pageContext.request.contextPath}/create">+ New Class</a>
+                                <a href="${pageContext.request.contextPath}/">+ New Class</a>
                             </button>
                         </div>
                     </div>
 
                     <!-- Class List -->
-                    <c:if test="${not empty sessionScope.classList}">
-                        <c:forEach items="${sessionScope.classList}" var="cls">
+                    <c:if test="${not empty classList}">
+                        <c:forEach items="${classList}" var="cls">
                             <div class="classes">
+<<<<<<< Updated upstream
                                 <!-- Demo cards -->
                                 <a class="class-card" href="${ctx}/classroom/manage/edit">
+=======
+                                <a class="class-card" href="#">
+>>>>>>> Stashed changes
                                     <div class="class-banner"></div>
                                     <div class="class-body">
                                         <h3 class="class-title">${cls.name}</h3>
