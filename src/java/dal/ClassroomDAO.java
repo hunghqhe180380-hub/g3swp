@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
 import java.sql.PreparedStatement;
@@ -12,140 +8,200 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
 
-/**
- *
- * @author BINH
- */
 public class ClassroomDAO extends DBContext {
 
-    protected PreparedStatement statement;
-    protected ResultSet resultSet;
+    private static final DateTimeFormatter FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    // ── Base SELECT shared by all read queries ─────────────────────────────
+    private static final String BASE_SELECT =
+        "SELECT a.Id, a.Name, a.ClassCode, a.Subject, a.TeacherId, " +
+        "       a.CreatedAt, a.MaxStudents, " +
+        "       b.FullName AS TeacherName, " +
+        "       (SELECT COUNT(*) FROM [Enrollments] e WHERE e.ClassId = a.Id) AS TotalStudent " +
+        "FROM [Classrooms] a " +
+        "JOIN [Users] b ON a.TeacherId = b.Id ";
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  COUNT  (for pagination metadata)
+    // ─────────────────────────────────────────────────────────────────────
+
+    public int countAllClasses(String search) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(*) FROM [Classrooms] a " +
+            "JOIN [Users] b ON a.TeacherId = b.Id WHERE 1=1"
+        );
+        boolean hasSearch = isNotBlank(search);
+        if (hasSearch) sql.append(searchClause());
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            if (hasSearch) bindSearch(ps, 1, search);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  PAGED LIST  (SQL-level OFFSET / FETCH)
+    // ─────────────────────────────────────────────────────────────────────
+
+    public List<Classroom> getClassesPaged(String search,
+                                           String sortCol, String sortDir,
+                                           int offset, int pageSize) {
+        String orderBy = switch (sortCol == null ? "" : sortCol.toLowerCase()) {
+            case "name"    -> "a.Name";
+            case "teacher" -> "b.FullName";
+            default        -> "a.CreatedAt";
+        };
+        String dir = "asc".equalsIgnoreCase(sortDir) ? "ASC" : "DESC";
+
+        boolean hasSearch = isNotBlank(search);
+        StringBuilder sql = new StringBuilder(BASE_SELECT).append("WHERE 1=1");
+        if (hasSearch) sql.append(searchClause());
+        sql.append(" ORDER BY ").append(orderBy).append(" ").append(dir);
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        List<Classroom> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (hasSearch) idx = bindSearch(ps, idx, search);
+            ps.setInt(idx++, offset);
+            ps.setInt(idx,   pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  ALL + SEARCH  (in-memory sort + PagingUtil approach)
+    // ─────────────────────────────────────────────────────────────────────
 
     public List<Classroom> getAllClassBySearch(String search) {
-        String sql = "select a.*,b.FullName as TeacherName,"
-                + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
-                + "from [Classrooms] as a\n"
-                + "join [Users] as b on a.TeacherId = b.Id\n"
-                + "where 1=1";
-        if (search != null && !search.trim().isEmpty()) {
-            sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ? OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
-        }
+        boolean hasSearch = isNotBlank(search);
+        StringBuilder sql = new StringBuilder(BASE_SELECT).append("WHERE 1=1");
+        if (hasSearch) sql.append(searchClause());
+        sql.append(" ORDER BY a.CreatedAt DESC");
+
         List<Classroom> list = new ArrayList<>();
-        try {
-            statement = connection.prepareStatement(sql);
-            int paramIndex = 1;
-            if (search != null && !search.trim().isEmpty()) {
-                String pattern = "%" + search.toLowerCase() + "%";
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            if (hasSearch) bindSearch(ps, 1, search);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
             }
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Classroom classes = new Classroom();
-                classes.setId(resultSet.getInt("Id"));
-                classes.setName(resultSet.getString("Name"));
-                classes.setClassCode(resultSet.getString("ClassCode"));
-                classes.setSubject(resultSet.getString("Subject"));
-                classes.setTeacherId(resultSet.getString("TeacherId"));
-                classes.setTeacherName(resultSet.getString("TeacherName"));
-                classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-                classes.setMaxStudent(resultSet.getInt("MaxStudents"));
-                classes.setSum(resultSet.getInt("TotalStudent"));
-                list.add(classes);
-            }
-            statement.close();
-            resultSet.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
 
-    public List<Classroom> getClassInfoByEnrollment() {
+    // ─────────────────────────────────────────────────────────────────────
+    //  TEACHER-SCOPED LIST
+    // ─────────────────────────────────────────────────────────────────────
+
+    public List<Classroom> getClassesByTeacher(String teacherId) {
+        String sql = BASE_SELECT + "WHERE a.TeacherId = ? ORDER BY a.CreatedAt DESC";
         List<Classroom> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, teacherId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
 
-    public boolean updateClassroom(Classroom classes) {
-        String sql = "update [Classrooms] set\n"
-                + "Name = ?, Subject = ?, MaxStudents = ?\n"
-                + "where Id = ?";
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classes.getName());
-            statement.setObject(2, classes.getSubject());
-            statement.setObject(3, classes.getMaxStudent());
-            statement.setObject(4, classes.getId());
-            int rows = statement.executeUpdate();
-            statement.close();
-            return rows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // ─────────────────────────────────────────────────────────────────────
+    //  SINGLE RECORD
+    // ─────────────────────────────────────────────────────────────────────
 
-    public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.*,b.FullName,"
-                + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
-                + "FROM [Classrooms] as a\n"
-                + "JOIN [Users] as b ON a.TeacherId = b.Id\n"
-                + "WHERE a.Id = ?";
-
-        Classroom cl = new Classroom();
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classId);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                cl.setId(resultSet.getInt("Id"));
-                cl.setName(resultSet.getString("Name"));
-                cl.setClassCode(resultSet.getString("ClassCode"));
-                cl.setSubject(resultSet.getString("Subject"));
-                cl.setTeacherId(resultSet.getString("TeacherId"));
-                cl.setTeacherName(resultSet.getString("FullName"));
-                cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-                cl.setMaxStudent(resultSet.getInt("MaxStudents"));
-                cl.setSum(resultSet.getInt("TotalStudent"));
+    public Classroom getClassById(int classId) {
+        String sql = BASE_SELECT + "WHERE a.Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, classId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
             }
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return cl;
-    }
-
-    public void deleteClassroom(String classId) {
-        String sql = "delete from [Classrooms] where Id = ?";
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classId);
-            statement.executeUpdate();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //get class id by it's code
-    public String getClassIdByCode(String classCode) {
-        try {
-            String sql = "SELECT  [Id]\n"
-                    + "  FROM [POETWebDB].[dbo].[Classrooms]\n"
-                    + "  where ClassCode = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, classCode);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("Id");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
 
+    public Classroom getClassInfoByClassId(String classId) {
+        try { return getClassById(Integer.parseInt(classId)); }
+        catch (NumberFormatException e) { return null; }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  WRITE OPERATIONS
+    // ─────────────────────────────────────────────────────────────────────
+
+    public boolean updateClassroom(Classroom c) {
+        String sql = "UPDATE [Classrooms] SET Name=?, Subject=?, MaxStudents=? WHERE Id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, c.getName());
+            ps.setString(2, c.getSubject());
+            ps.setInt(3, c.getMaxStudent());
+            ps.setInt(4, c.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    public void deleteClassroom(String classId) {
+        String sql = "DELETE FROM [Classrooms] WHERE Id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(classId));
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public String getClassIdByCode(String classCode) {
+        String sql = "SELECT Id FROM [Classrooms] WHERE ClassCode=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, classCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("Id");
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  PRIVATE HELPERS
+    // ─────────────────────────────────────────────────────────────────────
+
+    private Classroom mapRow(ResultSet rs) throws SQLException {
+        Classroom c = new Classroom();
+        c.setId(rs.getInt("Id"));
+        c.setName(rs.getString("Name"));
+        c.setClassCode(rs.getString("ClassCode"));
+        c.setSubject(rs.getString("Subject"));
+        c.setTeacherId(rs.getString("TeacherId"));
+        c.setTeacherName(rs.getString("TeacherName"));
+        if (rs.getTimestamp("CreatedAt") != null)
+            c.setCreatedAt(rs.getTimestamp("CreatedAt").toLocalDateTime().format(FMT));
+        c.setMaxStudent(rs.getInt("MaxStudents"));
+        c.setSum(rs.getInt("TotalStudent"));
+        return c;
+    }
+
+    private static String searchClause() {
+        return " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ?" +
+               " OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
+    }
+
+    /** Bind 4 LIKE params; returns next available param index. */
+    private static int bindSearch(PreparedStatement ps, int start, String search)
+            throws SQLException {
+        String p = "%" + search.trim().toLowerCase() + "%";
+        ps.setString(start,   p);
+        ps.setString(start+1, p);
+        ps.setString(start+2, p);
+        ps.setString(start+3, p);
+        return start + 4;
+    }
+
+    private static boolean isNotBlank(String s) {
+        return s != null && !s.trim().isEmpty();
+    }
 }

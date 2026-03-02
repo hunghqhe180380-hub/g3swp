@@ -25,8 +25,18 @@ public class DBContext {
         try {
             Properties properties = new Properties();
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("../ConnectDB.properties");
+            if (inputStream == null)
+                inputStream = getClass().getClassLoader().getResourceAsStream("ConnectDB.properties");
+            if (inputStream == null)
+                inputStream = DBContext.class.getResourceAsStream("/ConnectDB.properties");
+            if (inputStream == null) {
+                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, "ConnectDB.properties NOT FOUND in classpath!");
+                return;
+            }
             try {
                 properties.load(inputStream);
+                inputStream.close();
+
             } catch (IOException ex) {
                 Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -38,5 +48,10 @@ public class DBContext {
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void main(String[] args) {
+        DBContext dbContext = new DBContext();
+        System.out.println(dbContext.connection);
     }
 }
