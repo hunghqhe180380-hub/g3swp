@@ -678,6 +678,35 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
+
+    public String getPasswordHashByUserId(String userId) {
+        try {
+            String sql = "SELECT [PasswordHash] FROM [dbo].[Users] WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("PasswordHash");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updatePasswordHashByUserId(String userId, String newPasswordHash) {
+        try {
+            String sql = "UPDATE [dbo].[Users] SET [PasswordHash] = ? WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newPasswordHash);
+            statement.setObject(2, userId);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"

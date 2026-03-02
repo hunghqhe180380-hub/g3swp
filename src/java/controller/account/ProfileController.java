@@ -274,10 +274,53 @@ public class ProfileController extends HttpServlet {
             }
 
             if ("password".equals(tab)) {
-                // String currentPassword = request.getParameter("currentPassword");
-                // String newPassword = request.getParameter("newPassword");
-                // String confirmPassword = request.getParameter("confirmPassword");
-                response.sendRedirect(request.getContextPath() + "/account/profile?tab=password");
+                request.setCharacterEncoding("UTF-8");
+
+                String currentPassword = request.getParameter("currentPassword");
+                String newPassword = request.getParameter("newPassword");
+                String confirmPassword = request.getParameter("confirmPassword");
+
+                if (currentPassword == null || currentPassword.trim().isEmpty()) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=current_empty");
+                    return;
+                }
+                if (newPassword == null || newPassword.trim().isEmpty()) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=new_invalid");
+                    return;
+                }
+                if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=confirm_mismatch");
+                    return;
+                }
+
+                validation.InputValidator inputValidator = new validation.InputValidator();
+                if (inputValidator.isPassword(newPassword.trim()) != null) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=new_invalid");
+                    return;
+                }
+
+                util.PasswordService passwordService = new util.PasswordService();
+
+                String currentHash = userDAO.getPasswordHashByUserId(userLogin.getUserID());
+                if (currentHash == null || !passwordService.checkPassword(currentPassword.trim(), currentHash)) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=current_wrong");
+                    return;
+                }
+
+                if (!passwordService.isPasswordMatch(newPassword, confirmPassword)) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=confirm_mismatch");
+                    return;
+                }
+
+                String newHash = passwordService.encryptPassword(newPassword.trim());
+                boolean ok = userDAO.updatePasswordHashByUserId(userLogin.getUserID(), newHash);
+
+                if (!ok) {
+                    response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=new_invalid");
+                    return;
+                }
+
+                response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&msg=pw_updated");
                 return;
             }
 

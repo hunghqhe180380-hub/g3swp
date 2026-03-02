@@ -139,8 +139,25 @@
                         <div class="tab-panel" data-panel="password">
                             <h2 class="acc-subtitle">Change password</h2>
 
+                            <!-- messages -->
+                            <c:if test="${param.msg == 'pw_updated'}">
+                                <div class="acc-help">Password updated successfully.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'current_empty'}">
+                                <div class="acc-help" style="color:#dc2626;">Please enter your current password.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'current_wrong'}">
+                                <div class="acc-help" style="color:#dc2626;">Current password is incorrect.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'new_invalid'}">
+                                <div class="acc-help" style="color:#dc2626;">New password is invalid.</div>
+                            </c:if>
+                            <c:if test="${param.err == 'confirm_mismatch'}">
+                                <div class="acc-help" style="color:#dc2626;">Confirm password does not match.</div>
+                            </c:if>
+
                             <div class="two-col">
-                                <div class="acc-card pad">
+                                <form class="acc-card pad" method="post" action="${ctx}/account/profile?tab=password">
                                     <div class="acc-label">Current password</div>
                                     <div class="pw-wrap">
                                         <input class="acc-input" type="password" name="currentPassword"
@@ -169,10 +186,10 @@
                                     </div>
 
                                     <div class="acc-actions" style="margin-top:18px;">
-                                        <button class="acc-btn primary" type="button">Update password</button>
+                                        <button class="acc-btn primary" type="submit">Update password</button>
                                         <button class="acc-btn ghost" type="button" data-go="profile">Back</button>
                                     </div>
-                                </div>
+                                </form>
 
                                 <div class="acc-card pad tip-card">
                                     <div class="tip-title">🛡 Password tips</div>
