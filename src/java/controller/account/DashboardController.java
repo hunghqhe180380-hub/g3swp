@@ -42,8 +42,7 @@ public class DashboardController extends HttpServlet {
         
         String userRole = userLogin.getRole();
         switch (userRole) {
-            case "Student":
-                
+            case "Student":                
                 request.getRequestDispatcher("/view/student/dashboard.jsp").forward(request, response);
                 break;
             case "Teacher":

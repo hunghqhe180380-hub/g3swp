@@ -106,16 +106,15 @@
                             </div>
 
                             <button class="btn btn-primary join-btn" type="button">
-                                <a href="${pageContext.request.contextPath}/create">+ New Class</a>
+                                <a href="${pageContext.request.contextPath}/">+ New Class</a>
                             </button>
                         </div>
                     </div>
 
                     <!-- Class List -->
-                    <c:if test="${not empty sessionScope.classList}">
-                        <c:forEach items="${sessionScope.classList}" var="cls">
+                    <c:if test="${not empty classList}">
+                        <c:forEach items="${classList}" var="cls">
                             <div class="classes">
-                                <!-- Demo cards -->
                                 <a class="class-card" href="#">
                                     <div class="class-banner"></div>
                                     <div class="class-body">
