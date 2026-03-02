@@ -38,8 +38,6 @@ public class ProfileController extends HttpServlet {
                 return "/view/student/profile.jsp";
             case "teacher":
                 return "/view/teacher/profile.jsp";
-            case "admin":
-                return "/view/admin/profile.jsp";
             default:
                 return "/view/student/profile.jsp";
         }
