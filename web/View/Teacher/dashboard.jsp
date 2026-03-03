@@ -105,16 +105,14 @@
                                 <input type="text" placeholder="Search classes..." />
                             </div>
 
-                            <button class="btn btn-primary join-btn" type="button">
-                                <a href="${pageContext.request.contextPath}/">+ New Class</a>
-                            </button>
+                            <a class="btn btn-primary join-btn" href="${ctx}/view/classroom/create_class.jsp">+ New Class</a>
                         </div>
                     </div>
 
                     <!-- Class List -->
                     <c:if test="${not empty classList}">
-                        <c:forEach items="${classList}" var="cls">
-                            <div class="classes">
+                        <div class="classes classes-scroll">
+                            <c:forEach items="${classList}" var="cls">
                                 <a class="class-card" href="#">
                                     <div class="class-banner"></div>
                                     <div class="class-body">
@@ -125,8 +123,8 @@
                                         </div>
                                     </div>
                                 </a>
-                            </div>
-                        </c:forEach>
+                            </c:forEach>
+                        </div>
                     </c:if>
                 </section>
             </div>

@@ -239,10 +239,11 @@ body.dash-page{
 
 /* Classes grid */
 .classes{
-    margin-top: 18px;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    grid-auto-rows: 220px;
+    margin-top: 15px;
 }
 
 .class-card{
@@ -252,6 +253,7 @@ body.dash-page{
     overflow: hidden;
     box-shadow: 0 1px 0 rgba(2,6,23,0.02);
     transition: 0.18s ease;
+    height: 220px;
 }
 
 .class-card:hover{
@@ -282,6 +284,28 @@ body.dash-page{
     margin-top: 8px;
     color: #64748b;
     line-height: 1.5;
+}
+
+.classes-scroll{
+    --card-h: 220px;
+    --row-gap: 28px;
+    max-height: calc(220px * 2 + 28px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.classes-scroll::-webkit-scrollbar{
+    width: 8px;
+}
+.classes-scroll::-webkit-scrollbar-track{
+    background: transparent;
+}
+.classes-scroll::-webkit-scrollbar-thumb{
+    background: rgba(100,116,139,0.35);
+    border-radius: 999px;
+}
+.classes-scroll::-webkit-scrollbar-thumb:hover{
+    background: rgba(100,116,139,0.55);
 }
 
 /* Modal */
