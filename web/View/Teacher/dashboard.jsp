@@ -93,18 +93,19 @@
                 </section>
 
                 <section>
-                    <div class="section-top">
-                        <h2>My Classes</h2>
+                    <div class="classes-head">
+                        <h2 class="section-title">My Classes</h2>
 
-                        <div class="class-tools">
+                        <div class="classes-actions">
                             <div class="searchbox">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
                                 <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                 </svg>
-                                <input type="text" placeholder="Search classes..." />
+                                <input id="classSearchInput" type="text" placeholder="Search classes..." />
                             </div>
 
+                            <button class="btn btn-primary search-btn" type="button" id="btnSearchClass">Search</button>
                             <a class="btn btn-primary join-btn" href="${ctx}/view/classroom/create_class.jsp">+ New Class</a>
                         </div>
                     </div>
@@ -113,13 +114,22 @@
                     <c:if test="${not empty classList}">
                         <div class="classes classes-scroll">
                             <c:forEach items="${classList}" var="cls">
-                                <a class="class-card" href="#">
+                                <a class="class-card"
+                                   href="#"
+                                   data-class-id="<c:out value='${cls.id}'/>"
+                                   data-class-name="<c:out value='${cls.name}'/>"
+                                   data-class-code="<c:out value='${cls.classCode}'/>"
+                                   data-subject="<c:out value='${cls.subject}'/>"
+                                   data-teacher="<c:out value='${cls.teacherName}'/>"
+                                   data-created="<c:out value='${cls.createdAt}'/>"
+                                   data-sum="<c:out value='${cls.sum}'/>"
+                                   data-max="<c:out value='${cls.maxStudent}'/>">
                                     <div class="class-banner"></div>
                                     <div class="class-body">
-                                        <h3 class="class-title">${cls.name}</h3>
+                                        <h3 class="class-title"><c:out value="${cls.name}"/></h3>
                                         <div class="class-meta">
-                                            Subject : ${cls.subject}<br>
-                                            Student : ${cls.sum}/${cls.maxStudent}
+                                            Subject : <c:out value="${cls.subject}"/><br>
+                                            Student : <c:out value="${cls.sum}"/>/<c:out value="${cls.maxStudent}"/>
                                         </div>
                                     </div>
                                 </a>
@@ -129,5 +139,191 @@
                 </section>
             </div>
         </main>
+        <!-- Class Detail Modal (Teacher)-->
+        <div id="classDetailModal" class="dash-modal class-detail-modal" aria-hidden="true">
+            <div class="dash-modal__backdrop" data-close="1"></div>
+
+            <div class="dash-modal__dialog class-detail__dialog" role="dialog" aria-modal="true" aria-labelledby="cd-title">
+                <div class="class-detail__header">
+                    <div class="class-detail__heading" id="cd-title">Class Details</div>
+                    <button class="class-detail__close" type="button" aria-label="Close" data-close="1">×</button>
+                </div>
+
+                <div class="class-detail__body">
+                    <div class="class-detail__top">
+                        <div>
+                            <div class="class-detail__name" id="cd-name">—</div>
+                            <div class="class-detail__code-line">
+                                <span class="class-detail__code" id="cd-code">—</span>
+                                <button type="button" class="class-detail__copy" id="cd-copy-btn">Copy code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="class-detail__row">
+                        <div class="class-detail__label">Subject:</div>
+                        <div class="class-detail__value" id="cd-subject">—</div>
+                    </div>
+
+                    <div class="class-detail__row">
+                        <div class="class-detail__label">Created:</div>
+                        <div class="class-detail__value" id="cd-created">—</div>
+                    </div>
+
+                    <div class="class-detail__row">
+                        <div class="class-detail__label">Teacher:</div>
+                        <div class="class-detail__value" id="cd-teacher">—</div>
+                    </div>
+
+                    <div class="class-detail__row">
+                        <div class="class-detail__label">Capacity:</div>
+                        <div class="class-detail__value" id="cd-capacity">—</div>
+                    </div>
+
+                    <div class="class-detail__actions">
+                        <a class="class-detail__btn is-blue" id="cd-students" href="#">Student List</a>
+                        <a class="class-detail__btn is-green" id="cd-materials" href="#">Materials</a>
+                        <a class="class-detail__btn is-orange" id="cd-assignments" href="#">Assignments</a>
+
+                        <a class="class-detail__btn is-purple" id="cd-edit" href="#">Edit Class</a>
+
+                        <form id="cd-delete-form" method="post" action="${ctx}/classroom/manage/delete-class" class="class-detail__delete">
+                            <input type="hidden" name="classId" id="cd-classId" value="" />
+                            <button type="submit" class="class-detail__btn is-red"
+                                    onclick="return confirm('Delete this class?');">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
+<script>
+    (function () {
+        const input = document.getElementById('classSearchInput');
+        const btn = document.getElementById('btnSearchClass');
+        const cards = document.querySelectorAll('.classes .class-card');
+
+        if (!input || !btn || !cards.length)
+            return;
+
+        function norm(s) {
+            return (s || '')
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')   // remove accents
+                    .trim();
+        }
+
+        function applyFilter() {
+            const q = norm(input.value);
+
+            cards.forEach(card => {
+                const title = card.querySelector('.class-title')?.innerText || '';
+                const meta = card.querySelector('.class-meta')?.innerText || '';
+                const hay = norm(title + ' ' + meta);
+
+                card.style.display = (q === '' || hay.includes(q)) ? '' : 'none';
+            });
+        }
+
+        btn.addEventListener('click', applyFilter);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilter();
+            }
+        });
+    })();
+</script>
+<script>
+        (() => {
+            const modal = document.getElementById('classDetailModal');
+            if (!modal) return;
+
+            const ctx = '${ctx}';
+
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = (val ?? '').toString().trim() || '—';
+            };
+
+            const openModal = () => {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            };
+
+            const closeModal = () => {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            };
+
+            modal.addEventListener('click', (e) => {
+                if (e.target?.dataset?.close === '1') closeModal();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+            });
+
+            // Copy code
+            const copyBtn = document.getElementById('cd-copy-btn');
+            copyBtn?.addEventListener('click', async () => {
+                const code = document.getElementById('cd-code')?.textContent?.trim();
+                if (!code || code === '—') return;
+
+                try {
+                    await navigator.clipboard.writeText(code);
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
+                } catch (_) {
+                    const ta = document.createElement('textarea');
+                    ta.value = code;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                const card = e.target.closest('.class-card');
+                if (!card) return;
+                e.preventDefault();
+
+                const d = card.dataset;
+
+                setText('cd-name', d.className);
+                setText('cd-code', d.classCode);
+                setText('cd-subject', d.subject);
+                setText('cd-created', d.created);
+                setText('cd-teacher', d.teacher);
+
+                const sum = d.sum ?? '';
+                const max = d.max ?? '';
+                setText('cd-capacity', (sum !== '' && max !== '') ? `${sum} students • ${max} max` : '—');
+
+                const classIdRaw = d.classId || '';
+                const classId = encodeURIComponent(classIdRaw);
+
+                const hidden = document.getElementById('cd-classId');
+                if (hidden) hidden.value = classIdRaw;
+
+                document.getElementById('cd-students').href = `${ctx}/classroom/view/student-list?classId=${classId}`;
+                document.getElementById('cd-materials').href = `${ctx}/material/view/material-list?classId=${classId}`;
+
+                document.getElementById('cd-assignments').href = `#`;
+
+                document.getElementById('cd-edit').href = `${ctx}/classroom/manage/edit?classId=${classId}`;
+
+                openModal();
+            });
+        })();
+    </script>
