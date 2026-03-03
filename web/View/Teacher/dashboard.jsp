@@ -239,91 +239,98 @@
     })();
 </script>
 <script>
-        (() => {
-            const modal = document.getElementById('classDetailModal');
-            if (!modal) return;
+    (() => {
+        const modal = document.getElementById('classDetailModal');
+        if (!modal)
+            return;
 
-            const ctx = '${ctx}';
+        const ctx = '${ctx}';
 
-            const setText = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = (val ?? '').toString().trim() || '—';
-            };
+        const setText = (id, val) => {
+            const el = document.getElementById(id);
+            if (el)
+                el.textContent = (val ?? '').toString().trim() || '—';
+        };
 
-            const openModal = () => {
-                modal.classList.add('is-open');
-                modal.setAttribute('aria-hidden', 'false');
-                document.body.classList.add('modal-open');
-            };
+        const openModal = () => {
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+        };
 
-            const closeModal = () => {
-                modal.classList.remove('is-open');
-                modal.setAttribute('aria-hidden', 'true');
-                document.body.classList.remove('modal-open');
-            };
+        const closeModal = () => {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+        };
 
-            modal.addEventListener('click', (e) => {
-                if (e.target?.dataset?.close === '1') closeModal();
-            });
+        modal.addEventListener('click', (e) => {
+            if (e.target?.dataset?.close === '1')
+                closeModal();
+        });
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-            });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open'))
+                closeModal();
+        });
 
-            // Copy code
-            const copyBtn = document.getElementById('cd-copy-btn');
-            copyBtn?.addEventListener('click', async () => {
-                const code = document.getElementById('cd-code')?.textContent?.trim();
-                if (!code || code === '—') return;
+        // Copy code
+        const copyBtn = document.getElementById('cd-copy-btn');
+        copyBtn?.addEventListener('click', async () => {
+            const code = document.getElementById('cd-code')?.textContent?.trim();
+            if (!code || code === '—')
+                return;
 
-                try {
-                    await navigator.clipboard.writeText(code);
-                    copyBtn.textContent = 'Copied!';
-                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
-                } catch (_) {
-                    const ta = document.createElement('textarea');
-                    ta.value = code;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
+            try {
+                await navigator.clipboard.writeText(code);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
+            } catch (_) {
+                const ta = document.createElement('textarea');
+                ta.value = code;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
 
-                    copyBtn.textContent = 'Copied!';
-                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
-                }
-            });
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
+            }
+        });
 
-            document.addEventListener('click', (e) => {
-                const card = e.target.closest('.class-card');
-                if (!card) return;
-                e.preventDefault();
+        document.addEventListener('click', (e) => {
+            const card = e.target.closest('.class-card');
+            if (!card)
+                return;
+            e.preventDefault();
 
-                const d = card.dataset;
+            const d = card.dataset;
 
-                setText('cd-name', d.className);
-                setText('cd-code', d.classCode);
-                setText('cd-subject', d.subject);
-                setText('cd-created', d.created);
-                setText('cd-teacher', d.teacher);
+            setText('cd-name', d.className);
+            setText('cd-code', d.classCode);
+            setText('cd-subject', d.subject);
+            setText('cd-created', d.created);
+            setText('cd-teacher', d.teacher);
 
-                const sum = d.sum ?? '';
-                const max = d.max ?? '';
-                setText('cd-capacity', (sum !== '' && max !== '') ? `${sum} students • ${max} max` : '—');
+            const sum = d.sum || '';
+            const max = d.max || '';
+            const capacityText = (sum !== '' && max !== '') ? sum + ' students • ' + max + ' max' : '—';
+            setText('cd-capacity', capacityText);
+            const classIdRaw = d.classId || '';
+            const classId = encodeURIComponent(classIdRaw);
 
-                const classIdRaw = d.classId || '';
-                const classId = encodeURIComponent(classIdRaw);
+            const hidden = document.getElementById('cd-classId');
+            if (hidden)
+                hidden.value = classIdRaw;
 
-                const hidden = document.getElementById('cd-classId');
-                if (hidden) hidden.value = classIdRaw;
+            document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
+                        document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
 
-                document.getElementById('cd-students').href = `${ctx}/classroom/view/student-list?classId=${classId}`;
-                document.getElementById('cd-materials').href = `${ctx}/material/view/material-list?classId=${classId}`;
+                                    document.getElementById('cd-assignments').href = `#`;
 
-                document.getElementById('cd-assignments').href = `#`;
+                                    document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
-                document.getElementById('cd-edit').href = `${ctx}/classroom/manage/edit?classId=${classId}`;
-
-                openModal();
-            });
-        })();
-    </script>
+                                                openModal();
+                                            });
+                                        })();
+</script>

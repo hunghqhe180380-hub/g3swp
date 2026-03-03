@@ -36,10 +36,12 @@ public class User {
         this.emailConfirm = emailConfirm;
     }
 
-    public User(String userName, String fullName, String email) {
+    public User(String userName, String fullName, String email, String phoneNumber, String accountCode) {
         this.userName = userName;
         this.fullName = fullName;
         this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.accountCode = accountCode;
     }
     
 
