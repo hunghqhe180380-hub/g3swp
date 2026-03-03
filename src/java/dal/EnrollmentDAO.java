@@ -23,7 +23,7 @@ public class EnrollmentDAO extends DBContext {
 
     public List<Enrollment> getEnrollmentByClassId(String search, String classId, String[] status) {
         String sql = "SELECT a.*,b.* FROM [Enrollments] as a\n"
-                + "JOIN [Users] as b ON a.UserId = b.Id\n"                
+                + "JOIN [Users] as b ON a.UserId = b.Id\n"
                 + "WHERE a.ClassId =?";
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?)";
@@ -61,7 +61,9 @@ public class EnrollmentDAO extends DBContext {
                 enroll.setId(resultSet.getInt("Id"));
                 enroll.setClassId(resultSet.getInt("ClassId"));
                 enroll.setUserId(resultSet.getString("UserId"));
-                enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
+                enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"),
+                         resultSet.getString("Email"), resultSet.getString("PhoneNumber"),
+                         resultSet.getString("AccountCode")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
                 enroll.setJoinedAt(resultSet.getTimestamp("JoinedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 enroll.setStatus(resultSet.getInt("Status"));
@@ -106,7 +108,6 @@ public class EnrollmentDAO extends DBContext {
 //        }
 //        return list;
 //    }
-
     public void kickOutStudent(String userId, String classId) {
         String sql = "delete from [Enrollments] where userId =? and classId =?";
         try {
@@ -139,7 +140,7 @@ public class EnrollmentDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }    
+    }
 
     public boolean isUnenroll(String userId, String classId) {
         boolean enroll = false;
