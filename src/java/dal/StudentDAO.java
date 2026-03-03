@@ -27,14 +27,12 @@ public class StudentDAO extends DBContext {
         try {
             String sql = "SELECT [ClassId]\n"
                     + ",c.*\n"
-                    + ",[RoleInClass]\n"
-                    + ",(select count(*) from [Enrollments] where ClassId = c.Id) as TotalStudent\n"
+                    + ",[RoleInClass]\n"                    
                     + ",b.FullName as TeacherName\n"
                     + "  FROM [dbo].[Enrollments] e\n"
-                    + "  JOIN [dbo].[Classrooms] c\n"
-                    + "  on e.ClassId = c.Id\n"
+                    + "  JOIN [dbo].[Classrooms] c on e.ClassId = c.Id\n"
                     + "  JOIN [Users] as b on c.TeacherId = b.Id\n"
-                    + "  where UserId = ?";
+                    + "  where e.UserId = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             resultSet = statement.executeQuery();

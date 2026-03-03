@@ -41,7 +41,7 @@ public class RouteByRoleController extends HttpServlet {
         User userLogin = (User) session.getAttribute("user");
 
         List<Classroom> classList = showClassList(userLogin.getUserID(), userLogin.getRole());
-        request.setAttribute("classList", classList);
+        session.setAttribute("classList", classList);
         request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
         //check route 
     }

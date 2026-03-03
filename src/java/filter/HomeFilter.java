@@ -156,7 +156,7 @@ public class HomeFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession ses = req.getSession();
-        User user = (User) ses.getAttribute("user");
+        User user = (User) ses.getAttribute("user");        
         String url = req.getServletPath();
         boolean isPublic = url.equals("/login") || url.equals("/register")
                 || url.equals("/home") || url.startsWith("/assets/")
