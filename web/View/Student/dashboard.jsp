@@ -95,7 +95,7 @@
             <section>
                 <div class="section-top">
                     <h2>My Classes</h2>
-                    <form action="join" method="POST">
+                    <form action="${ctx}/join" method="POST">
                         <div class="class-tools">
                             <div class="searchbox">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">

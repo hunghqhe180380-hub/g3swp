@@ -27,7 +27,7 @@
                 <div class="header__label">Teacher • Class</div>
                 <h4 class="header__title">Edit: <c:out value="${classroom.name}"/></h4>
             </div>
-            <a class="btn btn-back-header" href="${ctx}/teacher/dashboard">
+            <a class="btn btn-back-header" href="${ctx}/account/dashboard">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>

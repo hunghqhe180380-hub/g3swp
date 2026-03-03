@@ -106,7 +106,7 @@
                             </div>
 
                             <button class="btn btn-primary search-btn" type="button" id="btnSearchClass">Search</button>
-                            <a class="btn btn-primary join-btn" href="${ctx}/view/classroom/create_class.jsp">+ New Class</a>
+                            <a class="btn btn-primary join-btn" href="${ctx}/classroom/manage/create">+ New Class</a>
                         </div>
                     </div>
 

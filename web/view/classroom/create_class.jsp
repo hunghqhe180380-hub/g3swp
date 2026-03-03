@@ -28,7 +28,7 @@
                     <!-- FORM CARD -->
                     <section class="cc-card cc-card--form">
                         <!-- Fix giùm cái link cái -->
-                        <form action="${ctx}/Classrooms/Create" method="POST" id="createClassForm" novalidate> 
+                        <form action="${ctx}/Classrooms/manage/create" method="POST" id="createClassForm" novalidate> 
                             <div class="cc-field">
                                 <label class="cc-label" for="className">Name</label>
                                 <input class="cc-input" type="text" id="className" name="className"
