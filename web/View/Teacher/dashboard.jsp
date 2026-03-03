@@ -111,9 +111,9 @@
                     </div>
 
                     <!-- Class List -->
-                    <c:if test="${not empty classList}">
+                    <c:if test="${not empty sessionScope.classList}">
                         <div class="classes classes-scroll">
-                            <c:forEach items="${classList}" var="cls">
+                            <c:forEach items="${sessionScope.classList}" var="cls">
                                 <a class="class-card"
                                    href="#"
                                    data-class-id="<c:out value='${cls.id}'/>"
@@ -136,6 +136,9 @@
                             </c:forEach>
                         </div>
                     </c:if>
+                    <c:if test="${empty sessionScope.classList}">
+                        <h1>Have not created any class yet!</h1>
+                    </c:if>
                 </section>
             </div>
         </main>
@@ -154,7 +157,7 @@
                         <div>
                             <div class="class-detail__name" id="cd-name">—</div>
                             <div class="class-detail__code-line">
-                                <span class="class-detail__code" id="cd-code">—</span>
+                                <span class="class-detail__code" id="cd-class-code">—</span>
                                 <button type="button" class="class-detail__copy" id="cd-copy-btn">Copy code</button>
                             </div>
                         </div>
@@ -168,11 +171,6 @@
                     <div class="class-detail__row">
                         <div class="class-detail__label">Created:</div>
                         <div class="class-detail__value" id="cd-created">—</div>
-                    </div>
-
-                    <div class="class-detail__row">
-                        <div class="class-detail__label">Teacher:</div>
-                        <div class="class-detail__value" id="cd-teacher">—</div>
                     </div>
 
                     <div class="class-detail__row">
@@ -200,54 +198,20 @@
         </div>
     </body>
 </html>
-<script>
-    (function () {
-        const input = document.getElementById('classSearchInput');
-        const btn = document.getElementById('btnSearchClass');
-        const cards = document.querySelectorAll('.classes .class-card');
-
-        if (!input || !btn || !cards.length)
-            return;
-
-        function norm(s) {
-            return (s || '')
-                    .toLowerCase()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')   // remove accents
-                    .trim();
-        }
-
-        function applyFilter() {
-            const q = norm(input.value);
-
-            cards.forEach(card => {
-                const title = card.querySelector('.class-title')?.innerText || '';
-                const meta = card.querySelector('.class-meta')?.innerText || '';
-                const hay = norm(title + ' ' + meta);
-
-                card.style.display = (q === '' || hay.includes(q)) ? '' : 'none';
-            });
-        }
-
-        btn.addEventListener('click', applyFilter);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                applyFilter();
-            }
-        });
-    })();
-</script>
-<script>
+ <script>
         (() => {
             const modal = document.getElementById('classDetailModal');
-            if (!modal) return;
+            if (!modal) {
+                console.log('Missing #classDetailModal');
+                return;
+            }
 
             const ctx = '${ctx}';
 
             const setText = (id, val) => {
                 const el = document.getElementById(id);
-                if (el) el.textContent = (val ?? '').toString().trim() || '—';
+                if (el)
+                    el.textContent = (val ?? '').toString().trim() || '—';
             };
 
             const openModal = () => {
@@ -262,68 +226,94 @@
                 document.body.classList.remove('modal-open');
             };
 
+            // Close by backdrop / X
             modal.addEventListener('click', (e) => {
-                if (e.target?.dataset?.close === '1') closeModal();
+                if (e.target && e.target.dataset && e.target.dataset.close === '1')
+                    closeModal();
             });
 
+            // Close by ESC
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+                if (e.key === 'Escape' && modal.classList.contains('is-open'))
+                    closeModal();
             });
 
-            // Copy code
-            const copyBtn = document.getElementById('cd-copy-btn');
-            copyBtn?.addEventListener('click', async () => {
-                const code = document.getElementById('cd-code')?.textContent?.trim();
-                if (!code || code === '—') return;
-
-                try {
-                    await navigator.clipboard.writeText(code);
-                    copyBtn.textContent = 'Copied!';
-                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
-                } catch (_) {
-                    const ta = document.createElement('textarea');
-                    ta.value = code;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-
-                    copyBtn.textContent = 'Copied!';
-                    setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
-                }
-            });
-
+            // dashboard.jsp - Đoạn Script xử lý click
             document.addEventListener('click', (e) => {
                 const card = e.target.closest('.class-card');
-                if (!card) return;
+                if (!card)
+                    return;
+
                 e.preventDefault();
-
                 const d = card.dataset;
-
+                setText('cd-class-code', d.classCode);
                 setText('cd-name', d.className);
-                setText('cd-code', d.classCode);
                 setText('cd-subject', d.subject);
                 setText('cd-created', d.created);
                 setText('cd-teacher', d.teacher);
 
-                const sum = d.sum ?? '';
-                const max = d.max ?? '';
-                setText('cd-capacity', (sum !== '' && max !== '') ? `${sum} students • ${max} max` : '—');
-
-                const classIdRaw = d.classId || '';
-                const classId = encodeURIComponent(classIdRaw);
+                // FIX 1: Nối chuỗi kiểu cũ (dùng dấu +) để JSP không nhận nhầm 
+                const sum = d.sum || '';
+                const max = d.max || '';
+                const capacityText = (sum !== '' && max !== '') ? sum + ' students • ' + max + ' max' : '—';
+                setText('cd-capacity', capacityText);
 
                 const hidden = document.getElementById('cd-classId');
-                if (hidden) hidden.value = classIdRaw;
+                if (hidden)
+                    hidden.value = d.classId || '';
 
-                document.getElementById('cd-students').href = `${ctx}/classroom/view/student-list?classId=${classId}`;
-                document.getElementById('cd-materials').href = `${ctx}/material/view/material-list?classId=${classId}`;
+                // FIX 2: Tách ctx (biến JSP) ra khỏi classId (biến JS)
+                const classId = encodeURIComponent(d.classId || '');
+                const a1 = document.getElementById('cd-students');
+                const a2 = document.getElementById('cd-materials');
 
-                document.getElementById('cd-assignments').href = `#`;
-
-                document.getElementById('cd-edit').href = `${ctx}/classroom/manage/edit?classId=${classId}`;
+                if (a1)
+                    a1.href = ctx + '/classroom/view/student-list?classId=' + classId;
+                if (a2)
+                    a2.href = ctx + '/material/view/material-list?classId=' + classId;
 
                 openModal();
             });
         })();
     </script>
+
+    <script>
+        (() => {
+            const modal = document.getElementById('joinClassModal');
+            const openBtn = document.getElementById('openJoinModalBtn');
+            const input = document.getElementById('join-classCode');
+
+            if (!modal || !openBtn)
+                return;
+
+            const open = () => {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+                setTimeout(() => input && input.focus(), 0);
+            };
+
+            const close = () => {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            };
+
+            const shouldOpen = ${openJoinModal ? "true" : "false"};
+            if (shouldOpen)
+                open();
+
+            openBtn.addEventListener('click', open);
+
+            modal.addEventListener('click', (e) => {
+                if (e.target?.dataset?.close === 'join')
+                    close();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('is-open'))
+                    close();
+            });
+        })();
+    </script>
+</script>

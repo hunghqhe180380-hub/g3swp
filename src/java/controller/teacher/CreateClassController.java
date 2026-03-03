@@ -61,7 +61,7 @@ public class CreateClassController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/classroom/create_class.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
     }
 
     /**
@@ -82,21 +82,20 @@ public class CreateClassController extends HttpServlet {
         HttpSession session = request.getSession();
         User teacher = (User) session.getAttribute("user");
         Map<String, String> listMSG = validator(teacher.getUserID(), className, subject, studentLimit);
-        if (listMSG.size() > 0) {
-            request.setAttribute("className", className);
-            request.setAttribute("subject", subject);
-            request.setAttribute("studentLimit", studentLimit);
-            request.setAttribute("listMSG", listMSG);
-            request.getRequestDispatcher("view/classroom/create_class.jsp").forward(request, response);
-            return;
-        } else {
+        request.setAttribute("className", className);
+        request.setAttribute("subject", subject);
+        request.setAttribute("studentLimit", studentLimit);
+        if (listMSG.size() == 0) {
+            //if validation is legit => allow create a new classroom
+            listMSG.put("msgSuccess", "Create class successfull.");
             TeacherDAO techerDAO = new TeacherDAO();
             User user = (User) session.getAttribute("user");
-            techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
-            request.getRequestDispatcher("route").forward(request, response);
+            String classCode = techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
+            request.setAttribute("classCode", classCode);
         }
+        request.setAttribute("listMSG", listMSG);
+        request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
     }
-    
 
     //validation 
     private Map<String, String> validator(
@@ -112,7 +111,7 @@ public class CreateClassController extends HttpServlet {
             errors.put("msgClassName", Message.MSG301);
         }
         // className of teachers unique
-        if(teacherDAO.isExistClassName(teacherID, className)){
+        if (teacherDAO.isExistClassName(teacherID, className)) {
             errors.put("msgClassName", Message.MSG305);
         }
         // subject is blank ? return : continue

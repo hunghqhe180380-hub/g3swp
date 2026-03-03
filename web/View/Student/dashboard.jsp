@@ -111,12 +111,13 @@
                 </div>
 
                 <!-- Class List -->
-                <c:if test="${not empty classList}">
+                <c:if test="${not empty sessionScope.classList}">
                     <div class="classes classes-scroll">
-                        <c:forEach items="${classList}" var="cls">
+                        <c:forEach items="${sessionScope.classList}" var="cls">
                             <a class="class-card"
                                href="#"
                                data-class-id="<c:out value='${cls.id}'/>"
+                               data-class-code="<c:out value='${cls.classCode}'/>"
                                data-class-name="<c:out value='${cls.name}'/>"
                                data-subject="<c:out value='${cls.subject}'/>"
                                data-teacher="<c:out value='${cls.teacherName}'/>"
@@ -174,7 +175,7 @@
                     <div class="form-success">${requestScope.msgClassCode}</div>
                 </c:if> 
                 <div class="join-modal__actions">
-                    <button type="button" class="btn" data-close="join">Cancel</button>
+                    <button type="submit" class="btn" data-close="join" name="action" value="cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary" name="action" value="joinClass">Join</button>
                 </div>
             </form>
@@ -193,7 +194,7 @@
 
             <div class="class-detail__body">
                 <div class="class-detail__name" id="cd-name">—</div>
-
+                
                 <div class="class-detail__row">
                     <div class="class-detail__label">Subject:</div>
                     <div class="class-detail__value" id="cd-subject">—</div>

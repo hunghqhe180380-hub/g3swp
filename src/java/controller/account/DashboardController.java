@@ -5,6 +5,7 @@
 
 package controller.account;
 
+import controller.auth.RouteByRoleController;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.Classroom;
 import model.User;
 
 /**
@@ -32,7 +35,9 @@ public class DashboardController extends HttpServlet {
         HttpSession session = request.getSession();
         
         User userLogin = (User) session.getAttribute("user");
-        
+        RouteByRoleController route = new RouteByRoleController();
+        List<Classroom> classList = route.showClassList(userLogin.getUserID(), userLogin.getRole());
+        session.setAttribute("classList", classList);
         //check user login ? continue : back to login
         if (userLogin == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");

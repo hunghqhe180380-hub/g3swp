@@ -6,6 +6,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,10 +22,11 @@ public class TeacherDAO extends DBContext {
     protected ResultSet resultSet;
 
     //create new class
-    public void createNewClass(String className,
+    public String createNewClass(String className,
             String subject,
             String teacherId,
             String studentLimit) {
+        String genClassCode = generateClassCode();
         try {
             String sql = "INSERT INTO [dbo].[Classrooms]\n"
                     + "           ([Name]\n"
@@ -42,7 +44,7 @@ public class TeacherDAO extends DBContext {
                     + "           ,?)";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, className);
-            statement.setObject(2, generateClassCode());
+            statement.setObject(2, genClassCode);
             statement.setObject(3, subject);
             statement.setObject(4, teacherId);
             statement.setObject(5, studentLimit);
@@ -50,6 +52,7 @@ public class TeacherDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return genClassCode;
     }
 
     //check class name exist
@@ -90,26 +93,27 @@ public class TeacherDAO extends DBContext {
 
         List<Classroom> listClass = new ArrayList<>();
 
-        String sql = "SELECT c.Id, c.Name, c.Subject, c.MaxStudents, "
-                + "COUNT(e.UserId) AS TotalStudents "
-                + "FROM Classrooms c "
-                + "LEFT JOIN Enrollments e "
-                + "ON c.Id = e.ClassId AND e.Status = 0 "
-                + "WHERE c.TeacherId = ? "
-                + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents";
+        String sql = " SELECT c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt, \n"
+                + "                COUNT(e.UserId) AS TotalStudents \n"
+                + "                FROM Classrooms c\n"
+                + "                LEFT JOIN Enrollments e\n"
+                + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
+                + "WHERE c.TeacherId = ? \n"
+                + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, teacherId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
                 Classroom cls = new Classroom();
-
-                cls.setId(rs.getInt("Id"));
-                cls.setName(rs.getString("Name"));
-                cls.setSubject(rs.getString("Subject"));
-                cls.setMaxStudent(rs.getInt("MaxStudents"));
-                cls.setSum(rs.getInt("TotalStudents"));
+                cls.setId(resultSet.getInt("Id"));
+                cls.setName(resultSet.getString("Name"));
+                cls.setSubject(resultSet.getString("Subject"));
+                cls.setMaxStudent(resultSet.getInt("MaxStudents"));
+                cls.setSum(resultSet.getInt("TotalStudents"));
+                cls.setClassCode(resultSet.getString("ClassCode"));
+                cls.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 listClass.add(cls);
             }
         } catch (Exception e) {
@@ -132,10 +136,10 @@ public class TeacherDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classCode);
             resultSet = statement.executeQuery();
-            if (resultSet.next()) { 
+            if (resultSet.next()) {
                 int max = resultSet.getInt("MaxStudents");
                 int sum = resultSet.getInt("TotalStudents");
-                return sum >= max; 
+                return sum >= max;
             }
         } catch (Exception e) {
             e.printStackTrace();

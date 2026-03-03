@@ -28,7 +28,7 @@
                     <!-- FORM CARD -->
                     <section class="cc-card cc-card--form">
                         <!-- Fix giùm cái link cái -->
-                        <form action="${ctx}/Classrooms/manage/create" method="POST" id="createClassForm" novalidate> 
+                        <form action="${ctx}/classroom/manage/create" method="POST" id="createClassForm" novalidate> 
                             <div class="cc-field">
                                 <label class="cc-label" for="className">Name</label>
                                 <input class="cc-input" type="text" id="className" name="className"
@@ -67,6 +67,9 @@
                                 <c:if test="${not empty listMSG.msgStudentLimit}">
                                     <div class="cc-error">${listMSG.msgStudentLimit}</div>
                                 </c:if>
+                                <c:if test="${not empty listMSG.msgSuccess}">
+                                    <div style="color: #16a34a; font-weight: bolder">${listMSG.msgSuccess}</div>
+                                </c:if>
                             </div>
 
                             <div class="cc-actions">
@@ -89,6 +92,13 @@
                                 </div>
 
                                 <div class="cc-preview-meta">
+                                    <div>
+                                        <span class="cc-muted">Class Code :</span>
+                                        <span id="">
+                                            <c:out value="${empty requestScope.classCode ? '' : requestScope.classCode}"/>
+                                        </span>
+                                    </div>
+                                        
                                     <div>
                                         <span class="cc-muted">Subject :</span>
                                         <span id="pvSubject">
@@ -138,7 +148,8 @@
                 }
 
                 [nameInp, subjectInp, limitInp].forEach(el => {
-                    if (!el) return;
+                    if (!el)
+                        return;
                     el.addEventListener('input', update);
                     el.addEventListener('change', update);
                 });

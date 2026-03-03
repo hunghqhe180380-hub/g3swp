@@ -74,19 +74,17 @@ public class JoinClassController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action.equalsIgnoreCase("searchClass")) {
-            doGet(request, response);
+        if (action.equalsIgnoreCase("cancel")) {
+            response.sendRedirect("account/dashboard");
         } else {
-
             String classCode = request.getParameter("classCode");
             HttpSession session = request.getSession();
-              User student = (User) session.getAttribute("user");
+            User student = (User) session.getAttribute("user");
             Map<String, String> listMSG = validator(classCode, student.getUserID());
             if (listMSG.size() > 0) {
                 request.setAttribute("classCode", classCode);
                 request.setAttribute("listMSG", listMSG);
             } else {
-              
                 StudentDAO stDAO = new StudentDAO();
                 //get class id by class code
                 ClassroomDAO clsDAO = new ClassroomDAO();
@@ -94,13 +92,10 @@ public class JoinClassController extends HttpServlet {
                 stDAO.joinClass(classId, student.getUserID());
                 request.setAttribute("msgClassCode", "Join new class succesfull.");
             }
-            request.getRequestDispatcher("route").forward(request, response);
-
+            request.getRequestDispatcher("account/dashboard").forward(request, response);
         }
-
     }
-    
-    
+
     //validator
     private Map<String, String> validator(
             String classCode,
@@ -113,24 +108,26 @@ public class JoinClassController extends HttpServlet {
             errors.put("msgClassCode", Message.MSG310);
             return errors;
         }
-        
-         ClassroomDAO clsDAO = new ClassroomDAO();
+
+        ClassroomDAO clsDAO = new ClassroomDAO();
         // class code exist?
         if (classCode != null) {
-           
+
             if (clsDAO.getClassIdByCode(classCode) == null) {
                 errors.put("msgClassCode", Message.MSG311);
                 return errors;
             } else {
                 //check user joined class?
                 StudentDAO stDAO = new StudentDAO();
-                if(stDAO.isJoinedClass(studentId, classCode)){
+                if (stDAO.isJoinedClass(studentId, classCode)) {
                     errors.put("msgClassCode", Message.MSG313);
+                    return errors;
                 }
                 //check class is full or not?
                 TeacherDAO teacherDAO = new TeacherDAO();
-                if(teacherDAO.isClassFull(classCode) == true){
+                if (teacherDAO.isClassFull(classCode) == true) {
                     errors.put("msgClassCode", Message.MSG314);
+                    return errors;
                 };
             }
 

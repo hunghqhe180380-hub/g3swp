@@ -49,7 +49,7 @@
                     <p class="sub">Welcome back — please sign in</p>
                 </div>
 
-                <form class="form" action="${ctx}/login" method="POST">
+                <form class="form" action="login" method="POST">
                     <!-- Email / Username -->
                     <div>
                         <input class="input" type="text" name="userName"
