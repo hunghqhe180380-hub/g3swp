@@ -41,7 +41,7 @@ public class RouteByRoleController extends HttpServlet {
         User userLogin = (User) session.getAttribute("user");
 
         List<Classroom> classList = showClassList(userLogin.getUserID(), userLogin.getRole());
-        session.setAttribute("classList", classList);
+        request.setAttribute("classList", classList);
         request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
         //check route 
     }
@@ -56,7 +56,7 @@ public class RouteByRoleController extends HttpServlet {
                 break;
             case "Student":
                 StudentDAO studentDAO = new StudentDAO();
-               listClass = studentDAO.getListClassJoined(userId);
+                listClass = studentDAO.getListClassJoined(userId);
                 System.out.println("sixxxx: " + listClass.size());
                 break;
             case "Admin":

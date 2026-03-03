@@ -6,6 +6,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Classroom;
@@ -25,22 +26,27 @@ public class StudentDAO extends DBContext {
         TeacherDAO teacherDAO = new TeacherDAO();
         try {
             String sql = "SELECT [ClassId]\n"
-                    + ",c.Name\n"
-                    + "      ,[RoleInClass]\n"
-                    + "      ,c.Subject\n"
-                    + "      ,c.MaxStudents\n"
+                    + ",c.*\n"
+                    + ",[RoleInClass]\n"
+                    + ",(select count(*) from [Enrollments] where ClassId = c.Id) as TotalStudent\n"
+                    + ",b.FullName as TeacherName\n"
                     + "  FROM [dbo].[Enrollments] e\n"
                     + "  JOIN [dbo].[Classrooms] c\n"
                     + "  on e.ClassId = c.Id\n"
+                    + "  JOIN [Users] as b on c.TeacherId = b.Id\n"
                     + "  where UserId = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Classroom cls = new Classroom();
-                cls.setClassCode(userId);
+                cls.setId(resultSet.getInt("Id"));
                 cls.setName(resultSet.getString("Name"));
+                cls.setClassCode(resultSet.getString("ClassCode"));
                 cls.setSubject(resultSet.getString("Subject"));
+                cls.setTeacherId(resultSet.getString("TeacherId"));
+                cls.setTeacherName(resultSet.getString("TeacherName"));
+                cls.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cls.setSum(teacherDAO.getSumStudentEnrolledByClassId(resultSet.getInt("ClassId")));
                 listClassroom.add(cls);
@@ -64,12 +70,12 @@ public class StudentDAO extends DBContext {
             statement.setObject(1, userId);
             statement.setObject(2, classId);
             resultSet = statement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
         return false;
     }
 
