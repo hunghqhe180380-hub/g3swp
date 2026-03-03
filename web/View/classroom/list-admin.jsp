@@ -43,14 +43,14 @@
                 <div class="section-head">
                     <h2 class="section-title">Classes <span class="count">(${fn:length(classes)})</span></h2>
 
-                    <form class="search" action="${ctx}/classroom/manage/class-list" method="get">
+                    <form class="search" action="${ctx}/classroom/view/class-list" method="get">
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
                                placeholder="Search class/teacher/code...">
                         <button class="search__btn search__btn--primary" type="submit">Search</button>
                     </form>
                                
-                    <form action="${ctx}/classroom/manage/class-list" method="get" id="frmSort" hidden>                        
+                    <form action="${ctx}/classroom/view/class-list" method="get" id="frmSort" hidden>                        
                         <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>">                        
                         <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
                         <input type="hidden" id="txtCreateAt" name="txtCreateAt" value="<c:out value="${param.txtCreateAt != null ? param.txtCreateAt : 0}"/>">                        
@@ -147,7 +147,7 @@
 
                 <!-- PAGING -->
                 <div class="pager">                    
-                    <c:url var="basePath" value="/classroom/manage/class-list">
+                    <c:url var="basePath" value="/classroom/view/class-list">
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>

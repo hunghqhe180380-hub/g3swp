@@ -73,7 +73,7 @@ public class DeleteClassController extends HttpServlet {
         String classId = request.getParameter("classId");
         String pageIndex = request.getParameter("pageIndex");
         dao.deleteClassroom(classId);
-        response.sendRedirect(request.getContextPath() + "/classroom/manage/class-list?index=" + pageIndex);
+        response.sendRedirect(request.getContextPath() + "/classroom/view/class-list?index=" + pageIndex);
     }
 
     /** 

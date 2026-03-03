@@ -23,23 +23,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.http.HttpSession;
+import model.User;
 
 /**
  *
  * @author hung2
  */
 public class HomeFilter implements Filter {
-    
+
     private static final boolean debug = false;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public HomeFilter() {
-    }    
-    
+    }
+
     private void doBeforeProcessing(RequestWrapper request, ResponseWrapper response)
             throws IOException, ServletException {
         if (debug) {
@@ -75,8 +77,8 @@ public class HomeFilter implements Filter {
 	    log(buf.toString());
 	}
          */
-    }    
-    
+    }
+
     private void doAfterProcessing(RequestWrapper request, ResponseWrapper response)
             throws IOException, ServletException {
         if (debug) {
@@ -132,11 +134,11 @@ public class HomeFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
+
         if (debug) {
             log("HomeFilter:doFilter()");
         }
-        
+
         // Create wrappers for the request and response objects.
         // Using these, you can extend the capabilities of the
         // request and response, for example, allow setting parameters
@@ -147,21 +149,51 @@ public class HomeFilter implements Filter {
         // include requests.
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) request);
         ResponseWrapper wrappedResponse = new ResponseWrapper((HttpServletResponse) response);
-        
+
         doBeforeProcessing(wrappedRequest, wrappedResponse);
-        
+
         //only allow user access page via url(servlet)
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        
+        HttpSession ses = req.getSession();
+        User user = (User) ses.getAttribute("user");
         String url = req.getServletPath();
-//        if(url.endsWith(".jsp")){
-//            res.sendRedirect(req.getContextPath() + "/home");
-//            return;
-//        }
-        
+        boolean isPublic = url.equals("/login") || url.equals("/register")
+                || url.equals("/home") || url.startsWith("/assets/")
+                || url.startsWith("/uploads/") || url.equals("/account/dashboard")
+                || url.equals("/verify-email") || url.equals("/forgot-password")
+                || url.equals("/reset-password") || url.equals("/route");
+        if (isPublic) {
+            chain.doFilter(wrappedRequest, wrappedResponse);
+            return;
+        }
+        if (url.endsWith(".jsp")) {
+            res.sendRedirect(req.getContextPath() + "/home");
+            return;
+        }
+        if (user == null) {
+            res.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+        if (url.startsWith("/admin/")) {
+            if (!user.getRole().equals("Admin")) {
+                res.sendRedirect(req.getContextPath() + "/account/dashboard");
+                return;
+            }
+        }
+        if (url.contains("/manage/") && user.getRole().equals("Student")) {
+            res.sendRedirect(req.getContextPath() + "/account/dashboard");
+            return;
+        }
+        if (url.contains("/join")) {
+            if (!user.getRole().equals("Student")) {
+                res.sendRedirect(req.getContextPath() + "/account/dashboard");
+                return;
+            }
+        }
+
         Throwable problem = null;
-        
+
         try {
             chain.doFilter(wrappedRequest, wrappedResponse);
         } catch (Throwable t) {
@@ -171,7 +203,7 @@ public class HomeFilter implements Filter {
             problem = t;
             t.printStackTrace();
         }
-        
+
         doAfterProcessing(wrappedRequest, wrappedResponse);
 
         // If there was a problem, we want to rethrow it if it is
@@ -206,16 +238,16 @@ public class HomeFilter implements Filter {
     /**
      * Destroy method for this filter
      */
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (debug) {
                 log("HomeFilter: Initializing filter");
             }
         }
@@ -233,22 +265,22 @@ public class HomeFilter implements Filter {
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());
-        
+
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -265,7 +297,7 @@ public class HomeFilter implements Filter {
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -279,9 +311,9 @@ public class HomeFilter implements Filter {
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
 
     /**
@@ -292,7 +324,7 @@ public class HomeFilter implements Filter {
      * access to the wrapped request using the method getRequest()
      */
     class RequestWrapper extends HttpServletRequestWrapper {
-        
+
         public RequestWrapper(HttpServletRequest request) {
             super(request);
         }
@@ -301,12 +333,12 @@ public class HomeFilter implements Filter {
         // you must also override the getParameter, getParameterValues, getParameterMap,
         // and getParameterNames methods.
         protected Hashtable localParams = null;
-        
+
         public void setParameter(String name, String[] values) {
             if (debug) {
                 System.out.println("HomeFilter::setParameter(" + name + "=" + values + ")" + " localParams = " + localParams);
             }
-            
+
             if (localParams == null) {
                 localParams = new Hashtable();
                 // Copy the parameters from the underlying request.
@@ -320,7 +352,7 @@ public class HomeFilter implements Filter {
             }
             localParams.put(name, values);
         }
-        
+
         @Override
         public String getParameter(String name) {
             if (debug) {
@@ -339,7 +371,7 @@ public class HomeFilter implements Filter {
             }
             return (val == null ? null : val.toString());
         }
-        
+
         @Override
         public String[] getParameterValues(String name) {
             if (debug) {
@@ -350,7 +382,7 @@ public class HomeFilter implements Filter {
             }
             return (String[]) localParams.get(name);
         }
-        
+
         @Override
         public Enumeration getParameterNames() {
             if (debug) {
@@ -360,8 +392,8 @@ public class HomeFilter implements Filter {
                 return getRequest().getParameterNames();
             }
             return localParams.keys();
-        }        
-        
+        }
+
         @Override
         public Map getParameterMap() {
             if (debug) {
@@ -382,9 +414,9 @@ public class HomeFilter implements Filter {
      * get access to the wrapped response using the method getResponse()
      */
     class ResponseWrapper extends HttpServletResponseWrapper {
-        
+
         public ResponseWrapper(HttpServletResponse response) {
-            super(response);            
+            super(response);
         }
 
         // You might, for example, wish to know what cookies were set on the response
@@ -411,5 +443,5 @@ public class HomeFilter implements Filter {
 	}
          */
     }
-    
+
 }

@@ -160,7 +160,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
-        <url-pattern>/classroom/manage/class-list</url-pattern>
+        <url-pattern>/classroom/view/class-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
@@ -220,7 +220,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateClassController</servlet-name>
-        <url-pattern>/create</url-pattern>
+        <url-pattern>/classroom/manage/create</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EditClassController</servlet-name>

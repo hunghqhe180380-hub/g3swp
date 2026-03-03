@@ -35,7 +35,7 @@
                     <div class="topbar__meta"><c:out value="${classes.sum}"/> students</div>
                 </div>
 
-                <a class="btn-back" href="${ctx}/classroom/manage/class-list">← Back</a>
+                <a class="btn-back" href="${ctx}/classroom/view/class-list">← Back</a>
             </div>
         </header>
 
