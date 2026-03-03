@@ -269,14 +269,13 @@
                     closeModal();
             });
 
-            // Event delegation
+            // dashboard.jsp - Đoạn Script xử lý click
             document.addEventListener('click', (e) => {
                 const card = e.target.closest('.class-card');
                 if (!card)
                     return;
 
                 e.preventDefault();
-
                 const d = card.dataset;
 
                 setText('cd-name', d.className);
@@ -284,28 +283,29 @@
                 setText('cd-created', d.created);
                 setText('cd-teacher', d.teacher);
 
-                const sum = d.sum ?? '';
-                const max = d.max ?? '';
-                setText('cd-capacity', (sum !== '' && max !== '') ? `${sum} students • ${max} max` : '—');
+                // FIX 1: Nối chuỗi kiểu cũ (dùng dấu +) để JSP không nhận nhầm 
+                const sum = d.sum || '';
+                const max = d.max || '';
+                const capacityText = (sum !== '' && max !== '') ? sum + ' students • ' + max + ' max' : '—';
+                setText('cd-capacity', capacityText);
 
                 const hidden = document.getElementById('cd-classId');
                 if (hidden)
                     hidden.value = d.classId || '';
 
+                // FIX 2: Tách ctx (biến JSP) ra khỏi classId (biến JS)
                 const classId = encodeURIComponent(d.classId || '');
                 const a1 = document.getElementById('cd-students');
                 const a2 = document.getElementById('cd-materials');
-                const a3 = document.getElementById('cd-assignments');
+
                 if (a1)
-                    a1.href = `${ctx}/classroom/view/student-list?classId=${classId}`;
-                                if (a2)
-                                    a2.href = `${ctx}/material/view/material-list?classId=${classId}`;
-                                                if (a3)
-                                                    a3.href = `#`;
-                                                console.log('Open modal for classId=', d.classId); // debug
-                                                openModal();
-                                            });
-                                        })();
+                    a1.href = ctx + '/classroom/view/student-list?classId=' + classId;
+                if (a2)
+                    a2.href = ctx + '/material/view/material-list?classId=' + classId;
+
+                openModal();
+            });
+        })();
     </script>
 
     <script>

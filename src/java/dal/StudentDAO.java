@@ -38,7 +38,7 @@ public class StudentDAO extends DBContext {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Classroom cls = new Classroom();
-                cls.setId(resultSet.getInt("Id"));
+                cls.setId(resultSet.getInt("ClassId"));
                 cls.setName(resultSet.getString("Name"));
                 cls.setClassCode(resultSet.getString("ClassCode"));
                 cls.setSubject(resultSet.getString("Subject"));
@@ -95,7 +95,7 @@ public class StudentDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             statement.setObject(2, userId);
-            statement.executeQuery();
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
