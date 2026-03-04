@@ -55,14 +55,15 @@ public class TeacherDAO extends DBContext {
         return genClassCode;
     }
 
-    //check class name exist
-    public boolean isExistClassName(String teacherId, String className) {
-        String sql = "SELECT 1 FROM [dbo].[Classrooms] "
-                + "WHERE TeacherId = ? AND Name = ?";
+    //check class  exist
+    public boolean isExistClass(String teacherId, String className, String subject) {
+        String sql = "SELECT [Name], [Subject], [TeacherId] FROM [dbo].[Classrooms]\n"
+                + "where [Name] = ? and [Subject] = ? and [TeacherId] = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, teacherId);
-            ps.setString(2, className);
+            ps.setString(1, className);
+            ps.setString(2, subject);
+            ps.setString(3, teacherId);
 
             ResultSet rs = ps.executeQuery();
             return rs.next();

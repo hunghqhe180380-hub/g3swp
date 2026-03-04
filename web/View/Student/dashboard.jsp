@@ -95,16 +95,16 @@
             <section>
                 <div class="section-top">
                     <h2>My Classes</h2>
-                    <form action="${ctx}/join" method="POST">
+                    <form action="${ctx}/classroom/search" method="POST">
                         <div class="class-tools">
                             <div class="searchbox">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
                                 <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                 </svg>
-                                <input type="text" name="q" value="${param.q}" placeholder="Search classes..." />
+                                <input type="text" name="nameClass" value="${requestScope.nameClass}" placeholder="Search classes..." />
                             </div>
-                            <button class="btn btn-primary join-btn" type="submit" name="action" value="searchClass">+ Search Class</button>
+                            <button class="btn btn-primary join-btn" type="submit" value="searchClass">+ Search Class</button>
                             <button class="btn btn-primary join-btn" type="button" id="openJoinModalBtn">+ Join Class</button>
                         </div>
                     </form>
@@ -151,34 +151,35 @@
         <div class="dash-modal__backdrop" data-close="join"></div>
 
         <div class="dash-modal__dialog join-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="join-title">
-            <div class="join-modal__header">
-                <div class="join-modal__title" id="join-title">Join a class</div>
-                <button class="join-modal__close" type="button" aria-label="Close" data-close="join">×</button>
-            </div>
-
-            <form method="post" action="${ctx}/join" class="join-modal__body">
-                <label class="join-modal__label" for="join-classCode">Class code</label>
-                <input
-                    id="join-classCode"
-                    class="join-modal__input"
-                    type="text"
-                    name="classCode"
-                    placeholder="6-Digit Code"
-                    autocomplete="off"
-                    value="${requestScope.classCode}"
-                    />
-                <c:if test="${not empty requestScope.listMSG.msgClassCode}">
-                    <div class="form-error">${requestScope.listMSG.msgClassCode}</div>
-                </c:if>
-
-                <c:if test="${not empty requestScope.msgClassCode}">
-                    <div class="form-success">${requestScope.msgClassCode}</div>
-                </c:if> 
-                <div class="join-modal__actions">
-                    <button type="submit" class="btn" data-close="join" name="action" value="cancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary" name="action" value="joinClass">Join</button>
+            <form method="post" action="${ctx}/classroom/join" class="join-modal__body">
+                <div class="join-modal__header">
+                    <div class="join-modal__title" id="join-title">Join a class</div>
+                    <button class="join-modal__close" type="submit" aria-label="Close" name="action" value="cancel" data-close="join">×</button>
                 </div>
-            </form>
+
+                <form method="post" action="${ctx}/classroom/join" class="join-modal__body">
+                    <label class="join-modal__label" for="join-classCode">Class code</label>
+                    <input
+                        id="join-classCode"
+                        class="join-modal__input"
+                        type="text"
+                        name="classCode"
+                        placeholder="6-Digit Code"
+                        autocomplete="off"
+                        value="${requestScope.classCode}"
+                        />
+                    <c:if test="${not empty requestScope.listMSG.msgClassCode}">
+                        <div class="form-error">${requestScope.listMSG.msgClassCode}</div>
+                    </c:if>
+
+                    <c:if test="${not empty requestScope.msgClassCode}">
+                        <div class="form-success">${requestScope.msgClassCode}</div>
+                    </c:if> 
+                    <div class="join-modal__actions">
+                        <button type="submit" class="btn" data-close="join" name="action" value="cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="joinClass">Join</button>
+                    </div>
+                </form>
         </div>
     </div>
 
@@ -194,7 +195,7 @@
 
             <div class="class-detail__body">
                 <div class="class-detail__name" id="cd-name">—</div>
-                
+
                 <div class="class-detail__row">
                     <div class="class-detail__label">Subject:</div>
                     <div class="class-detail__value" id="cd-subject">—</div>

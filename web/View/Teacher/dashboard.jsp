@@ -95,19 +95,20 @@
                 <section>
                     <div class="classes-head">
                         <h2 class="section-title">My Classes</h2>
+                        <form action="${ctx}/classroom/search" method="POST">
+                            <div class="classes-actions">
+                                <div class="searchbox">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                    <input id="classSearchInput" type="text" name="nameClass" value="${requestScope.nameClass}" placeholder="Search classes..." />
+                                </div>
 
-                        <div class="classes-actions">
-                            <div class="searchbox">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
-                                <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                                <input id="classSearchInput" type="text" placeholder="Search classes..." />
+                                <button class="btn btn-primary search-btn" type="submit" id="btnSearchClass">Search</button>
+                                <a class="btn btn-primary join-btn" href="${ctx}/classroom/manage/create">+ New Class</a>
                             </div>
-
-                            <button class="btn btn-primary search-btn" type="button" id="btnSearchClass">Search</button>
-                            <a class="btn btn-primary join-btn" href="${ctx}/classroom/manage/create">+ New Class</a>
-                        </div>
+                        </form>
                     </div>
 
                     <!-- Class List -->
@@ -320,13 +321,13 @@
                 hidden.value = classIdRaw;
 
             document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
-                        document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
+            document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
 
-                                    document.getElementById('cd-assignments').href = `#`;
+            document.getElementById('cd-assignments').href = `#`;
 
-                                    document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
+            document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
-                                                openModal();
-                                            });
-                                        })();
+            openModal();
+        });
+    })();
 </script>

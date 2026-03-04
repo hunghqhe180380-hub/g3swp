@@ -123,7 +123,7 @@ public class VerifyEmailController extends HttpServlet {
                 newToken,
                 emailService.setExpriryDateTime());
 
-        String linkVerifyEmail = "http://localhost:9999/POET/verify-email?token=" + newToken;
+        String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
         //insert newToken with action=VerifyEmail into Database
         TokenDAO tokenDAO = new TokenDAO();
         tokenDAO.insertToTokenDB(token, "VerifyEmail");

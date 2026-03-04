@@ -67,8 +67,8 @@
                                 <c:if test="${not empty listMSG.msgStudentLimit}">
                                     <div class="cc-error">${listMSG.msgStudentLimit}</div>
                                 </c:if>
-                                <c:if test="${not empty listMSG.msgSuccess}">
-                                    <div style="color: #16a34a; font-weight: bolder">${listMSG.msgSuccess}</div>
+                                <c:if test="${not empty listMSG.msgNotify}">
+                                    <div style="color: #16a34a; font-weight: bolder">${listMSG.msgNotify}</div>
                                 </c:if>
                             </div>
 

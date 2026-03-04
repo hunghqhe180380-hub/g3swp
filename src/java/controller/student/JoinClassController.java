@@ -75,7 +75,7 @@ public class JoinClassController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action.equalsIgnoreCase("cancel")) {
-            response.sendRedirect("account/dashboard");
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
         } else {
             String classCode = request.getParameter("classCode");
             HttpSession session = request.getSession();
@@ -92,7 +92,7 @@ public class JoinClassController extends HttpServlet {
                 stDAO.joinClass(classId, student.getUserID());
                 request.setAttribute("msgClassCode", "Join new class succesfull.");
             }
-            request.getRequestDispatcher("account/dashboard").forward(request, response);
+            request.getRequestDispatcher("/account/dashboard").forward(request, response);
         }
     }
 

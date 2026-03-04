@@ -87,7 +87,7 @@ public class CreateClassController extends HttpServlet {
         request.setAttribute("studentLimit", studentLimit);
         if (listMSG.size() == 0) {
             //if validation is legit => allow create a new classroom
-            listMSG.put("msgSuccess", "Create class successfull.");
+            listMSG.put("msgNotify", "Create class successfull.");
             TeacherDAO techerDAO = new TeacherDAO();
             User user = (User) session.getAttribute("user");
             String classCode = techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
@@ -110,10 +110,7 @@ public class CreateClassController extends HttpServlet {
         if (className.isEmpty()) {
             errors.put("msgClassName", Message.MSG301);
         }
-        // className of teachers unique
-        if (teacherDAO.isExistClassName(teacherID, className)) {
-            errors.put("msgClassName", Message.MSG305);
-        }
+
         // subject is blank ? return : continue
         if (subject.isEmpty()) {
             errors.put("msgSubject", Message.MSG302);
@@ -129,6 +126,11 @@ public class CreateClassController extends HttpServlet {
         if (!studentLimitRaw.isEmpty()) {
             if (Integer.parseInt(studentLimitRaw) <= 0 || Integer.parseInt(studentLimitRaw) > 100) {
                 errors.put("msgStudentLimit", Message.MSG304);
+            } else {
+                // class of teachers unique
+                if (teacherDAO.isExistClass(teacherID, className, subject)) {
+                    errors.put("msgNotify", Message.MSG306);
+                }
             }
             return errors;
         }

@@ -21,6 +21,7 @@ public class ClassroomDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
+    //this function use to search class by class name, teacher of this class
     public List<Classroom> getAllClassBySearch(String search) {
         String sql = "select a.*,b.FullName as TeacherName,"
                 + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
@@ -134,7 +135,7 @@ public class ClassroomDAO extends DBContext {
     public String getClassIdByCode(String classCode) {
         try {
             String sql = "SELECT  [Id]\n"
-                    + "  FROM [POETWebDB].[dbo].[Classrooms]\n"
+                    + "  FROM [dbo].[Classrooms]\n"
                     + "  where ClassCode = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classCode);
@@ -147,5 +148,5 @@ public class ClassroomDAO extends DBContext {
         }
         return null;
     }
-
+    
 }

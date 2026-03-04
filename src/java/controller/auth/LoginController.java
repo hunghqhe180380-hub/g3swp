@@ -115,42 +115,48 @@ public class LoginController extends HttpServlet {
                 return;
             }
             //email is confirmed to login
-            if (userLogin.getEmailConfirm() == 1) {
+            if (userLogin.getEmailConfirm() == 1 && userLogin.getIsDeleted() == 0) {
                 //login success => save user's session
                 //get avatar url
                 userLogin.setUrlImgProfile(userDAO.getAvatarUrlByUserID(userLogin.getUserID()));
                 System.out.println("getavt: " + userDAO.getAvatarUrlByUserID(userLogin.getUserID()));
                 System.out.println("userLogin.setUrlImgProfile: " + userLogin.getUrlImgProfile());
-               session.setAttribute("user", userLogin);
+                session.setAttribute("user", userLogin);
                 //route user by this role
                 request.getRequestDispatcher("route").forward(request, response);
                 return;
             } else {
-                String email = "";
-                if (userName.contains("@")) {
-                    // login bằng email
-                    email = userName;
+                //if email is confirmed but this account is deactive by admin
+                if (userLogin.getIsDeleted() == 1) {
+                   session.setAttribute("msgVeriyEmail", "You are banned. Contact admin to unlock account!");
                 } else {
-                    // login bằng username
-                    email = userDAO.getEmailByUserName(userName);
+                    //if email is not confirmed
+                    String email = "";
+                    if (userName.contains("@")) {
+                        // login bằng email
+                        email = userName;
+                    } else {
+                        // login bằng username
+                        email = userDAO.getEmailByUserName(userName);
+                    }
+                    //auto send email to account not verify yet 
+                    EmailService emailService = new EmailService();
+                    String newToken = emailService.generateToken();
+                    String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
+                    System.out.println("EmailL:" + email);
+                    Token newTokenForgetPassword = new Token(
+                            email,
+                            userLogin.getUserID(),
+                            false,
+                            newToken,
+                            emailService.setExpriryDateTime());
+                    //send link to this email 
+                    TokenDAO tokenForgetDAO = new TokenDAO();
+                    boolean isInsert = tokenForgetDAO.insertToTokenDB(newTokenForgetPassword, "VerifyEmail");
+                    boolean isSend = emailService.sendEmail(email, linkVerifyEmail, userName, "VerifyEmail");
+                    //send link to this email 
+                    session.setAttribute("msgVeriyEmail", Message.MSG99);
                 }
-                //auto send email to account not verify yet 
-                EmailService emailService = new EmailService();
-                String newToken = emailService.generateToken();
-                String linkVerifyEmail = "http://localhost:8080/POET/verify-email?token=" + newToken;
-                System.out.println("EmailL:" + email);
-                Token newTokenForgetPassword = new Token(
-                        email,
-                        userLogin.getUserID(),
-                        false,
-                        newToken,
-                        emailService.setExpriryDateTime());
-                //send link to this email 
-                TokenDAO tokenForgetDAO = new TokenDAO();
-                boolean isInsert = tokenForgetDAO.insertToTokenDB(newTokenForgetPassword, "VerifyEmail");
-                boolean isSend = emailService.sendEmail(email, linkVerifyEmail, userName, "VerifyEmail");
-                //send link to this email 
-                session.setAttribute("msgVeriyEmail", Message.MSG99);
             }
         }
         session.setAttribute("userName", userName);

@@ -69,6 +69,7 @@ public class Message {
     public static final String MSG303 = "Student limit is required.";
     public static final String MSG304 = "Student limit must be > 0 and <= 100.";
     public static final String MSG305 = "You already have this class name.";
+    public static final String MSG306 = "This class is exist.";
     public static final String MSG310 = "Class code is required.";
     public static final String MSG311 = "Class code not exist.";
     public static final String MSG312 = "This lass is full.";
