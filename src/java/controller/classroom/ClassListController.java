@@ -11,12 +11,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.Classroom;
+import model.User;
 import util.PagingUtil;
 
 /**
@@ -69,6 +71,8 @@ public class ClassListController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String search = request.getParameter("search");
+        HttpSession ses = request.getSession();
+        User user = (User) ses.getAttribute("user");
         List<Classroom> classes = dao.getAllClassBySearch(search);
         sort(request, classes);
         paging(request, classes);

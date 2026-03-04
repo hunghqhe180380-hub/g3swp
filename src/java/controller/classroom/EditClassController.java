@@ -18,13 +18,13 @@ import model.Classroom;
  * @author BINH
  */
 public class EditClassController extends HttpServlet {
-
+    
     private ClassroomDAO dao;
-
+    
     public void init() {
         dao = new ClassroomDAO();
     }
-
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -41,7 +41,7 @@ public class EditClassController extends HttpServlet {
             out.println("</html>");
         }
     }
-
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -50,7 +50,7 @@ public class EditClassController extends HttpServlet {
         request.setAttribute("classroom", classes);
         request.getRequestDispatcher("/view/classroom/edit.jsp").forward(request, response);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,7 +59,7 @@ public class EditClassController extends HttpServlet {
         String subject = request.getParameter("subject");
         String maxStudent = request.getParameter("maxStudents");
         Classroom classes = dao.getClassInfoByClassId(classId);
-
+        classes.setId(Integer.parseInt(classId));
         if (className != null && !className.isEmpty()) {
             classes.setName(className);
         }
@@ -72,9 +72,9 @@ public class EditClassController extends HttpServlet {
         }        
         dao.updateClassroom(classes);
         request.setAttribute("classroom", classes);
-        request.getRequestDispatcher("/view/classroom/edit.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
     }
-
+    
     @Override
     public String getServletInfo() {
         return "Short description";

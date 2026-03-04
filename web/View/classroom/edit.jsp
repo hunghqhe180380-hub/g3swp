@@ -42,7 +42,7 @@
             </c:if>
 
             <form action="${ctx}/classroom/manage/edit" method="post">
-                <input type="hidden" name="classId" value="22">
+                <input type="hidden" name="classId" value="${classroom.id}">
 
                 <div class="form-grid">
 

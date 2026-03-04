@@ -69,9 +69,9 @@ public class ClassroomDAO extends DBContext {
     }
 
     public boolean updateClassroom(Classroom classes) {
-        String sql = "update [Classrooms] set\n"
+        String sql = "UPDATE [dbo].[Classrooms] SET\n"
                 + "Name = ?, Subject = ?, MaxStudents = ?\n"
-                + "where Id = ?";
+                + "WHERE Id = ?";
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classes.getName());
@@ -88,7 +88,7 @@ public class ClassroomDAO extends DBContext {
     }
 
     public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.*,b.FullName,"
+        String sql = "SELECT a.*,b.FullName as TeacherName,"
                 + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
                 + "FROM [Classrooms] as a\n"
                 + "JOIN [Users] as b ON a.TeacherId = b.Id\n"
@@ -105,7 +105,7 @@ public class ClassroomDAO extends DBContext {
                 cl.setClassCode(resultSet.getString("ClassCode"));
                 cl.setSubject(resultSet.getString("Subject"));
                 cl.setTeacherId(resultSet.getString("TeacherId"));
-                cl.setTeacherName(resultSet.getString("FullName"));
+                cl.setTeacherName(resultSet.getString("TeacherName"));
                 cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 cl.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cl.setSum(resultSet.getInt("TotalStudent"));
