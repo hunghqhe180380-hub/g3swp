@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author BINH
@@ -19,6 +21,7 @@ public class Classroom {
     private String createdAt;
     private int maxStudent;
     private int sum;
+    private String timeExpiryClassCode;
 
     public Classroom() {
     }
@@ -111,6 +114,14 @@ public class Classroom {
 
     public void setSum(int sum) {
         this.sum = sum;
+    }
+
+    public String getTimeExpiryClassCode() {
+        return timeExpiryClassCode;
+    }
+
+    public void setTimeExpiryClassCode(String timeExpiryClassCode) {
+        this.timeExpiryClassCode = timeExpiryClassCode;
     }
     
 }

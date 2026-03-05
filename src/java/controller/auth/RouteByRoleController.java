@@ -45,7 +45,7 @@ public class RouteByRoleController extends HttpServlet {
         //check route 
     }
 
-    //techer
+    //show classlist by role
     public List<Classroom> showClassList(String userId, String role) {
         List<Classroom> listClass = new ArrayList<>();
         switch (role) {

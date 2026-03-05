@@ -105,6 +105,7 @@ public class ClassListController extends HttpServlet {
             teState = Integer.parseInt(request.getParameter("txtTeacherName"));
             tiState = Integer.parseInt(request.getParameter("txtCreateAt"));
         } catch (Exception e) {
+            e.printStackTrace();
         }
         if (clState != 0) {
             Comparator<Classroom> cmp

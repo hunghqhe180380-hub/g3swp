@@ -82,8 +82,8 @@ public class CreateClassController extends HttpServlet {
         HttpSession session = request.getSession();
         User teacher = (User) session.getAttribute("user");
         Map<String, String> listMSG = validator(teacher.getUserID(), className, subject, studentLimit);
-        request.setAttribute("className", className);
-        request.setAttribute("subject", subject);
+        request.setAttribute("className", className.trim());
+        request.setAttribute("subject", subject.trim());
         request.setAttribute("studentLimit", studentLimit);
         if (listMSG.size() == 0) {
             //if validation is legit => allow create a new classroom
@@ -107,13 +107,19 @@ public class CreateClassController extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
 
         // className is blank ? return : continue
-        if (className.isEmpty()) {
+        if (className.trim().isEmpty()) {
             errors.put("msgClassName", Message.MSG301);
         }
 
+        if(className.trim().length() > 30){
+            errors.put("msgClassName", Message.MSG315);
+        }
         // subject is blank ? return : continue
-        if (subject.isEmpty()) {
+        if (subject.trim().isEmpty()) {
             errors.put("msgSubject", Message.MSG302);
+        }
+        if(subject.trim().length() > 20){
+            errors.put("msgSubject", Message.MSG316);
         }
 
         // studentLimitRaw is blank ? return : continue

@@ -105,14 +105,14 @@ public class SearchClassroomController extends HttpServlet {
         }
         //role admin have not done yet
         //searche class
-        List<Classroom> listClassSearchByName = searClassroomByName(nameClass, listAllClass);
+        List<Classroom> listClassSearchByName = searchClassroomByName(nameClass, listAllClass);
         System.out.println("list search: " + listClassSearchByName.size());
         session.setAttribute("classList", listClassSearchByName);
         request.getRequestDispatcher("/view" + "/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
     }
 
     //function search class by name
-    private List<Classroom> searClassroomByName(String className, List<Classroom> listAllClass){
+    private List<Classroom> searchClassroomByName(String className, List<Classroom> listAllClass){
         List<Classroom> resultSearch = new ArrayList<>();
         for (int i = 0; i < listAllClass.size(); i++) {
             if(listAllClass.get(i).getName().toLowerCase().contains(className.trim().toLowerCase())){

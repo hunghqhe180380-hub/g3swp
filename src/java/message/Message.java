@@ -75,4 +75,6 @@ public class Message {
     public static final String MSG312 = "This lass is full.";
     public static final String MSG313 = "You already joined this class.";
     public static final String MSG314 = "This class is full slot. Can not join.";
+    public static final String MSG315 = "Class name must not exceed 30 characters.";
+    public static final String MSG316 = "Subject must not exceed 20 characters.";
 }

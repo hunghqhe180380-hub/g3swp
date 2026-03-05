@@ -49,13 +49,13 @@
                                placeholder="Search class/teacher/code...">
                         <button class="search__btn search__btn--primary" type="submit">Search</button>
                     </form>
-                               
+
                     <form action="${ctx}/classroom/view/class-list" method="get" id="frmSort" hidden>                        
                         <input type="hidden" id="txtClassName" name="txtClassName" value="<c:out value="${param.txtClassName != null ? param.txtClassName : 0}"/>">                        
                         <input type="hidden" id="txtTeacherName" name="txtTeacherName" value="<c:out value="${param.txtTeacherName != null ? param.txtTeacherName : 0}"/>">                        
                         <input type="hidden" id="txtCreateAt" name="txtCreateAt" value="<c:out value="${param.txtCreateAt != null ? param.txtCreateAt : 0}"/>">                        
                         <input type="hidden" name="search" value="<c:out value="${search}"/>">
-                        
+
                         <input type="hidden" name="index" id="pageIndex" value="<c:out value="${page.index}"/>">                        
                     </form>                                        
                 </div>
@@ -75,7 +75,9 @@
                                         </c:choose>
                                     </span>
                                 </th>
-                                <th>Code</th>                                
+                                <th>Subject</th>
+                                <th>Code</th>
+                                <th>Time Expiry Class Code</th>                                 
                                 <th onclick="sort('TeacherName')" style="cursor:pointer">
                                     Teacher
                                     <span id="iconTeacherName">
@@ -86,7 +88,8 @@
                                         </c:choose>
                                     </span>
                                 </th>
-                                <th>Students</th>                                
+                                <th>Students Joined</th>
+                                <th>Max Students</th>                                
                                 <th onclick="sort('CreateAt')" style="cursor:pointer">
                                     Created
                                     <span id="iconCreateAt">
@@ -107,16 +110,19 @@
                                     <td>
                                         <div class="classcell">
                                             <div class="classcell__name"><c:out value="${cl.name}"/></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="classcell">
                                             <div class="classcell__sub"><c:out value="${cl.subject}"/></div>
                                         </div>
                                     </td>
-
                                     <td class="code"><c:out value="${cl.classCode}"/></td>
-
+                                    <td class="timeExpiryClassCode"><c:out value="${cl.timeExpiryClassCode}"/></td>
                                     <td class="muted"><c:out value="${cl.teacherName}"/></td>
 
                                     <td><span class="num"><c:out value="${cl.sum}"/></span></td>
-
+                                    <td><span class="num"><c:out value="${cl.maxStudent}"/></span></td>
                                     <td class="muted"><c:out value="${cl.createdAt}"/></td>
 
                                     <td class="actions">
@@ -204,7 +210,7 @@
     }
 
     function reset(x) {
-        ["ClassName","TeacherName","CreateAt"].forEach(f => {
+        ["ClassName", "TeacherName", "CreateAt"].forEach(f => {
             if (f !== x) {
                 document.getElementById("txt" + f).value = 0;
                 updateIcon(f, 0);
@@ -225,5 +231,5 @@
             default:
                 icon.textContent = "⇅";
         }
-    }    
+    }
 </script>

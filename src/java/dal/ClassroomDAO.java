@@ -7,6 +7,7 @@ package dal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class ClassroomDAO extends DBContext {
                 classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 classes.setMaxStudent(resultSet.getInt("MaxStudents"));
                 classes.setSum(resultSet.getInt("TotalStudent"));
+                classes.setTimeExpiryClassCode(resultSet.getTimestamp("TimeExpiryClassCode").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 list.add(classes);
             }
             statement.close();
@@ -64,10 +66,6 @@ public class ClassroomDAO extends DBContext {
         return list;
     }
 
-    public List<Classroom> getClassInfoByEnrollment() {
-        List<Classroom> list = new ArrayList<>();
-        return list;
-    }
 
     public boolean updateClassroom(Classroom classes) {
         String sql = "UPDATE [dbo].[Classrooms] SET\n"
