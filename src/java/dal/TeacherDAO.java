@@ -34,14 +34,17 @@ public class TeacherDAO extends DBContext {
                     + "           ,[Subject]\n"
                     + "           ,[TeacherId]\n"
                     + "           ,[CreatedAt]\n"
-                    + "           ,[MaxStudents])\n"
+                    + "           ,[MaxStudents]\n"
+                    + "           ,[TimeExpiryClassCode])"
                     + "     VALUES\n"
                     + "           (?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,GETDATE()\n"
-                    + "           ,?)";
+                    + "           ,?\n"
+                    + "           ,DATEADD(MINUTE, 2, GETDATE())"
+                    + ")";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, className);
             statement.setObject(2, genClassCode);
@@ -75,7 +78,7 @@ public class TeacherDAO extends DBContext {
     }
 
     //generate class code
-    private String generateClassCode() {
+    public String generateClassCode() {
 
         Random random = new Random();
 
@@ -94,13 +97,16 @@ public class TeacherDAO extends DBContext {
 
         List<Classroom> listClass = new ArrayList<>();
 
-        String sql = " SELECT c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt, \n"
-                + "                COUNT(e.UserId) AS TotalStudents \n"
-                + "                FROM Classrooms c\n"
-                + "                LEFT JOIN Enrollments e\n"
-                + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
-                + "WHERE c.TeacherId = ? \n"
-                + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt";
+        String sql = "SELECT c.Id, CASE \n"
+                + "        WHEN c.TimeExpiryClassCode < GETDATE() THEN NULL\n"
+                + "        ELSE c.ClassCode\n"
+                + "    END AS ClassCode, c.TimeExpiryClassCode,c.Name, c.Subject, c.MaxStudents, c.CreatedAt, \n"
+                + "                  COUNT(e.UserId) AS TotalStudents \n"
+                + "                              FROM Classrooms c\n"
+                + "                            LEFT JOIN Enrollments e\n"
+                + "                               ON c.Id = e.ClassId AND e.Status = 0 \n"
+                + "				WHERE c.TeacherId = ?\n"
+                + "                GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -167,5 +173,21 @@ public class TeacherDAO extends DBContext {
             e.printStackTrace();
         }
         return total;
+    }
+
+    //update classcode of this teacher by classId
+    public void setNewClassCode(String newClassCode, String classId) {
+        try {
+            String sql = "UPDATE [dbo].[Classrooms]\n"
+                    + "   SET [ClassCode] = ?,\n"
+                    + "      [TimeExpiryClassCode] = DATEADD(MINUTE, 2, GETDATE())\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newClassCode);
+            statement.setObject(2, classId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

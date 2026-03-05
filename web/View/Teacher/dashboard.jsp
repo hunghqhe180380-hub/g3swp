@@ -155,8 +155,13 @@
                         <div>
                             <div class="class-detail__name" id="cd-name">—</div>
                             <div class="class-detail__code-line">
-                                <span class="class-detail__code" id="cd-code">—</span>
-                                <button type="button" class="class-detail__copy" id="cd-copy-btn">Copy code</button>
+                                <span class="class-detail__code" id="cd-code">
+                                    ${empty requestScope.newClassCode ? '—' : requestScope.newClassCode}
+                                </span>
+                                <form action="${ctx}/classroom/manage/generate-classcode" method="POST">
+                                    <input type="text" name="classId"  id="cd-classId-generate" hidden="true">
+                                    <button type="submit" class="class-detail__copy" id="cd-copy-btn">Generate code</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -316,9 +321,13 @@
             const classIdRaw = d.classId || '';
             const classId = encodeURIComponent(classIdRaw);
 
-            const hidden = document.getElementById('cd-classId');
-            if (hidden)
-                hidden.value = classIdRaw;
+            const hiddenGenerate = document.getElementById('cd-classId-generate');
+            if (hiddenGenerate)
+                hiddenGenerate.value = classIdRaw;
+
+            const hiddenDelete = document.getElementById('cd-classId');
+            if (hiddenDelete)
+                hiddenDelete.value = classIdRaw;
 
             document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
             document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;

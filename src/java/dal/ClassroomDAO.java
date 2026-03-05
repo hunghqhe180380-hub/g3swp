@@ -136,7 +136,7 @@ public class ClassroomDAO extends DBContext {
         try {
             String sql = "SELECT  [Id]\n"
                     + "  FROM [dbo].[Classrooms]\n"
-                    + "  where ClassCode = ?";
+                    + "  where ClassCode = ? and TimeExpiryClassCode >= GETDATE()";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classCode);
             resultSet = statement.executeQuery();

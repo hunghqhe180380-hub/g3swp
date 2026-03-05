@@ -122,6 +122,10 @@
         <servlet-name>SearchClassroomController</servlet-name>
         <servlet-class>controller.classroom.SearchClassroomController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GenerateClasscodeController</servlet-name>
+        <servlet-class>controller.teacher.GenerateClasscodeController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -237,6 +241,10 @@
     <servlet-mapping>
         <servlet-name>SearchClassroomController</servlet-name>
         <url-pattern>/classroom/search</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenerateClasscodeController</servlet-name>
+        <url-pattern>/classroom/manage/generate-classcode</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
