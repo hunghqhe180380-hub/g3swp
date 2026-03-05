@@ -112,9 +112,9 @@
                     </div>
 
                     <!-- Class List -->
-                    <c:if test="${not empty classList}">
+                    <c:if test="${not empty sessionScope.classList}">
                         <div class="classes classes-scroll">
-                            <c:forEach items="${classList}" var="cls">
+                            <c:forEach items="${sessionScope.classList}" var="cls">
                                 <a class="class-card"
                                    href="#"
                                    data-class-id="<c:out value='${cls.id}'/>"
