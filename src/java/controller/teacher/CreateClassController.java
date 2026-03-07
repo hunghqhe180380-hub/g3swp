@@ -86,12 +86,11 @@ public class CreateClassController extends HttpServlet {
         request.setAttribute("subject", subject.trim());
         request.setAttribute("studentLimit", studentLimit);
         if (listMSG.size() == 0) {
-            //if validation is legit => allow create a new classroom
-            listMSG.put("msgNotify", "Create class successfull.");
+            //if validation is legit => allow create a new classroom            
             TeacherDAO techerDAO = new TeacherDAO();
             User user = (User) session.getAttribute("user");
-            String classCode = techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
-            request.setAttribute("classCode", classCode);
+            techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
+            response.sendRedirect(request.getContextPath()+"/route");
         }
         request.setAttribute("listMSG", listMSG);
         request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);

@@ -87,29 +87,18 @@
                             <div class="cc-preview-banner"></div>
 
                             <div class="cc-preview-body">
-                                <div class="cc-preview-name" id="pvName">
-                                    <c:out value="${empty className ? 'Class name' : className}"/>
+                                <div class="cc-preview-name" id="pvName">                                    
                                 </div>
 
-                                <div class="cc-preview-meta">
-                                    <div>
-                                        <span class="cc-muted">Class Code :</span>
-                                        <span id="">
-                                            <c:out value="${empty requestScope.classCode ? '' : requestScope.classCode}"/>
-                                        </span>
-                                    </div>
-                                        
+                                <div class="cc-preview-meta">                                    
                                     <div>
                                         <span class="cc-muted">Subject :</span>
-                                        <span id="pvSubject">
-                                            <c:out value="${empty subject ? 'subject' : subject}"/>
+                                        <span id="pvSubject">                                            
                                         </span>
                                     </div>
 
                                     <div class="cc-preview-students">
-                                        <span id="pvStudents">
-                                            0 /
-                                            <c:out value="${empty studentLimit ? '0' : studentLimit}"/>
+                                        <span id="pvStudents">                                                                                    
                                         </span>
                                         <span class="cc-muted">students</span>
                                     </div>
@@ -123,9 +112,12 @@
 
         <script>
             (function () {
-                const nameInp = document.getElementById('className');
-                const subjectInp = document.getElementById('subject');
-                const limitInp = document.getElementById('studentLimit');
+                const nameInp = document.getElementById('className')
+                        || document.querySelector('input[name="className"]');
+                const subjectInp = document.getElementById('subject')
+                        || document.querySelector('input[name="subject"]');
+                const limitInp = document.getElementById('studentLimit')
+                        || document.querySelector('input[name="studentLimit"]');
 
                 const pvName = document.getElementById('pvName');
                 const pvSubject = document.getElementById('pvSubject');
@@ -141,10 +133,10 @@
                     const limitRaw = safeText(limitInp?.value);
 
                     pvName.textContent = name ? name : 'Class name';
-                    pvSubject.textContent = subject ? subject : 'subject';
+                    pvSubject.textContent = subject ? subject : '—';
 
-                    const limit = (limitRaw === '' ? '0' : limitRaw);
-                    pvStudents.textContent = `0 / ${limit}`;
+                    const limit = (limitRaw === '' ? '—' : limitRaw);
+                    pvStudents.textContent = "0 / " + limit;
                 }
 
                 [nameInp, subjectInp, limitInp].forEach(el => {
