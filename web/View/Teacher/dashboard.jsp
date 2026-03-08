@@ -120,6 +120,7 @@
                                    data-class-id="<c:out value='${cls.id}'/>"
                                    data-class-name="<c:out value='${cls.name}'/>"
                                    data-class-code="<c:out value='${cls.classCode}'/>"
+                                   data-class-expiry="<c:out value='${cls.timeExpiryClassCode}'/>"
                                    data-subject="<c:out value='${cls.subject}'/>"
                                    data-teacher="<c:out value='${cls.teacherName}'/>"
                                    data-created="<c:out value='${cls.createdAt}'/>"
@@ -154,14 +155,18 @@
                     <div class="class-detail__top">
                         <div>
                             <div class="class-detail__name" id="cd-name">—</div>
-                            <div class="class-detail__code-line">
-                                <span class="class-detail__code" id="cd-code">
-                                    ${empty requestScope.newClassCode ? '—' : requestScope.newClassCode}
-                                </span>
-                                <form action="${ctx}/classroom/manage/generate-classcode" method="POST">
-                                    <input type="text" name="classId"  id="cd-classId-generate" hidden="true">
-                                    <button type="submit" class="class-detail__copy" id="cd-copy-btn">Generate code</button>
-                                </form>
+                            <div class="class-detail__row class-detail__row--code">
+                                <div class="class-detail__label">Class Code:</div>
+
+                                <div class="class-detail__value class-detail__value--code">
+                                    <div id="cd-code-wrap" class="class-detail__code-wrap is-hidden">
+                                        <span class="class-detail__countdown" id="cd-countdown">02:00</span>
+                                    </div>
+                                    <form action="${ctx}/classroom/manage/generate-classcode" method="POST" id="cd-generate-form">
+                                        <input type="hidden" name="classId" id="cd-classId-generate">
+                                        <button type="submit" class="class-detail__copy" id="cd-generate-btn">Generate code</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -247,12 +252,23 @@
             return;
 
         const ctx = '${ctx}';
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoOpenClassId = urlParams.get('openClassId');
+        const generatedFlag = urlParams.get('generated') === '1';
+
+        let countdownInterval = null;
+        let revealedClassId = generatedFlag ? autoOpenClassId : null;
 
         const setText = (id, val) => {
             const el = document.getElementById(id);
             if (el)
                 el.textContent = (val ?? '').toString().trim() || '—';
         };
+
+        const codeWrap = document.getElementById('cd-code-wrap');
+        const codeEl = document.getElementById('cd-code');
+        const countdownEl = document.getElementById('cd-countdown');
+        const generateForm = document.getElementById('cd-generate-form');
 
         const openModal = () => {
             modal.classList.add('is-open');
@@ -266,58 +282,72 @@
             document.body.classList.remove('modal-open');
         };
 
-        modal.addEventListener('click', (e) => {
-            if (e.target?.dataset?.close === '1')
-                closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('is-open'))
-                closeModal();
-        });
-
-        // Copy code
-        const copyBtn = document.getElementById('cd-copy-btn');
-        copyBtn?.addEventListener('click', async () => {
-            const code = document.getElementById('cd-code')?.textContent?.trim();
-            if (!code || code === '—')
-                return;
-
-            try {
-                await navigator.clipboard.writeText(code);
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
-            } catch (_) {
-                const ta = document.createElement('textarea');
-                ta.value = code;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => (copyBtn.textContent = 'Copy code'), 900);
+        const stopCountdown = () => {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
             }
-        });
+        };
 
-        document.addEventListener('click', (e) => {
-            const card = e.target.closest('.class-card');
-            if (!card)
+        const showGenerateState = () => {
+            stopCountdown();
+            codeWrap.classList.add('is-hidden');
+            generateForm.classList.remove('is-hidden');
+            setText('cd-code', '—');
+            setText('cd-countdown', '02:00');
+        };
+
+        const showCodeState = (code, expiryStr) => {
+            if (!code || !expiryStr) {
+                showGenerateState();
                 return;
-            e.preventDefault();
+            }
 
+            const expiryDate = new Date(expiryStr.replace(' ', 'T'));
+            if (isNaN(expiryDate.getTime())) {
+                showGenerateState();
+                return;
+            }
+
+            codeWrap.classList.remove('is-hidden');
+            generateForm.classList.add('is-hidden');
+            codeEl.textContent = code;
+
+            const tick = () => {
+                const now = new Date().getTime();
+                const distance = expiryDate.getTime() - now;
+
+                if (distance <= 0) {
+                    revealedClassId = null;
+                    showGenerateState();
+                    return;
+                }
+
+                const totalSeconds = Math.floor(distance / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+
+                countdownEl.textContent =
+                        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            };
+
+            stopCountdown();
+            tick();
+            countdownInterval = setInterval(tick, 1000);
+        };
+
+        const bindClassDataToModal = (card) => {
             const d = card.dataset;
 
             setText('cd-name', d.className);
-            setText('cd-code', d.classCode);
             setText('cd-subject', d.subject);
             setText('cd-created', d.created);
-            setText('cd-teacher', d.teacher);
 
             const sum = d.sum || '';
             const max = d.max || '';
             const capacityText = (sum !== '' && max !== '') ? sum + ' students • ' + max + ' max' : '—';
             setText('cd-capacity', capacityText);
+
             const classIdRaw = d.classId || '';
             const classId = encodeURIComponent(classIdRaw);
 
@@ -331,12 +361,52 @@
 
             document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
             document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
-
-            document.getElementById('cd-assignments').href = `#`;
-
+            document.getElementById('cd-assignments').href = '#';
             document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
+            const shouldRevealCode =
+                    revealedClassId !== null &&
+                    String(revealedClassId) === String(classIdRaw) &&
+                    d.classCode &&
+                    d.classExpiry;
+
+            if (shouldRevealCode) {
+                showCodeState(d.classCode, d.classExpiry);
+            } else {
+                showGenerateState();
+            }
+        };
+
+        modal.addEventListener('click', (e) => {
+            if (e.target?.dataset?.close === '1')
+                closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const card = e.target.closest('.class-card');
+            if (!card)
+                return;
+
+            e.preventDefault();
+            bindClassDataToModal(card);
             openModal();
         });
+
+        if (autoOpenClassId) {
+            const autoCard = document.querySelector('.class-card[data-class-id="' + autoOpenClassId + '"]');
+            if (autoCard) {
+                bindClassDataToModal(autoCard);
+                openModal();
+
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        }
     })();
 </script>

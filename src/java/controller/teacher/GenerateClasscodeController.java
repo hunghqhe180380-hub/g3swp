@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -54,9 +56,9 @@ public class GenerateClasscodeController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+            throws ServletException, IOException {
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -67,24 +69,31 @@ public class GenerateClasscodeController extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         String classId = request.getParameter("classId");
-        System.out.println("classId:" + classId);
+        if (classId == null || classId.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
         TeacherDAO teacherDAO = new TeacherDAO();
         //genarate new class code
         String newClassCode = teacherDAO.generateClassCode();
         //set new classcode and new time expiry of this classcode
         teacherDAO.setNewClassCode(newClassCode, classId);
-        request.getRequestDispatcher("/account/dashboard").forward(request, response);
+        String redirectUrl = request.getContextPath()
+                + "/account/dashboard?openClassId="
+                + URLEncoder.encode(classId, StandardCharsets.UTF_8)
+                + "&generated=1";
+        response.sendRedirect(redirectUrl);
     }
-
+    
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Generate class code controller";
     }// </editor-fold>
 
 }

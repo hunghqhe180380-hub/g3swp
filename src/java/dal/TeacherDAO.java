@@ -120,7 +120,17 @@ public class TeacherDAO extends DBContext {
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cls.setSum(resultSet.getInt("TotalStudents"));
                 cls.setClassCode(resultSet.getString("ClassCode"));
-                cls.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                cls.setCreatedAt(resultSet.getTimestamp("CreatedAt")
+                                .toLocalDateTime()
+                                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                );
+                if (resultSet.getTimestamp("TimeExpiryClassCode") != null) {
+                    cls.setTimeExpiryClassCode(
+                            resultSet.getTimestamp("TimeExpiryClassCode")
+                                    .toLocalDateTime()
+                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                    );
+                }
                 listClass.add(cls);
             }
         } catch (Exception e) {
