@@ -792,42 +792,7 @@ body.modal-open { overflow: hidden; }
 
 .class-detail__delete{ margin-left: auto; }
 
-/*Teacher modal class code*/
-.class-detail__row--code{
-  align-items: center;
-}
 
-.class-detail__value--code{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.class-detail__code-wrap{
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.class-detail__countdown{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 64px;
-  height: 34px;
-  padding: 0 10px;
-  border-radius: 10px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.15);
-  color: #dc2626;
-  font-weight: 900;
-  font-size: 13px;
-}
-
-.is-hidden{
-  display: none !important;
-}
 /* Responsive */
 @media (max-width: 900px){
     .classes-head{

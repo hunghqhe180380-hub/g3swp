@@ -157,9 +157,9 @@
                             <div class="class-detail__name" id="cd-name">—</div>
                             <div class="class-detail__row class-detail__row--code">
                                 <div class="class-detail__label">Class Code:</div>
-
                                 <div class="class-detail__value class-detail__value--code">
                                     <div id="cd-code-wrap" class="class-detail__code-wrap is-hidden">
+                                        <span id="cd-code" class="class-detail__code">—</span>
                                         <span class="class-detail__countdown" id="cd-countdown">02:00</span>
                                     </div>
                                     <form action="${ctx}/classroom/manage/generate-classcode" method="POST" id="cd-generate-form">
@@ -410,3 +410,36 @@
         }
     })();
 </script>
+<style>
+.class-detail__row--code {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.class-detail__value--code {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap !important;
+}
+
+
+.is-hidden {
+    display: none !important;
+}
+
+.class-detail__code-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.class-detail__code {
+    font-weight: 800;
+    color: #1e293b;
+    background: #f1f5f9;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+</style>
