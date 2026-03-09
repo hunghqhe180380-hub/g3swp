@@ -164,7 +164,7 @@
                                     </div>
                                     <form action="${ctx}/classroom/manage/generate-classcode" method="POST" id="cd-generate-form">
                                         <input type="hidden" name="classId" id="cd-classId-generate">
-                                        <button type="submit" class="class-detail__copy" id="cd-generate-btn">Generate code</button>
+                                        <button type="submit" class="class-detail__copy" id="">Generate code</button>
                                     </form>
                                 </div>
                             </div>
@@ -365,8 +365,6 @@
             document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
             const shouldRevealCode =
-                    revealedClassId !== null &&
-                    String(revealedClassId) === String(classIdRaw) &&
                     d.classCode &&
                     d.classExpiry;
 
@@ -411,35 +409,35 @@
     })();
 </script>
 <style>
-.class-detail__row--code {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+    .class-detail__row--code {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-.class-detail__value--code {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap !important;
-}
+    .class-detail__value--code {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap !important;
+    }
 
 
-.is-hidden {
-    display: none !important;
-}
+    .is-hidden {
+        display: none !important;
+    }
 
-.class-detail__code-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    .class-detail__code-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.class-detail__code {
-    font-weight: 800;
-    color: #1e293b;
-    background: #f1f5f9;
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-}
+    .class-detail__code {
+        font-weight: 800;
+        color: #1e293b;
+        background: #f1f5f9;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+    }
 </style>

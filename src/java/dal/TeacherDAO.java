@@ -93,6 +93,7 @@ public class TeacherDAO extends DBContext {
         return "" + firstLetter + secondLetter + thirdLetter + String.format("%03d", number);
     }
 
+    //get techer's class list by teacher's id
     public List<Classroom> getClassListByTeacherId(String teacherId) {
 
         List<Classroom> listClass = new ArrayList<>();

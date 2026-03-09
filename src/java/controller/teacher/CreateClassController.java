@@ -129,6 +129,12 @@ public class CreateClassController extends HttpServlet {
 
         // studentLimitRaw must be > 0 and < 100
         if (!studentLimitRaw.isEmpty()) {
+            for (int i = 0; i < studentLimitRaw.length(); i++) {
+                if(studentLimitRaw.charAt(i) < '0' || studentLimitRaw.charAt(i) > '9'){
+                    errors.put("msgStudentLimit", Message.MSG304);
+                    return errors;
+                }
+            }
             if (Integer.parseInt(studentLimitRaw) <= 0 || Integer.parseInt(studentLimitRaw) > 100) {
                 errors.put("msgStudentLimit", Message.MSG304);
             } else {

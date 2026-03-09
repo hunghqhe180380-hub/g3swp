@@ -66,7 +66,6 @@ public class ClassroomDAO extends DBContext {
         return list;
     }
 
-
     public boolean updateClassroom(Classroom classes) {
         String sql = "UPDATE [dbo].[Classrooms] SET\n"
                 + "Name = ?, Subject = ?, MaxStudents = ?\n"
@@ -146,5 +145,21 @@ public class ClassroomDAO extends DBContext {
         }
         return null;
     }
-    
+
+    //clear expired class code
+    public void clearExpiredClassCode() {
+
+        String sql = """
+       UPDATE Classrooms
+                SET ClassCode = NULL
+                WHERE TimeExpiryClassCode < GETDATE()
+    """;
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

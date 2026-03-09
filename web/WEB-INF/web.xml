@@ -126,6 +126,10 @@
         <servlet-name>GenerateClasscodeController</servlet-name>
         <servlet-class>controller.teacher.GenerateClasscodeController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LeaveClassController</servlet-name>
+        <servlet-class>controller.student.LeaveClassController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -245,6 +249,10 @@
     <servlet-mapping>
         <servlet-name>GenerateClasscodeController</servlet-name>
         <url-pattern>/classroom/manage/generate-classcode</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LeaveClassController</servlet-name>
+        <url-pattern>/classroom/leave</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
