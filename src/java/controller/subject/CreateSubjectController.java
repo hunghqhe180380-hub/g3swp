@@ -2,25 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.account;
+package controller.subject;
 
-import controller.auth.RouteByRoleController;
+import dal.SubjectDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import model.Classroom;
-import model.User;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author hung2
  */
-public class DashboardController extends HttpServlet {
+public class CreateSubjectController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,35 +31,18 @@ public class DashboardController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        User userLogin = (User) session.getAttribute("user");
-        if (userLogin == null) {
-            response.sendRedirect(request.getContextPath() + "/home");
-            return;
-        }
-        RouteByRoleController route = new RouteByRoleController();
-        List<Classroom> classList = route.showClassList(userLogin.getUserID(), userLogin.getRole());
-        session.setAttribute("classList", classList);
-        //check user login ? continue : back to login
-        if (userLogin == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
-        }
-
-        String userRole = userLogin.getRole();
-        switch (userRole) {
-            case "Student":
-                request.getRequestDispatcher("/view/student/dashboard.jsp").forward(request, response);
-                break;
-            case "Teacher":
-                request.getRequestDispatcher("/view/teacher/dashboard.jsp").forward(request, response);
-                break;
-            case "Admin":
-                request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
-                break;
-            default:
-                throw new AssertionError();
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet CreateSubjectController</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet CreateSubjectController at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 
@@ -77,7 +58,7 @@ public class DashboardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
     }
 
     /**
@@ -91,7 +72,36 @@ public class DashboardController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String action = request.getParameter("action");
+        if (action.equalsIgnoreCase("reset")) {
+            request.removeAttribute("listMSG");
+            request.removeAttribute("subjectName");
+        } else {
+            String subjectName = request.getParameter("subjectName");
+            Map<String, String> listMSG = validSubjectName(subjectName);
+
+            if (listMSG.size() == 0) {
+                listMSG.put("msgSubjectSucces", message.Message.MSG502);
+                SubjectDAO subjectDAO = new SubjectDAO();
+                subjectDAO.createSubject(subjectName);
+            }
+            request.setAttribute("listMSG", listMSG);
+            request.setAttribute("subjectName", subjectName.trim());
+        }
+        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
+    }
+
+    public Map<String, String> validSubjectName(String subjectName) {
+        Map<String, String> errors = new HashMap<>();
+        if (subjectName.trim().isEmpty()) {
+            errors.put("msgSubject", message.Message.MSG500);
+            return errors;
+        }
+
+        if (subjectName.length() > 30) {
+            errors.put("msgSubject", message.Message.MSG501);
+        }
+        return errors;
     }
 
     /**

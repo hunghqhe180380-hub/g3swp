@@ -80,6 +80,24 @@
                             <a class="btn-open" href="${ctx}/classroom/view/class-list">Open</a>
                         </div>
                     </section>
+                     <!-- Card Create New Subject -->
+                    <section class="admin-card">
+                        <div class="admin-card__icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
+                                      stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="admin-card__body">
+                            <h3>Mange Subject</h3>
+                            <p>New Subject, New Income =))</p>
+
+                            <a class="btn-open" href="${ctx}/subject/view/subject-list">Open</a>
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>

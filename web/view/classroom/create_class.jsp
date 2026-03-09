@@ -41,9 +41,12 @@
 
                             <div class="cc-field">
                                 <label class="cc-label" for="subject">Subject</label>
-                                <input class="cc-input" type="text" id="subject" name="subject"
-                                       placeholder="e.g. Tin Học"
-                                       value="${subject}">
+                                <select name="subjectId"  id="id">
+                                    <option value="none">---</option>
+                                    <c:forEach items="${requestScope.listSubject}" var="subject">
+                                        <option value="${subject.id}">${subject.name}</option>
+                                    </c:forEach>
+                                </select>
                                 <c:if test="${not empty listMSG.msgSubject}">
                                     <div class="cc-error">${listMSG.msgSubject}</div>
                                 </c:if>
