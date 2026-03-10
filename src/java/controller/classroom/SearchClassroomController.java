@@ -5,6 +5,7 @@
 package controller.classroom;
 
 import dal.ClassroomDAO;
+import dal.MaterialDAO;
 import dal.StudentDAO;
 import dal.TeacherDAO;
 import java.io.IOException;
@@ -82,8 +83,8 @@ public class SearchClassroomController extends HttpServlet {
         System.out.println("du pót");
         String nameClass = request.getParameter("nameClass");
         request.setAttribute("nameClass", nameClass);
-        if(nameClass.trim().isEmpty()){
-           response.sendRedirect(request.getContextPath() + "/account/dashboard");
+        if (nameClass.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
             return;
         }
         HttpSession session = request.getSession();
@@ -95,35 +96,39 @@ public class SearchClassroomController extends HttpServlet {
         ClassroomDAO clsDAO = new ClassroomDAO();
         //get all list class of this user (by user's role)
         List<Classroom> listAllClass = new ArrayList<>();
-        if(userLogin.getRole().equalsIgnoreCase("student")){
+        if (userLogin.getRole().equalsIgnoreCase("student")) {
             StudentDAO stDAO = new StudentDAO();
             listAllClass = stDAO.getListClassJoined(userLogin.getUserID());
         }
-        if(userLogin.getRole().equalsIgnoreCase("teacher")){
+        if (userLogin.getRole().equalsIgnoreCase("teacher")) {
             TeacherDAO teacherDAO = new TeacherDAO();
             listAllClass = teacherDAO.getClassListByTeacherId(userLogin.getUserID());
         }
         //role admin have not done yet
         //searche class
         List<Classroom> listClassSearchByName = searchClassroomByName(nameClass, listAllClass);
+        //get total material follow class list by class's id
+        MaterialDAO mtrDAO = new MaterialDAO();
+        session.setAttribute("totalMaterial", mtrDAO.getTotalMaterial(listClassSearchByName));
+        System.out.println("Total nenene: " + mtrDAO.getTotalMaterial(listClassSearchByName));
         System.out.println("list search: " + listClassSearchByName.size());
         session.setAttribute("classList", listClassSearchByName);
         request.getRequestDispatcher("/view" + "/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
     }
 
     //function search class by name
-    private List<Classroom> searchClassroomByName(String className, List<Classroom> listAllClass){
+    private List<Classroom> searchClassroomByName(String className, List<Classroom> listAllClass) {
         List<Classroom> resultSearch = new ArrayList<>();
         for (int i = 0; i < listAllClass.size(); i++) {
-            if(listAllClass.get(i).getName().toLowerCase().contains(className.trim().toLowerCase())){
+            if (listAllClass.get(i).getName().toLowerCase().contains(className.trim().toLowerCase())) {
                 resultSearch.add(listAllClass.get(i));
                 System.out.println("hahaha");
             }
         }
-        
+
         return resultSearch;
     }
-    
+
     /**
      * Returns a short description of the servlet.
      *

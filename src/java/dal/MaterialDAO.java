@@ -19,7 +19,7 @@ public class MaterialDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    // ── existing methods (unchanged) ─────────────────────────────────────────
+    // ── existing methods (unchanged) ────────────────────────────────────────
     public List<Material> getMaterialByClassId(String search, String classId) {
         String sql = "SELECT * FROM [Materials] WHERE ClassId=?";
         if (search != null && !search.trim().isEmpty()) {
@@ -238,17 +238,31 @@ public class MaterialDAO extends DBContext {
         return m;
     }
 
-    //get Total Material of User by User's id
-    public int getTotalMaterialStudent(String userId) {
+    /**
+     * **
+     *** get Total Material of CLASSES by class's id and teacher'id
+     */
+    public int getTotalMaterial(List<Classroom> classList) {
+        int totalMaterial = 0;
+        System.out.println("classList333: " + classList.size());
+        for (int i = 0; i < classList.size(); i++) {
+            totalMaterial += getTotalMaterialByClassId(classList.get(i).getId());
+            System.out.println("&&&: " + " " + classList.get(i).getId());
+        }
+        return totalMaterial;
+    }
+
+    private int getTotalMaterialByClassId(int classId) {
         int total = 0;
         try {
-            String sql = "SELECT COUNT(m.Id) AS TotalMaterial\n"
-                    + "FROM Materials m\n"
-                    + "JOIN Enrollments e\n"
-                    + "    ON m.ClassId = e.ClassId\n"
-                    + "WHERE e.UserId = ?";
+            String sql = "SELECT c.Id, COUNT(m.Id) AS TotalMaterial\n"
+                    + "FROM Classrooms c\n"
+                    + "LEFT JOIN Materials m\n"
+                    + "ON c.Id = m.ClassId\n"
+                    + "WHERE c.Id = ? \n"
+                    + "GROUP BY c.Id";
             statement = connection.prepareStatement(sql);
-            statement.setObject(1, userId);
+            statement.setObject(1, classId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 total = resultSet.getInt("TotalMaterial");

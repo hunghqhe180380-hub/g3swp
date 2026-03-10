@@ -24,13 +24,15 @@ public class ClassroomDAO extends DBContext {
 
     //this function use to search class by class name, teacher of this class
     public List<Classroom> getAllClassBySearch(String search) {
-        String sql = "select a.*,b.FullName as TeacherName,"
+        String sql = "select a.*,b.FullName as TeacherName, s.subject_name,"
                 + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
                 + "from [Classrooms] as a\n"
                 + "join [Users] as b on a.TeacherId = b.Id\n"
-                + "where 1=1";
+                + "join [Subjects] s\n"
+                + "on s.id = a.SubjectId\n"
+                + "where 1=1\n";
         if (search != null && !search.trim().isEmpty()) {
-            sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ? OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
+            sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ? OR LOWER(s.subject_name) LIKE ? OR LOWER(b.FullName) LIKE ?)";
         }
         List<Classroom> list = new ArrayList<>();
         try {
@@ -50,6 +52,7 @@ public class ClassroomDAO extends DBContext {
                 classes.setName(resultSet.getString("Name"));
                 classes.setClassCode(resultSet.getString("ClassCode"));
                 classes.setSubjectId(resultSet.getString("SubjectId"));
+                classes.setSubjectName(resultSet.getString("subject_name"));
                 classes.setTeacherId(resultSet.getString("TeacherId"));
                 classes.setTeacherName(resultSet.getString("TeacherName"));
                 classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));

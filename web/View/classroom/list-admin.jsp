@@ -75,8 +75,8 @@
                                         </c:choose>
                                     </span>
                                 </th>
-                                <th>Subject</th>
-                                <th>Code</th>
+                                <th>Subject's ID</th>
+                                <th>Subject's Name</th>
                                 <th>Time Expiry Class Code</th>                                 
                                 <th onclick="sort('TeacherName')" style="cursor:pointer">
                                     Teacher
@@ -114,10 +114,10 @@
                                     </td>
                                     <td>
                                         <div class="classcell">
-                                            <div class="classcell__sub"><c:out value="${cl.subject}"/></div>
+                                            <div class="classcell__sub"><c:out value="${cl.subjectId}"/></div>
                                         </div>
                                     </td>
-                                    <td class="code"><c:out value="${cl.classCode}"/></td>
+                                    <td class="code"><c:out value="${cl.subjectName}"/></td>
                                     <td class="timeExpiryClassCode"><c:out value="${cl.timeExpiryClassCode}"/></td>
                                     <td class="muted"><c:out value="${cl.teacherName}"/></td>
 

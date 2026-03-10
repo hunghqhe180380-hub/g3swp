@@ -5,6 +5,7 @@
 package controller.account;
 
 import controller.auth.RouteByRoleController;
+import controller.material.MaterialListController;
 import dal.MaterialDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,10 +44,9 @@ public class DashboardController extends HttpServlet {
         }
         RouteByRoleController route = new RouteByRoleController();
         List<Classroom> classList = route.showClassList(userLogin.getUserID(), userLogin.getRole());
-        //get totalMaterial
-        MaterialDAO mtrDAO = new MaterialDAO();
-        //int totalMaterial = mtrDAO.getTotalMaterial(userLogin.getUserID());
-       // session.setAttribute("totalMaterial", totalMaterial);
+         //get totalMaterial
+        MaterialDAO mtrCtrl = new MaterialDAO();
+        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
         session.setAttribute("classList", classList);
         //check user login ? continue : back to login
         if (userLogin == null) {
