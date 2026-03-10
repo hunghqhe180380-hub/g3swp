@@ -119,7 +119,7 @@ public class TeacherDAO extends DBContext {
                 Classroom cls = new Classroom();
                 cls.setId(resultSet.getInt("Id"));
                 cls.setName(resultSet.getString("Name"));
-                cls.setSubject(resultSet.getString("subject_name"));
+                cls.setSubjectName(resultSet.getString("subject_name"));
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cls.setSum(resultSet.getInt("TotalStudents"));
                 cls.setClassCode(resultSet.getString("ClassCode"));

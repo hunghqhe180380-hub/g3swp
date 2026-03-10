@@ -82,4 +82,7 @@ public class Message {
     public static final String MSG500 = "Subject's name is require.";
     public static final String MSG501 = "Subject's name must be < 50 Characters.";
     public static final String MSG502 = "Create new subject success.";
+    
+    //msg edit class's info
+    public static final String MSG600 = "Max Student must be Integer >= number Student joined and <= 100";
 }

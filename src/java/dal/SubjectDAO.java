@@ -6,6 +6,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,11 @@ public class SubjectDAO extends DBContext {
     public List<Subject> getListSubject() {
         List<Subject> listSubject = new ArrayList<>();
         try {
-            String sql = "select s.Id, s.subject_name, count(c.teacherId) as total_teacher, count(c.Id) as total_classes, s.is_active, s.create_at    from Subjects s\n"
-                    + "left join Classrooms c\n"
-                    + "on s.Id = c.SubjectId\n"
-                    + "group by s.Id, s.subject_name, c.teacherId, c.Id, s.is_active, s.create_at";
+            String sql = "SELECT s.Id, s.subject_name, COUNT(c.teacherId) AS total_teacher, "
+                    + "COUNT(c.Id) AS total_classes, s.is_active, s.create_at "
+                    + "FROM Subjects s "
+                    + "LEFT JOIN Classrooms c ON s.Id = c.SubjectId "
+                    + "GROUP BY s.Id, s.subject_name, s.is_active, s.create_at";
             statement = connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -82,5 +84,26 @@ public class SubjectDAO extends DBContext {
         }
 
         return id.toString();
+    }
+
+    //get subject's name by it's id
+    public String getSubjectNameById(String subjectId) {
+        try {
+            String sql = "SELECT [Id]\n"
+                    + "      ,[subject_name]\n"
+                    + "      ,[is_active]\n"
+                    + "      ,[create_at]\n"
+                    + "  FROM [dbo].[Subjects]\n"
+                    + "Where Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, subjectId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("subject_name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

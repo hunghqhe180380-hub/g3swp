@@ -49,7 +49,7 @@ public class ClassroomDAO extends DBContext {
                 classes.setId(resultSet.getInt("Id"));
                 classes.setName(resultSet.getString("Name"));
                 classes.setClassCode(resultSet.getString("ClassCode"));
-                classes.setSubject(resultSet.getString("Subject"));
+                classes.setSubjectId(resultSet.getString("SubjectId"));
                 classes.setTeacherId(resultSet.getString("TeacherId"));
                 classes.setTeacherName(resultSet.getString("TeacherName"));
                 classes.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
@@ -66,14 +66,34 @@ public class ClassroomDAO extends DBContext {
         return list;
     }
 
+//    //this function will update class's name and maxStudents
+//    public boolean updateClassroomHaveStudent(Classroom classes) {
+//        String sql = "UPDATE [dbo].[Classrooms] SET\n"
+//                + "Name = ?, MaxStudents = ?\n"
+//                + "WHERE Id = ?";
+//        try {
+//            statement = connection.prepareStatement(sql);
+//            statement.setObject(1, classes.getName());
+//            statement.setObject(2, classes.getMaxStudent());
+//            statement.setObject(3, classes.getId());
+//            int rows = statement.executeUpdate();
+//            statement.close();
+//            return rows > 0;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+
+    //this function will update class's name, subject and maxStudents
     public boolean updateClassroom(Classroom classes) {
         String sql = "UPDATE [dbo].[Classrooms] SET\n"
-                + "Name = ?, Subject = ?, MaxStudents = ?\n"
+                + "Name = ?, SubjectId = ?, MaxStudents = ?\n"
                 + "WHERE Id = ?";
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classes.getName());
-            statement.setObject(2, classes.getSubject());
+            statement.setObject(2, classes.getSubjectId());
             statement.setObject(3, classes.getMaxStudent());
             statement.setObject(4, classes.getId());
             int rows = statement.executeUpdate();
@@ -84,7 +104,9 @@ public class ClassroomDAO extends DBContext {
             return false;
         }
     }
+    
 
+    //class's id, name, subject's id, teacherId, create_at, maxStudent, timeExpiryClassCode, teacher name, total student
     public Classroom getClassInfoByClassId(String classId) {
         String sql = "SELECT a.*,b.FullName as TeacherName,"
                 + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
@@ -101,7 +123,7 @@ public class ClassroomDAO extends DBContext {
                 cl.setId(resultSet.getInt("Id"));
                 cl.setName(resultSet.getString("Name"));
                 cl.setClassCode(resultSet.getString("ClassCode"));
-                cl.setSubject(resultSet.getString("Subject"));
+                cl.setSubjectId(resultSet.getString("SubjectId"));
                 cl.setTeacherId(resultSet.getString("TeacherId"));
                 cl.setTeacherName(resultSet.getString("TeacherName"));
                 cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));

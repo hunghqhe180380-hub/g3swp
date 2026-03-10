@@ -25,14 +25,7 @@ public class StudentDAO extends DBContext {
         List<Classroom> listClassroom = new ArrayList<>();
         TeacherDAO teacherDAO = new TeacherDAO();
         try {
-            String sql = "SELECT [ClassId]\n"
-                    + ",c.*\n"
-                    + ",[RoleInClass]\n"                    
-                    + ",b.FullName as TeacherName\n"
-                    + "  FROM [dbo].[Enrollments] e\n"
-                    + "  JOIN [dbo].[Classrooms] c on e.ClassId = c.Id\n"
-                    + "  JOIN [Users] as b on c.TeacherId = b.Id\n"
-                    + "  where e.UserId = ?";
+            String sql = "";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             resultSet = statement.executeQuery();
@@ -41,7 +34,7 @@ public class StudentDAO extends DBContext {
                 cls.setId(resultSet.getInt("ClassId"));
                 cls.setName(resultSet.getString("Name"));
                 cls.setClassCode(resultSet.getString("ClassCode"));
-                cls.setSubject(resultSet.getString("Subject"));
+                cls.setSubjectName(resultSet.getString("Subject"));
                 cls.setTeacherId(resultSet.getString("TeacherId"));
                 cls.setTeacherName(resultSet.getString("TeacherName"));
                 cls.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
