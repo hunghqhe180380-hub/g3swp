@@ -88,28 +88,38 @@ public class CreateClassController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        getListSubject(request, response);
-        String className = request.getParameter("className");
-        String subjectId = request.getParameter("subjectId");
-        System.out.println("subjectID: " + subjectId);
-        String studentLimit = request.getParameter("studentLimit");
-        System.out.println("student limit: " + studentLimit.length());
-        HttpSession session = request.getSession();
-        User teacher = (User) session.getAttribute("user");
-        Map<String, String> listMSG = validator(teacher.getUserID(), className, subjectId, studentLimit);
-        request.setAttribute("className", className.trim());
-        request.setAttribute("subjectId", subjectId);
-        request.setAttribute("studentLimit", studentLimit);
-        if (listMSG.size() == 0) {
-            //if validation is legit => allow create a new classroom            
-            TeacherDAO techerDAO = new TeacherDAO();
-            User user = (User) session.getAttribute("user");
-            techerDAO.createNewClass(className, subjectId, user.getUserID(), studentLimit);
-            response.sendRedirect(request.getContextPath() + "/route");
-            return;
+        String action = request.getParameter("action");
+        if (action.equalsIgnoreCase("reset")) {
+            response.sendRedirect(request.getContextPath() + "/classroom/manage/create");
+        } else {
+            getListSubject(request, response);
+            String className = request.getParameter("className");
+            String subjectId = request.getParameter("subjectId");
+            System.out.println("subjectID: " + subjectId);
+            String studentLimit = request.getParameter("studentLimit");
+            System.out.println("student limit: " + studentLimit.length());
+            HttpSession session = request.getSession();
+            User teacher = (User) session.getAttribute("user");
+            Map<String, String> listMSG = validator(teacher.getUserID(), className, subjectId, studentLimit);
+            request.setAttribute("className", className.trim());
+            request.setAttribute("subjectId", subjectId);
+            request.setAttribute("studentLimit", studentLimit);
+            if (listMSG.size() == 0) {
+                //if validation is legit => allow create a new classroom            
+                TeacherDAO techerDAO = new TeacherDAO();
+                User user = (User) session.getAttribute("user");
+                techerDAO.createNewClass(className, subjectId, user.getUserID(), studentLimit);
+//            response.sendRedirect(request.getContextPath() + "/route");
+//            return;
+                listMSG.put("msgNotifySuccess", "New class created successfully!");
+            }
+
+            //get subjectName to show in preview of view/classroom/create_class.jsp
+            SubjectDAO subjectDAO = new SubjectDAO();
+            request.setAttribute("subjectName", subjectDAO.getSubjectNameById(subjectId));
+            request.setAttribute("listMSG", listMSG);
+            request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
         }
-        request.setAttribute("listMSG", listMSG);
-        request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
     }
 
     //validation 
@@ -129,9 +139,9 @@ public class CreateClassController extends HttpServlet {
         if (className.trim().length() > 30) {
             errors.put("msgClassName", Message.MSG315);
         }
-        
+
         //check subjec
-        if(subjectId.equalsIgnoreCase("none")){
+        if (subjectId.equalsIgnoreCase("none")) {
             errors.put("msgSubject", Message.MSG302);
         }
 
@@ -154,7 +164,7 @@ public class CreateClassController extends HttpServlet {
             } else {
                 // class of teachers unique
                 if (teacherDAO.isExistClass(teacherID, className, subjectId)) {
-                    errors.put("msgNotify", Message.MSG306);
+                    errors.put("msgNotifyError", Message.MSG317);
                 }
             }
             return errors;
