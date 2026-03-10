@@ -144,17 +144,17 @@ public class TeacherDAO extends DBContext {
     }
 
     //check class is full slot?
-    public boolean isClassFull(String classCode) {
+    public boolean isClassFull(String classId) {
         try {
-            String sql = "SELECT c.ClassCode, c.Id, c.Name, c.Subject, c.MaxStudents, \n"
+            String sql = "SELECT c.Id, c.Name, c.SubjectId, c.MaxStudents, \n"
                     + "                COUNT(e.UserId) AS TotalStudents\n"
                     + "                FROM Classrooms c \n"
                     + "                LEFT JOIN Enrollments e \n"
                     + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
-                    + "                Where c.ClassCode = ? \n"
-                    + "                GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode";
+                    + "                Where c.Id = ? \n"
+                    + "                GROUP BY c.Id, c.Name, c.SubjectId, c.MaxStudents";
             statement = connection.prepareStatement(sql);
-            statement.setObject(1, classCode);
+            statement.setObject(1, classId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int max = resultSet.getInt("MaxStudents");

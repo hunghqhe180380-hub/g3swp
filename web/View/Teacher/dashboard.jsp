@@ -75,7 +75,7 @@
                         </div>
                         <div>
                             <div class="stat-label">Materials</div>
-                            <div class="stat-value">${empty requestScope.materials ? "Error" : requestScope.materials}</div>
+                            <div class="stat-value">${empty sessionScope.totalMaterial ? "Error" : sessionScope.totalMaterial}</div>
                         </div>
                     </div>
 

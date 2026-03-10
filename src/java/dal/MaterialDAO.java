@@ -11,8 +11,8 @@ import java.util.List;
 import model.*;
 
 /**
- * MaterialDAO – JDBC data access for Materials table.
- * Includes list, findById, insert (upload), update (edit), delete.
+ * MaterialDAO – JDBC data access for Materials table. Includes list, findById,
+ * insert (upload), update (edit), delete.
  */
 public class MaterialDAO extends DBContext {
 
@@ -20,7 +20,6 @@ public class MaterialDAO extends DBContext {
     protected ResultSet resultSet;
 
     // ── existing methods (unchanged) ─────────────────────────────────────────
-
     public List<Material> getMaterialByClassId(String search, String classId) {
         String sql = "SELECT * FROM [Materials] WHERE ClassId=?";
         if (search != null && !search.trim().isEmpty()) {
@@ -84,8 +83,9 @@ public class MaterialDAO extends DBContext {
     }
 
     // ── new methods ──────────────────────────────────────────────────────────
-
-    /** Find a single material by its primary key. Returns null if not found. */
+    /**
+     * Find a single material by its primary key. Returns null if not found.
+     */
     public Material findById(int id) {
         String sql = "SELECT * FROM [Materials] WHERE Id=?";
         Material m = null;
@@ -105,8 +105,8 @@ public class MaterialDAO extends DBContext {
     }
 
     /**
-     * Insert a new material row.
-     * sets all fields including file/url/note metadata.
+     * Insert a new material row. sets all fields including file/url/note
+     * metadata.
      */
     public boolean insertMaterial(Material m) {
         String sql = "INSERT INTO [Materials] "
@@ -144,8 +144,8 @@ public class MaterialDAO extends DBContext {
     }
 
     /**
-     * Update an existing material row.
-     * updates editable fields + file/url/note metadata.
+     * Update an existing material row. updates editable fields + file/url/note
+     * metadata.
      */
     public boolean updateMaterial(Material m) {
         String sql = "UPDATE [Materials] SET "
@@ -182,7 +182,9 @@ public class MaterialDAO extends DBContext {
         }
     }
 
-    /** Get Classroom by its int Id (for owner/name lookup). */
+    /**
+     * Get Classroom by its int Id (for owner/name lookup).
+     */
     public Classroom getClassById(int classId) {
         String sql = "SELECT * FROM [Classrooms] WHERE Id=?";
         Classroom cl = null;
@@ -205,7 +207,6 @@ public class MaterialDAO extends DBContext {
     }
 
     // ── private mapper ───────────────────────────────────────────────────────
-
     private Material mapFull(ResultSet rs) throws SQLException {
         Material m = new Material();
         m.setId(rs.getInt("Id"));
@@ -236,4 +237,37 @@ public class MaterialDAO extends DBContext {
         }
         return m;
     }
+
+    //get Total Material of User by User's id
+    public int getTotalMaterialStudent(String userId) {
+        int total = 0;
+        try {
+            String sql = "SELECT COUNT(m.Id) AS TotalMaterial\n"
+                    + "FROM Materials m\n"
+                    + "JOIN Enrollments e\n"
+                    + "    ON m.ClassId = e.ClassId\n"
+                    + "WHERE e.UserId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                total = resultSet.getInt("TotalMaterial");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+//get total material of Teacher
+//    public int getTotalMaterialTeacher(String teacherId) {
+//        try {
+//            String sql = "SELECT COUNT(m.Id) AS TotalMaterial\n"
+//                    + "FROM Materials m\n"
+//                    + "JOIN Classrooms c\n"
+//                    + "    ON m.ClassId = c.Id\n"
+//                    + "WHERE c.TeacherId = ?";
+//        } catch (Exception e) {
+//        }
+//    }
 }

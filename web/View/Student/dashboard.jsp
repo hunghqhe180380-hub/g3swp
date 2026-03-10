@@ -61,7 +61,7 @@
                     </div>
                     <div>
                         <div class="stat-label">Assignments Due</div>
-                        <div class="stat-value">${empty requestScope.assignmentsDue ? ERROR : requestScope.assignmentsDue}</div>
+                        <div class="stat-value">${empty requestScope.assignmentsDue ? 'ERROR' : requestScope.assignmentsDue}</div>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <div class="stat-label">Materials</div>
-                        <div class="stat-value">${empty session.materials ? ERROR : requestScope.materials}</div>
+                        <div class="stat-value">${empty sessionScope.totalMaterial ? 'ERROR' : sessionScope.totalMaterial}</div>
                     </div>
                 </div>
 
@@ -117,9 +117,9 @@
                             <a class="class-card"
                                href="#"
                                data-class-id="<c:out value='${cls.id}'/>"
-                               data-class-code="<c:out value='${cls.classCode}'/>"
+
                                data-class-name="<c:out value='${cls.name}'/>"
-                               data-subject="<c:out value='${cls.subject}'/>"
+                               data-subject="<c:out value='${cls.subjectName}'/>"
                                data-teacher="<c:out value='${cls.teacherName}'/>"
                                data-created="<c:out value='${cls.createdAt}'/>"
                                data-sum="<c:out value='${cls.sum}'/>"
@@ -128,7 +128,7 @@
                                 <div class="class-body">
                                     <h3 class="class-title">${cls.name}</h3>
                                     <div class="class-meta">
-                                        Subject : ${cls.subject}<br>
+                                        Subject : ${cls.subjectName}<br>
                                         Student : ${cls.sum}/${cls.maxStudent}
                                     </div>
                                 </div>
@@ -186,11 +186,10 @@
     <!-- Class Detail Modal (Student) -->
     <div id="classDetailModal" class="dash-modal class-detail-modal" aria-hidden="true">
         <div class="dash-modal__backdrop" data-close="1"></div>
-
         <div class="dash-modal__dialog class-detail__dialog" role="dialog" aria-modal="true" aria-labelledby="cd-title">
             <div class="class-detail__header">
                 <div class="class-detail__heading" id="cd-title">Class Details</div>
-                <button class="class-detail__close" type="button" aria-label="Close" data-close="1">×</button>
+                <button class="class-detail__close" type="submit" value="cancel" aria-label="Close" data-close="1">×</button>
             </div>
 
             <div class="class-detail__body">
@@ -221,14 +220,14 @@
                     <a class="class-detail__btn is-green" id="cd-materials" href="#">Materials</a>
                     <a class="class-detail__btn is-orange" id="cd-assignments" href="#">Assignments</a>
 
-                    <form id="cd-leave-form" method="post" action="${ctx}/join" class="class-detail__leave">
-                        <input type="hidden" name="action" value="leaveClass" />
-                        <input type="hidden" name="classId" id="cd-classId" value="" />
+                    <form id="cd-leave-form" method="post" action="${ctx}/classroom/leave" class="class-detail__leave">
+                        <input type="hidden" id="cd-classId" name="classId" value="" />
                         <button type="submit" class="class-detail__btn is-red">Leave</button>
                     </form>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>

@@ -78,17 +78,20 @@ public class JoinClassController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/account/dashboard");
         } else {
             String classCode = request.getParameter("classCode");
+            //get classId by classCode
+            ClassroomDAO clsDAO = new ClassroomDAO();
+            String classId = clsDAO.getClassIdByCode(classCode);
             HttpSession session = request.getSession();
             User student = (User) session.getAttribute("user");
-            Map<String, String> listMSG = validator(classCode, student.getUserID());
+            Map<String, String> listMSG = validator(classCode, classId , student.getUserID());
             if (listMSG.size() > 0) {
                 request.setAttribute("classCode", classCode);
                 request.setAttribute("listMSG", listMSG);
             } else {
                 StudentDAO stDAO = new StudentDAO();
                 //get class id by class code
-                ClassroomDAO clsDAO = new ClassroomDAO();
-                String classId = clsDAO.getClassIdByCode(classCode);
+//                ClassroomDAO clsDAO = new ClassroomDAO();
+//                String classId = clsDAO.getClassIdByCode(classCode);
                 stDAO.joinClass(classId, student.getUserID());
                 request.setAttribute("msgClassCode", "Join new class succesfull.");
             }
@@ -99,6 +102,7 @@ public class JoinClassController extends HttpServlet {
     //validator
     private Map<String, String> validator(
             String classCode,
+            String classId,
             String studentId) {
 
         Map<String, String> errors = new HashMap<>();
@@ -125,7 +129,7 @@ public class JoinClassController extends HttpServlet {
                 }
                 //check class is full or not?
                 TeacherDAO teacherDAO = new TeacherDAO();
-                if (teacherDAO.isClassFull(classCode) == true) {
+                if (teacherDAO.isClassFull(classId) == true) {
                     errors.put("msgClassCode", Message.MSG314);
                     return errors;
                 };
