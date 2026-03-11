@@ -24,14 +24,15 @@ public class ClassroomDAO extends DBContext {
 
     //this function use to search class by class name, teacher of this class
     public List<Classroom> getAllClassBySearch(String search) {
-        String sql = "select a.*,b.FullName as TeacherName,c.subject_name as SubjectName,"
+        String sql = "select a.*,b.FullName as TeacherName, s.subject_name,"
                 + "(select count(*) from [Enrollments] where ClassId = a.Id) as TotalStudent\n"
                 + "from [Classrooms] as a\n"
                 + "join [Users] as b on a.TeacherId = b.Id\n"
-                + "join [Subjects] as c on c.Id = a.SubjectId\n"
-                + "where 1=1";
+                + "join [Subjects] s\n"
+                + "on s.id = a.SubjectId\n"
+                + "where 1=1\n";
         if (search != null && !search.trim().isEmpty()) {
-            sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.Id) LIKE ? OR LOWER(SubjectName) LIKE ? OR LOWER(TeacherName) LIKE ?)";
+            sql += " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ? OR LOWER(s.subject_name) LIKE ? OR LOWER(b.FullName) LIKE ?)";
         }
         List<Classroom> list = new ArrayList<>();
         try {
@@ -48,7 +49,8 @@ public class ClassroomDAO extends DBContext {
             while (resultSet.next()) {
                 Classroom classes = new Classroom();
                 classes.setId(resultSet.getInt("Id"));
-                classes.setName(resultSet.getString("Name"));                
+                classes.setName(resultSet.getString("Name"));
+                //classes.setClassCode(resultSet.getString("ClassCode"));
                 classes.setSubjectId(resultSet.getString("SubjectId"));
                 classes.setSubjectName(resultSet.getString("subject_name"));
                 classes.setTeacherId(resultSet.getString("TeacherId"));
@@ -109,11 +111,10 @@ public class ClassroomDAO extends DBContext {
 
     //class's id, name, subject's id, teacherId, create_at, maxStudent, timeExpiryClassCode, teacher name, total student
     public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.*,b.FullName as TeacherName,c.subject_name as SubjectName"
+        String sql = "SELECT a.*,b.FullName as TeacherName,"
                 + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
                 + "FROM [Classrooms] as a\n"
                 + "JOIN [Users] as b ON a.TeacherId = b.Id\n"
-                + "join [Subjects] as c on c.Id = a.SubjectId\n"
                 + "WHERE a.Id = ?";
 
         Classroom cl = new Classroom();
@@ -123,7 +124,8 @@ public class ClassroomDAO extends DBContext {
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 cl.setId(resultSet.getInt("Id"));
-                cl.setName(resultSet.getString("Name"));                
+                cl.setName(resultSet.getString("Name"));
+               // cl.setClassCode(resultSet.getString("ClassCode"));
                 cl.setSubjectId(resultSet.getString("SubjectId"));
                 cl.setTeacherId(resultSet.getString("TeacherId"));
                 cl.setTeacherName(resultSet.getString("TeacherName"));
