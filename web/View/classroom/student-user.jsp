@@ -329,7 +329,7 @@
                         fd.append('classId', String(classId));
                         fd.append('userId', currentUserId);
                         try {
-                            var resp = await fetch(ctx + '/Classrooms/Kick', {
+                            var resp = await fetch(ctx + '/classroom/student/expel', {
                                 method: 'POST', body: fd,
                                 credentials: 'same-origin',
                                 headers: {'X-Requested-With': 'XMLHttpRequest'}

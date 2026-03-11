@@ -88,6 +88,7 @@ public class StudentListController extends HttpServlet {
         if (user.getRole().equals("Admin")) {
             request.getRequestDispatcher("/view/classroom/student-admin.jsp").forward(request, response);
         }else {
+            //role: Teacher or Student
             request.getRequestDispatcher("/view/classroom/student-user.jsp").forward(request, response);
         }
     }

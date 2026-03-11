@@ -138,6 +138,10 @@
         <servlet-name>CreateSubjectController</servlet-name>
         <servlet-class>controller.subject.CreateSubjectController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExpelStudentController</servlet-name>
+        <servlet-class>controller.teacher.ExpelStudentController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -269,6 +273,10 @@
     <servlet-mapping>
         <servlet-name>CreateSubjectController</servlet-name>
         <url-pattern>/subject/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExpelStudentController</servlet-name>
+        <url-pattern>/classroom/student/expel</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
