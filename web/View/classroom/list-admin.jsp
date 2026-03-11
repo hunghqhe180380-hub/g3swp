@@ -46,7 +46,7 @@
                     <form class="search" action="${ctx}/classroom/view/class-list" method="get">
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
-                               placeholder="Search class/teacher/code...">
+                               placeholder="Search class/teacher...">
                         <button class="search__btn search__btn--primary" type="submit">Search</button>
                     </form>
 
@@ -76,8 +76,7 @@
                                     </span>
                                 </th>
                                 <th>Subject</th>
-                                <th>Code</th>
-                                <th>Time Expiry Class Code</th>                                 
+                                <th>Class Id</th>                                                             
                                 <th onclick="sort('TeacherName')" style="cursor:pointer">
                                     Teacher
                                     <span id="iconTeacherName">
@@ -117,8 +116,9 @@
                                             <div class="classcell__sub"><c:out value="${cl.subject}"/></div>
                                         </div>
                                     </td>
-                                    <td class="code"><c:out value="${cl.classCode}"/></td>
-                                    <td class="timeExpiryClassCode"><c:out value="${cl.timeExpiryClassCode}"/></td>
+                                    <td class="classId">
+                                        <c:out value="${cl.id}"/>
+                                    </td>                                    
                                     <td class="muted"><c:out value="${cl.teacherName}"/></td>
 
                                     <td><span class="num"><c:out value="${cl.sum}"/></span></td>
@@ -190,7 +190,7 @@
     th span {
         font-size: 12px;
         margin-left: 4px;
-    }
+    }    
 </style>
 <script>
     function sort(x) {

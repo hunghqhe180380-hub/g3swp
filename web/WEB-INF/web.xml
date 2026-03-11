@@ -275,6 +275,10 @@
     </welcome-file-list>
     <context-param>
         <param-name>nrpp</param-name>
+        <param-value>6</param-value>
+    </context-param>
+    <context-param>
+        <param-name>clsp</param-name>
         <param-value>5</param-value>
     </context-param>
     <servlet>

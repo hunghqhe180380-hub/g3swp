@@ -179,7 +179,7 @@ a{ text-decoration:none; color: inherit; }
 }
 
 .muted{ color: var(--muted); }
-.code{
+.classId{
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     color:#e11d48;
 }

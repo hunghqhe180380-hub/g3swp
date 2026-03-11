@@ -439,5 +439,5 @@
         padding: 5px 10px;
         border-radius: 6px;
         border: 1px solid #cbd5e1;
-    }
+    }    
 </style>

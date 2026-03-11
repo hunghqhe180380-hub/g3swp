@@ -8,6 +8,7 @@ import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author BINH
  */
+@MultipartConfig
 public class KickStudentController extends HttpServlet {
 
     private EnrollmentDAO dao;
