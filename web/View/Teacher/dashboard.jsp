@@ -75,7 +75,7 @@
                         </div>
                         <div>
                             <div class="stat-label">Materials</div>
-                            <div class="stat-value">${empty requestScope.materials ? "Error" : requestScope.materials}</div>
+                            <div class="stat-value">${empty sessionScope.totalMaterial ? "Error" : sessionScope.totalMaterial}</div>
                         </div>
                     </div>
 
@@ -121,7 +121,7 @@
                                    data-class-name="<c:out value='${cls.name}'/>"
                                    data-class-code="<c:out value='${cls.classCode}'/>"
                                    data-class-expiry="<c:out value='${cls.timeExpiryClassCode}'/>"
-                                   data-subject="<c:out value='${cls.subject}'/>"
+                                   data-subject="<c:out value='${cls.subjectName}'/>"
                                    data-teacher="<c:out value='${cls.teacherName}'/>"
                                    data-created="<c:out value='${cls.createdAt}'/>"
                                    data-sum="<c:out value='${cls.sum}'/>"
@@ -130,7 +130,7 @@
                                     <div class="class-body">
                                         <h3 class="class-title"><c:out value="${cls.name}"/></h3>
                                         <div class="class-meta">
-                                            Subject : <c:out value="${cls.subject}"/><br>
+                                            Subject : <c:out value="${cls.subjectName}"/><br>
                                             Student : <c:out value="${cls.sum}"/>/<c:out value="${cls.maxStudent}"/>
                                         </div>
                                     </div>

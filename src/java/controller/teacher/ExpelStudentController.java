@@ -2,30 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.teacher;
 
-import controller.material.MaterialListController;
-import dal.MaterialDAO;
 import dal.StudentDAO;
-import dal.TeacherDAO;
-import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.Classroom;
-import model.User;
 
 /**
  *
  * @author hung2
  */
-public class RouteByRoleController extends HttpServlet {
+public class ExpelStudentController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,37 +30,18 @@ public class RouteByRoleController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        HttpSession session = request.getSession();
-        User userLogin = (User) session.getAttribute("user");
-        List<Classroom> classList = showClassList(userLogin.getUserID(), userLogin.getRole());
-        session.setAttribute("classList", classList);
-        //get totalMaterial
-        MaterialDAO mtrCtrl = new MaterialDAO();
-        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
-        request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
-        //check route 
-    }
-
-    //show classlist by role
-    public List<Classroom> showClassList(String userId, String role) {
-        List<Classroom> listClass = new ArrayList<>();
-        switch (role) {
-            case "Teacher":
-                TeacherDAO techerDAO = new TeacherDAO();
-                listClass = techerDAO.getClassListByTeacherId(userId);
-                break;
-            case "Student":
-                StudentDAO studentDAO = new StudentDAO();
-                listClass = studentDAO.getListClassJoined(userId);
-                System.out.println("sixxxx: " + listClass.size());
-                break;
-            case "Admin":
-                break;
-            default:
-                throw new AssertionError();
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet ExpelStudentController</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet ExpelStudentController at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-
-        return listClass;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -98,7 +70,13 @@ public class RouteByRoleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("application/json");
+        StudentDAO stDAO = new StudentDAO();
+        System.out.println("*&*&*&*&: " + request.getParameter("userId") + " " +  request.getParameter("classId"));
+        stDAO.leaveClassByClassId(request.getParameter("s.id"), request.getParameter("classId"));
+        PrintWriter out = response.getWriter();
+        out.write("{\"ok\": true}");
     }
 
     /**

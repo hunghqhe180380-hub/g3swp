@@ -15,7 +15,8 @@ public class Classroom {
     private int id;
     private String name;
     private String classCode;
-    private String subject;
+    private String subjectId;
+    private String subjectName;
     private String teacherId;
     private String teacherName;
     private String createdAt;
@@ -26,23 +27,19 @@ public class Classroom {
     public Classroom() {
     }
 
-    public Classroom(String name, String subject, int sum) {
-        this.name = name;
-        this.subject = subject;
-        this.sum = sum;
-    }         
-
-    public Classroom(int id, String name, String classCode, String subject, String teacherId, String teacherName, String createdAt, int maxStudent, int sum) {
+    public Classroom(int id, String name, String classCode, String subjectId, String subjectName, String teacherId, String teacherName, String createdAt, int maxStudent, int sum, String timeExpiryClassCode) {
         this.id = id;
         this.name = name;
         this.classCode = classCode;
-        this.subject = subject;
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
         this.teacherId = teacherId;
         this.teacherName = teacherName;
         this.createdAt = createdAt;
         this.maxStudent = maxStudent;
         this.sum = sum;
-    }        
+        this.timeExpiryClassCode = timeExpiryClassCode;
+    }
 
     public int getId() {
         return id;
@@ -68,12 +65,20 @@ public class Classroom {
         this.classCode = classCode;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getSubjectId() {
+        return subjectId;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setSubjectId(String subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public String getTeacherId() {
@@ -123,5 +128,6 @@ public class Classroom {
     public void setTimeExpiryClassCode(String timeExpiryClassCode) {
         this.timeExpiryClassCode = timeExpiryClassCode;
     }
+
     
 }

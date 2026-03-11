@@ -77,9 +77,13 @@ public class Message {
     public static final String MSG314 = "This class is full slot. Can not join.";
     public static final String MSG315 = "Class name must not exceed 30 characters.";
     public static final String MSG316 = "Subject must not exceed 20 characters.";
+    public static final String MSG317 = "This class already exists. A new class cannot be created.";
     
     //msg create new subject
     public static final String MSG500 = "Subject's name is require.";
     public static final String MSG501 = "Subject's name must be < 50 Characters.";
     public static final String MSG502 = "Create new subject success.";
+    
+    //msg edit class's info
+    public static final String MSG600 = "Max Student must be Integer >= number Student joined and <= 100";
 }

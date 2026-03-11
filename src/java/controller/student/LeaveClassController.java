@@ -5,12 +5,15 @@
 
 package controller.student;
 
+import dal.StudentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.User;
 
 /**
  *
@@ -66,7 +69,12 @@ public class LeaveClassController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String classId = request.getParameter("classId");
+        StudentDAO stDAO = new StudentDAO();
+        HttpSession session = request.getSession();
+        User student = (User) session.getAttribute("user");
+        stDAO.leaveClassByClassId(student.getUserID(), classId);
+        request.getRequestDispatcher("/account/dashboard").forward(request, response);
     }
 
     /** 

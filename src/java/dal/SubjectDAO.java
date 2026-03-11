@@ -85,4 +85,25 @@ public class SubjectDAO extends DBContext {
 
         return id.toString();
     }
+
+    //get subject's name by it's id
+    public String getSubjectNameById(String subjectId) {
+        try {
+            String sql = "SELECT [Id]\n"
+                    + "      ,[subject_name]\n"
+                    + "      ,[is_active]\n"
+                    + "      ,[create_at]\n"
+                    + "  FROM [dbo].[Subjects]\n"
+                    + "Where Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, subjectId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("subject_name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
