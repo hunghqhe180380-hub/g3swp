@@ -46,7 +46,7 @@ public class RouteByRoleController extends HttpServlet {
         //get totalMaterial
         MaterialDAO mtrCtrl = new MaterialDAO();
         session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
-        request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
         //check route 
     }
 

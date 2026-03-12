@@ -117,7 +117,6 @@
                             <a class="class-card"
                                href="#"
                                data-class-id="<c:out value='${cls.id}'/>"
-
                                data-class-name="<c:out value='${cls.name}'/>"
                                data-subject="<c:out value='${cls.subjectName}'/>"
                                data-teacher="<c:out value='${cls.teacherName}'/>"

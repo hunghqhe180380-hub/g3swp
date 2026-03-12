@@ -7,7 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -144,7 +144,6 @@
         <!-- Class Detail Modal (Teacher)-->
         <div id="classDetailModal" class="dash-modal class-detail-modal" aria-hidden="true">
             <div class="dash-modal__backdrop" data-close="1"></div>
-
             <div class="dash-modal__dialog class-detail__dialog" role="dialog" aria-modal="true" aria-labelledby="cd-title">
                 <div class="class-detail__header">
                     <div class="class-detail__heading" id="cd-title">Class Details</div>
@@ -205,6 +204,12 @@
                 </div>
             </div>
         </div>
+        <c:if test="${not empty sessionScope.msgDeleteThisClass}">
+            <script>
+                alert("${msgDeleteThisClass}");
+            </script>
+            <c:remove var="msgDeleteThisClass" scope="session"/>
+        </c:if>
     </body>
 </html>
 <script>
@@ -439,5 +444,5 @@
         padding: 5px 10px;
         border-radius: 6px;
         border: 1px solid #cbd5e1;
-    }    
+    }
 </style>

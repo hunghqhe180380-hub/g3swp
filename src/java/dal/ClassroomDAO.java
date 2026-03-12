@@ -15,7 +15,7 @@ import model.Classroom;
 
 /**
  *
- * @author BINH
+ * @author BINH , hung2
  */
 public class ClassroomDAO extends DBContext {
 
@@ -87,7 +87,6 @@ public class ClassroomDAO extends DBContext {
 //            return false;
 //        }
 //    }
-
     //this function will update class's name, subject and maxStudents
     public boolean updateClassroom(Classroom classes) {
         String sql = "UPDATE [dbo].[Classrooms] SET\n"
@@ -107,7 +106,6 @@ public class ClassroomDAO extends DBContext {
             return false;
         }
     }
-    
 
     //class's id, name, subject's id, teacherId, create_at, maxStudent, timeExpiryClassCode, teacher name, total student
     public Classroom getClassInfoByClassId(String classId) {
@@ -125,7 +123,7 @@ public class ClassroomDAO extends DBContext {
             if (resultSet.next()) {
                 cl.setId(resultSet.getInt("Id"));
                 cl.setName(resultSet.getString("Name"));
-               // cl.setClassCode(resultSet.getString("ClassCode"));
+                // cl.setClassCode(resultSet.getString("ClassCode"));
                 cl.setSubjectId(resultSet.getString("SubjectId"));
                 cl.setTeacherId(resultSet.getString("TeacherId"));
                 cl.setTeacherName(resultSet.getString("TeacherName"));
@@ -186,5 +184,45 @@ public class ClassroomDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //check student is join this class or not by class's Id?
+    public boolean isStudentInClass(String userId, String classId) {
+        try {
+            String sql = "SELECT\n"
+                    + "       [ClassId]\n"
+                    + "      ,[UserId]\n"
+                    + "      ,[RoleInClass]\n"
+                    + "  FROM [dbo].[Enrollments]\n"
+                    + "Where UserId = ? AND ClassId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            statement.setObject(2, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //check class has student in class?
+    public boolean hasStudentInClass(String classId) {
+        try {
+            String sql = "select count(*) as TotalStudent from [Enrollments] where ClassId =  ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                if (resultSet.getInt("TotalStudent") > 0) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
