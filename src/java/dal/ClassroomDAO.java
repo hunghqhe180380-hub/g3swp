@@ -207,6 +207,27 @@ public class ClassroomDAO extends DBContext {
         }
         return false;
     }
+    
+    //check teacher create this class or not by class's Id?
+    public boolean isClassCreatedByTeacher(String userId, String classId) {
+        try {
+            String sql = "SELECT\n"
+                    + "       [Id]\n"
+                    + "      ,[TeacherId]\n"
+                    + "  FROM [dbo].[Classrooms]\n"
+                    + "Where TeacherId = ? AND Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            statement.setObject(2, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     //check class has student in class?
     public boolean hasStudentInClass(String classId) {

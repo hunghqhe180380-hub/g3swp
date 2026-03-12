@@ -99,7 +99,7 @@ public class ClassListController extends HttpServlet {
             throws ServletException, IOException {
         int clState = 0;
         int teState = 0;
-        int tiState = 0;
+        int tiState = 0;        
         try {
             clState = Integer.parseInt(request.getParameter("txtClassName"));
             teState = Integer.parseInt(request.getParameter("txtTeacherName"));
