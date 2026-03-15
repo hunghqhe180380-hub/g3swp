@@ -189,7 +189,7 @@
                     <div class="class-detail__actions">
                         <a class="class-detail__btn is-blue" id="cd-students" href="#">Student List</a>
                         <a class="class-detail__btn is-green" id="cd-materials" href="#">Materials</a>
-                        <a class="class-detail__btn is-orange" id="cd-assignments" href="#">Assignments</a>
+                        <a class="class-detail__btn is-orange" id="cd-assignments" href="ListController">Assignments</a>
 
                         <a class="class-detail__btn is-purple" id="cd-edit" href="#">Edit Class</a>
 
@@ -366,7 +366,7 @@
 
             document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
             document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
-            document.getElementById('cd-assignments').href = '#';
+            document.getElementById('cd-assignments').href = ctx + '/assignment/list?classId=' + classId;
             document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
             const shouldRevealCode =
