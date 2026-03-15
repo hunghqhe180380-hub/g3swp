@@ -41,9 +41,13 @@
 
                             <div class="cc-field">
                                 <label class="cc-label" for="subject">Subject</label>
-                                <input class="cc-input" type="text" id="subject" name="subject"
-                                       placeholder="e.g. Tin Học"
-                                       value="${subject}">
+                                <select name="subjectId"  id="id">
+                                    <option value="none">---</option>
+                                    <c:forEach items="${requestScope.listSubject}" var="subject">
+                                        <option ${requestScope.subjectId == subject.id ? 'selected' : ''} value="${subject.id}">${subject.name}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="text" value="${requestScope.subjectName}" id="subject" hidden>
                                 <c:if test="${not empty listMSG.msgSubject}">
                                     <div class="cc-error">${listMSG.msgSubject}</div>
                                 </c:if>
@@ -67,13 +71,31 @@
                                 <c:if test="${not empty listMSG.msgStudentLimit}">
                                     <div class="cc-error">${listMSG.msgStudentLimit}</div>
                                 </c:if>
-                                <c:if test="${not empty listMSG.msgNotify}">
-                                    <div style="color: #16a34a; font-weight: bolder">${listMSG.msgNotify}</div>
+                                <c:if test="${not empty listMSG.msgNotifySuccess}">
+                                    <div style="color: #16a34a; font-weight: bolder">${listMSG.msgNotifySuccess}</div>
+                                </c:if>
+                                <c:if test="${not empty listMSG.msgNotifyError}">
+                                    <div style="color: #b91c1c; font-weight: bolder">${listMSG.msgNotifyError}</div>
                                 </c:if>
                             </div>
 
                             <div class="cc-actions">
-                                <button class="cc-btn cc-btn--primary" type="submit">Create</button>
+                                <button class="cc-btn cc-btn--primary" type="submit" name="action" value="create">Create</button>
+
+                                <button 
+                                    type="submit"
+                                    name="action"
+                                    value="reset"
+                                    style="background-color:#ffc107;
+                                    border:none;
+                                    color:#212529;
+                                    font-weight:bold;
+                                    font-size:16px;
+                                    padding:10px 20px;
+                                    border-radius:10px;
+                                    cursor:pointer;">
+                                    Reset
+                                </button>
                                 <a class="cc-btn cc-btn--ghost" href="${ctx}/account/dashboard">Cancel</a>
                             </div>
                         </form>

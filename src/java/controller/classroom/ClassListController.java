@@ -99,7 +99,7 @@ public class ClassListController extends HttpServlet {
             throws ServletException, IOException {
         int clState = 0;
         int teState = 0;
-        int tiState = 0;
+        int tiState = 0;        
         try {
             clState = Integer.parseInt(request.getParameter("txtClassName"));
             teState = Integer.parseInt(request.getParameter("txtTeacherName"));
@@ -140,9 +140,8 @@ public class ClassListController extends HttpServlet {
 
     private void paging(HttpServletRequest request, List<Classroom> classes)
             throws ServletException, IOException {
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
-        int size = classes.size();
-        request.setAttribute("nrpp", nrpp);
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("clsp"));
+        int size = classes.size();        
         int index = 0;
         try {
             index = Integer.parseInt(request.getParameter("index"));

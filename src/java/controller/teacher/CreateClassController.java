@@ -4,6 +4,7 @@
  */
 package controller.teacher;
 
+import dal.SubjectDAO;
 import dal.TeacherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,8 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import message.Message;
+import model.Subject;
 import model.User;
 import validation.InputValidator;
 
@@ -61,7 +64,17 @@ public class CreateClassController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //load subject from databse
+        getListSubject(request, response);
         request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
+    }
+
+    //get list subject
+    public void getListSubject(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        SubjectDAO subjectDAO = new SubjectDAO();
+        List<Subject> listSubject = subjectDAO.getListSubject();
+        request.setAttribute("listSubject", listSubject);
     }
 
     /**
@@ -75,32 +88,45 @@ public class CreateClassController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String className = request.getParameter("className");
-        String subject = request.getParameter("subject");
-        String studentLimit = request.getParameter("studentLimit");
-        System.out.println("student limit: " + studentLimit.length());
-        HttpSession session = request.getSession();
-        User teacher = (User) session.getAttribute("user");
-        Map<String, String> listMSG = validator(teacher.getUserID(), className, subject, studentLimit);
-        request.setAttribute("className", className.trim());
-        request.setAttribute("subject", subject.trim());
-        request.setAttribute("studentLimit", studentLimit);
-        if (listMSG.size() == 0) {
-            //if validation is legit => allow create a new classroom            
-            TeacherDAO techerDAO = new TeacherDAO();
-            User user = (User) session.getAttribute("user");
-            techerDAO.createNewClass(className, subject, user.getUserID(), studentLimit);
-            response.sendRedirect(request.getContextPath()+"/route");
+        String action = request.getParameter("action");
+        if (action.equalsIgnoreCase("reset")) {
+            response.sendRedirect(request.getContextPath() + "/classroom/manage/create");
+        } else {
+            getListSubject(request, response);
+            String className = request.getParameter("className");
+            String subjectId = request.getParameter("subjectId");
+            System.out.println("subjectID: " + subjectId);
+            String studentLimit = request.getParameter("studentLimit");
+            System.out.println("student limit: " + studentLimit.length());
+            HttpSession session = request.getSession();
+            User teacher = (User) session.getAttribute("user");
+            Map<String, String> listMSG = validator(teacher.getUserID(), className, subjectId, studentLimit);
+            request.setAttribute("className", className.trim());
+            request.setAttribute("subjectId", subjectId);
+            request.setAttribute("studentLimit", studentLimit);
+            if (listMSG.size() == 0) {
+                //if validation is legit => allow create a new classroom            
+                TeacherDAO techerDAO = new TeacherDAO();
+                User user = (User) session.getAttribute("user");
+                techerDAO.createNewClass(className, subjectId, user.getUserID(), studentLimit);
+//            response.sendRedirect(request.getContextPath() + "/route");
+//            return;
+                listMSG.put("msgNotifySuccess", "New class created successfully!");
+            }
+
+            //get subjectName to show in preview of view/classroom/create_class.jsp
+            SubjectDAO subjectDAO = new SubjectDAO();
+            request.setAttribute("subjectName", subjectDAO.getSubjectNameById(subjectId));
+            request.setAttribute("listMSG", listMSG);
+            request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
         }
-        request.setAttribute("listMSG", listMSG);
-        request.getRequestDispatcher("/view/classroom/create_class.jsp").forward(request, response);
     }
 
     //validation 
     private Map<String, String> validator(
             String teacherID,
             String className,
-            String subject,
+            String subjectId,
             String studentLimitRaw) {
         TeacherDAO teacherDAO = new TeacherDAO();
         Map<String, String> errors = new HashMap<>();
@@ -110,15 +136,13 @@ public class CreateClassController extends HttpServlet {
             errors.put("msgClassName", Message.MSG301);
         }
 
-        if(className.trim().length() > 30){
+        if (className.trim().length() > 30) {
             errors.put("msgClassName", Message.MSG315);
         }
-        // subject is blank ? return : continue
-        if (subject.trim().isEmpty()) {
+
+        //check subjec
+        if (subjectId.equalsIgnoreCase("none")) {
             errors.put("msgSubject", Message.MSG302);
-        }
-        if(subject.trim().length() > 20){
-            errors.put("msgSubject", Message.MSG316);
         }
 
         // studentLimitRaw is blank ? return : continue
@@ -129,12 +153,18 @@ public class CreateClassController extends HttpServlet {
 
         // studentLimitRaw must be > 0 and < 100
         if (!studentLimitRaw.isEmpty()) {
+            for (int i = 0; i < studentLimitRaw.length(); i++) {
+                if (studentLimitRaw.charAt(i) < '0' || studentLimitRaw.charAt(i) > '9') {
+                    errors.put("msgStudentLimit", Message.MSG304);
+                    return errors;
+                }
+            }
             if (Integer.parseInt(studentLimitRaw) <= 0 || Integer.parseInt(studentLimitRaw) > 100) {
                 errors.put("msgStudentLimit", Message.MSG304);
             } else {
                 // class of teachers unique
-                if (teacherDAO.isExistClass(teacherID, className, subject)) {
-                    errors.put("msgNotify", Message.MSG306);
+                if (teacherDAO.isExistClass(teacherID, className, subjectId)) {
+                    errors.put("msgNotifyError", Message.MSG317);
                 }
             }
             return errors;

@@ -7,7 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -75,7 +75,7 @@
                         </div>
                         <div>
                             <div class="stat-label">Materials</div>
-                            <div class="stat-value">${empty requestScope.materials ? "Error" : requestScope.materials}</div>
+                            <div class="stat-value">${empty sessionScope.totalMaterial ? "Error" : sessionScope.totalMaterial}</div>
                         </div>
                     </div>
 
@@ -121,7 +121,7 @@
                                    data-class-name="<c:out value='${cls.name}'/>"
                                    data-class-code="<c:out value='${cls.classCode}'/>"
                                    data-class-expiry="<c:out value='${cls.timeExpiryClassCode}'/>"
-                                   data-subject="<c:out value='${cls.subject}'/>"
+                                   data-subject="<c:out value='${cls.subjectName}'/>"
                                    data-teacher="<c:out value='${cls.teacherName}'/>"
                                    data-created="<c:out value='${cls.createdAt}'/>"
                                    data-sum="<c:out value='${cls.sum}'/>"
@@ -130,7 +130,7 @@
                                     <div class="class-body">
                                         <h3 class="class-title"><c:out value="${cls.name}"/></h3>
                                         <div class="class-meta">
-                                            Subject : <c:out value="${cls.subject}"/><br>
+                                            Subject : <c:out value="${cls.subjectName}"/><br>
                                             Student : <c:out value="${cls.sum}"/>/<c:out value="${cls.maxStudent}"/>
                                         </div>
                                     </div>
@@ -144,7 +144,6 @@
         <!-- Class Detail Modal (Teacher)-->
         <div id="classDetailModal" class="dash-modal class-detail-modal" aria-hidden="true">
             <div class="dash-modal__backdrop" data-close="1"></div>
-
             <div class="dash-modal__dialog class-detail__dialog" role="dialog" aria-modal="true" aria-labelledby="cd-title">
                 <div class="class-detail__header">
                     <div class="class-detail__heading" id="cd-title">Class Details</div>
@@ -164,7 +163,7 @@
                                     </div>
                                     <form action="${ctx}/classroom/manage/generate-classcode" method="POST" id="cd-generate-form">
                                         <input type="hidden" name="classId" id="cd-classId-generate">
-                                        <button type="submit" class="class-detail__copy" id="cd-generate-btn">Generate code</button>
+                                        <button type="submit" class="class-detail__copy" id="">Generate code</button>
                                     </form>
                                 </div>
                             </div>
@@ -205,6 +204,12 @@
                 </div>
             </div>
         </div>
+        <c:if test="${not empty sessionScope.msgDeleteThisClass}">
+            <script>
+                alert("${msgDeleteThisClass}");
+            </script>
+            <c:remove var="msgDeleteThisClass" scope="session"/>
+        </c:if>
     </body>
 </html>
 <script>
@@ -365,8 +370,6 @@
             document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
             const shouldRevealCode =
-                    revealedClassId !== null &&
-                    String(revealedClassId) === String(classIdRaw) &&
                     d.classCode &&
                     d.classExpiry;
 
@@ -411,35 +414,35 @@
     })();
 </script>
 <style>
-.class-detail__row--code {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+    .class-detail__row--code {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-.class-detail__value--code {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap !important;
-}
+    .class-detail__value--code {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap !important;
+    }
 
 
-.is-hidden {
-    display: none !important;
-}
+    .is-hidden {
+        display: none !important;
+    }
 
-.class-detail__code-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    .class-detail__code-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.class-detail__code {
-    font-weight: 800;
-    color: #1e293b;
-    background: #f1f5f9;
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-}
+    .class-detail__code {
+        font-weight: 800;
+        color: #1e293b;
+        background: #f1f5f9;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+    }
 </style>

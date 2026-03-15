@@ -23,7 +23,7 @@ public class TeacherDAO extends DBContext {
 
     //create new class
     public String createNewClass(String className,
-            String subject,
+            String subjectId,
             String teacherId,
             String studentLimit) {
         String genClassCode = generateClassCode();
@@ -31,7 +31,7 @@ public class TeacherDAO extends DBContext {
             String sql = "INSERT INTO [dbo].[Classrooms]\n"
                     + "           ([Name]\n"
                     + "           ,[ClassCode]\n"
-                    + "           ,[Subject]\n"
+                    + "           ,[SubjectId]\n"
                     + "           ,[TeacherId]\n"
                     + "           ,[CreatedAt]\n"
                     + "           ,[MaxStudents]\n"
@@ -48,7 +48,7 @@ public class TeacherDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, className);
             statement.setObject(2, genClassCode);
-            statement.setObject(3, subject);
+            statement.setObject(3, subjectId);
             statement.setObject(4, teacherId);
             statement.setObject(5, studentLimit);
             statement.executeUpdate();
@@ -59,13 +59,13 @@ public class TeacherDAO extends DBContext {
     }
 
     //check class  exist
-    public boolean isExistClass(String teacherId, String className, String subject) {
-        String sql = "SELECT [Name], [Subject], [TeacherId] FROM [dbo].[Classrooms]\n"
-                + "where [Name] = ? and [Subject] = ? and [TeacherId] = ?";
+    public boolean isExistClass(String teacherId, String className, String subjectId) {
+        String sql = "SELECT [Name], [SubjectId], [TeacherId] FROM [dbo].[Classrooms]\n"
+                + "where [Name] = ? and [SubjectId] = ? and [TeacherId] = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, className);
-            ps.setString(2, subject);
+            ps.setString(2, subjectId);
             ps.setString(3, teacherId);
 
             ResultSet rs = ps.executeQuery();
@@ -93,20 +93,23 @@ public class TeacherDAO extends DBContext {
         return "" + firstLetter + secondLetter + thirdLetter + String.format("%03d", number);
     }
 
+    //get techer's class list by teacher's id
     public List<Classroom> getClassListByTeacherId(String teacherId) {
 
         List<Classroom> listClass = new ArrayList<>();
 
         String sql = "SELECT c.Id, CASE \n"
-                + "        WHEN c.TimeExpiryClassCode < GETDATE() THEN NULL\n"
-                + "        ELSE c.ClassCode\n"
-                + "    END AS ClassCode, c.TimeExpiryClassCode,c.Name, c.Subject, c.MaxStudents, c.CreatedAt, \n"
-                + "                  COUNT(e.UserId) AS TotalStudents \n"
-                + "                              FROM Classrooms c\n"
-                + "                            LEFT JOIN Enrollments e\n"
-                + "                               ON c.Id = e.ClassId AND e.Status = 0 \n"
-                + "				WHERE c.TeacherId = ?\n"
-                + "                GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode";
+                + "                       WHEN c.TimeExpiryClassCode < GETDATE() THEN NULL\n"
+                + "                        ELSE c.ClassCode\n"
+                + "                   END AS ClassCode, c.TimeExpiryClassCode,c.Name, s.subject_name, c.MaxStudents, c.CreatedAt,\n"
+                + "                                  COUNT(e.UserId) AS TotalStudents \n"
+                + "                                              FROM Classrooms c\n"
+                + "                                            LEFT JOIN Enrollments e\n"
+                + "                                               ON c.Id = e.ClassId AND e.Status = 0 \n"
+                + "                						JOIN Subjects  s\n"
+                + "										ON c.SubjectId = s.Id\n"
+                + "WHERE c.TeacherId = ?\n"
+                + "                                GROUP BY c.Id, c.Name, s.subject_name, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -116,13 +119,13 @@ public class TeacherDAO extends DBContext {
                 Classroom cls = new Classroom();
                 cls.setId(resultSet.getInt("Id"));
                 cls.setName(resultSet.getString("Name"));
-                cls.setSubject(resultSet.getString("Subject"));
+                cls.setSubjectName(resultSet.getString("subject_name"));
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cls.setSum(resultSet.getInt("TotalStudents"));
                 cls.setClassCode(resultSet.getString("ClassCode"));
                 cls.setCreatedAt(resultSet.getTimestamp("CreatedAt")
-                                .toLocalDateTime()
-                                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                        .toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
                 );
                 if (resultSet.getTimestamp("TimeExpiryClassCode") != null) {
                     cls.setTimeExpiryClassCode(
@@ -141,17 +144,17 @@ public class TeacherDAO extends DBContext {
     }
 
     //check class is full slot?
-    public boolean isClassFull(String classCode) {
+    public boolean isClassFull(String classId) {
         try {
-            String sql = "SELECT c.ClassCode, c.Id, c.Name, c.Subject, c.MaxStudents, \n"
+            String sql = "SELECT c.Id, c.Name, c.SubjectId, c.MaxStudents, \n"
                     + "                COUNT(e.UserId) AS TotalStudents\n"
                     + "                FROM Classrooms c \n"
                     + "                LEFT JOIN Enrollments e \n"
                     + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
-                    + "                Where c.ClassCode = ? \n"
-                    + "                GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents, c.ClassCode";
+                    + "                Where c.Id = ? \n"
+                    + "                GROUP BY c.Id, c.Name, c.SubjectId, c.MaxStudents";
             statement = connection.prepareStatement(sql);
-            statement.setObject(1, classCode);
+            statement.setObject(1, classId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int max = resultSet.getInt("MaxStudents");

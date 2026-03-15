@@ -116,6 +116,7 @@ public class ForgotPasswordController extends HttpServlet {
         request.getRequestDispatcher("request-password.jsp").forward(request, response);
     }
 
+//validator email format
     private Map<String, String> validator(String email) {
         Map<String, String> errors = new HashMap<>();
         InputValidator inputValidator = new InputValidator();

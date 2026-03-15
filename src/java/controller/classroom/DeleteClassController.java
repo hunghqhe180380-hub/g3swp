@@ -16,7 +16,7 @@ import model.User;
 
 /**
  *
- * @author BINH
+ * @author hung2
  */
 public class DeleteClassController extends HttpServlet {
 
@@ -81,10 +81,22 @@ public class DeleteClassController extends HttpServlet {
         String pageIndex = request.getParameter("pageIndex");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
-        dao.deleteClassroom(classId);
+
+        //if role = Admin => delete class without condition
         if (user.getRole().equals("Admin")) {
+            //delete class 
+            dao.deleteClassroom(classId);
             response.sendRedirect(request.getContextPath() + "/classroom/view/class-list?index=" + pageIndex);
         } else if (user.getRole().equals("Teacher")) {
+            //if role = Teacher => class have student joined ? not allow to delete class : allow to delete class
+            String msgDeleteThisClass = null;
+            if (dao.hasStudentInClass(classId)) {
+                msgDeleteThisClass = "This class have student, not allow to DELETE.";
+            } else {
+                msgDeleteThisClass = "Delete class success!";
+                dao.deleteClassroom(classId);
+            }
+            request.getSession().setAttribute("msgDeleteThisClass", msgDeleteThisClass);
             response.sendRedirect(request.getContextPath() + "/account/dashboard");
         }
     }

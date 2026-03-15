@@ -21,7 +21,7 @@ import model.*;
 
 /**
  *
- * @author BINH
+ * @author hung2
  */
 public class StudentListController extends HttpServlet {
 
@@ -74,6 +74,10 @@ public class StudentListController extends HttpServlet {
         String search = request.getParameter("search");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
+        //cause request by doGet => need to check class have this student or not?
+        //if is not student of this class => maybe user edit url
+        // resolve : back user to /account/dashboard
+
         Classroom cl = classDAO.getClassInfoByClassId(classId);
         String[] status = request.getParameterValues("txtStatus");
         List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId, status);
@@ -87,9 +91,17 @@ public class StudentListController extends HttpServlet {
         }
         if (user.getRole().equals("Admin")) {
             request.getRequestDispatcher("/view/classroom/student-admin.jsp").forward(request, response);
-        }else {
-            request.getRequestDispatcher("/view/classroom/student-user.jsp").forward(request, response);
+        } else {
+            //role: Teacher or Student
+            if (classDAO.isStudentInClass(user.getUserID(), classId) || classDAO.isClassCreatedByTeacher(user.getUserID(), classId)) {
+                request.getRequestDispatcher("/view/classroom/student-user.jsp").forward(request, response);
+            } else {
+                // resolve : back user to /account/dashboard
+                response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            }
         }
+        ////////////////////////////////
+
     }
 
     private void sort(HttpServletRequest request, List<Enrollment> enrolls)

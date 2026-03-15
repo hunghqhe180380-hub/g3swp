@@ -2,28 +2,31 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.classroom;
+package controller.subject;
 
-import dal.EnrollmentDAO;
+import dal.SubjectDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import model.Subject;
+import util.PagingUtil;
 
 /**
  *
- * @author BINH
+ * @author hung2
  */
-@MultipartConfig
-public class KickStudentController extends HttpServlet {
+public class SubjectListController extends HttpServlet {
 
-    private EnrollmentDAO dao;
+    private SubjectDAO dao;
 
     public void init() {
-        dao = new EnrollmentDAO();
+        dao = new SubjectDAO();
     }
 
     /**
@@ -43,15 +46,16 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet SubjectListController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SubjectListController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -63,7 +67,12 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        //String search = request.getParameter("search");
+        //String[] statuses = request.getParameterValues("txtStatus");
+        List<Subject> listSubject = dao.getListSubject();
+        paging(request, listSubject);
+        request.setAttribute("listSubject", listSubject);
+        request.getRequestDispatcher("/view/admin/list-subject.jsp").forward(request, response);
     }
 
     /**
@@ -77,12 +86,42 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String classId = request.getParameter("classId");
-        String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
-        response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
+        processRequest(request, response);
     }
 
+    private void sort(HttpServletRequest request, List<Subject> listSubject)
+            throws ServletException, IOException {
+        int snState = 0;
+        try {
+            snState = Integer.parseInt(request.getParameter("txtSubjectName"));
+        } catch (Exception e) {
+        }
+        if (snState != 0) {
+            Comparator<Subject> cmp
+                    = Comparator.comparing(Subject::getName, String.CASE_INSENSITIVE_ORDER);
+
+            if (snState == 2) {
+                cmp = cmp.reversed();
+            }
+            Collections.sort(listSubject, cmp);
+        }
+    }
+
+    private void paging(HttpServletRequest request, List<Subject> listSubject)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
+        int size = listSubject.size();
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
+    }
     /**
      * Returns a short description of the servlet.
      *

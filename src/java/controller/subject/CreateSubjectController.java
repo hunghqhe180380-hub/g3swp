@@ -2,29 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.classroom;
+package controller.subject;
 
-import dal.EnrollmentDAO;
+import dal.SubjectDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
- * @author BINH
+ * @author hung2
  */
-@MultipartConfig
-public class KickStudentController extends HttpServlet {
-
-    private EnrollmentDAO dao;
-
-    public void init() {
-        dao = new EnrollmentDAO();
-    }
+public class CreateSubjectController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,15 +37,16 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet CreateSubjectController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CreateSubjectController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -63,7 +58,7 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
     }
 
     /**
@@ -77,10 +72,36 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String classId = request.getParameter("classId");
-        String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
-        response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
+        String action = request.getParameter("action");
+        if (action.equalsIgnoreCase("reset")) {
+            request.removeAttribute("listMSG");
+            request.removeAttribute("subjectName");
+        } else {
+            String subjectName = request.getParameter("subjectName");
+            Map<String, String> listMSG = validSubjectName(subjectName);
+
+            if (listMSG.size() == 0) {
+                listMSG.put("msgSubjectSucces", message.Message.MSG502);
+                SubjectDAO subjectDAO = new SubjectDAO();
+                subjectDAO.createSubject(subjectName);
+            }
+            request.setAttribute("listMSG", listMSG);
+            request.setAttribute("subjectName", subjectName.trim());
+        }
+        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
+    }
+
+    public Map<String, String> validSubjectName(String subjectName) {
+        Map<String, String> errors = new HashMap<>();
+        if (subjectName.trim().isEmpty()) {
+            errors.put("msgSubject", message.Message.MSG500);
+            return errors;
+        }
+
+        if (subjectName.length() > 30) {
+            errors.put("msgSubject", message.Message.MSG501);
+        }
+        return errors;
     }
 
     /**

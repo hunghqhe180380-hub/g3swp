@@ -175,7 +175,7 @@ public class HomeFilter implements Filter {
             res.sendRedirect(req.getContextPath() + "/login");
             return;
         }
-        if (url.startsWith("/admin/")) {
+        if (url.startsWith("/admin/") || url.startsWith("/subject/")) {
             if (!user.getRole().equals("Admin")) {
                 res.sendRedirect(req.getContextPath() + "/account/dashboard");
                 return;

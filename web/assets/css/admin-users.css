@@ -171,7 +171,7 @@ a{ text-decoration:none; color: inherit; }
     background: rgba(37,99,235,0.04);
 }
 .muted{ color: var(--muted); }
-.code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color:#e11d48; }
+.classId{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color:#e11d48; }
 
 /* User cell */
 .usercell__name{

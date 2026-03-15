@@ -149,8 +149,7 @@ public class UserListController extends HttpServlet {
     private void paging(HttpServletRequest request, List<User> users)
             throws ServletException, IOException {
         int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
-        int size = users.size();
-        request.setAttribute("nrpp", nrpp);
+        int size = users.size();        
         int index = 0;
         try {
             index = Integer.parseInt(request.getParameter("index"));

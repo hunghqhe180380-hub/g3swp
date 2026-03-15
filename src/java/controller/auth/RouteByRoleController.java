@@ -4,6 +4,8 @@
  */
 package controller.auth;
 
+import controller.material.MaterialListController;
+import dal.MaterialDAO;
 import dal.StudentDAO;
 import dal.TeacherDAO;
 import dal.UserDAO;
@@ -41,7 +43,10 @@ public class RouteByRoleController extends HttpServlet {
         User userLogin = (User) session.getAttribute("user");
         List<Classroom> classList = showClassList(userLogin.getUserID(), userLogin.getRole());
         session.setAttribute("classList", classList);
-        request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
+        //get totalMaterial
+        MaterialDAO mtrCtrl = new MaterialDAO();
+        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
         //check route 
     }
 
