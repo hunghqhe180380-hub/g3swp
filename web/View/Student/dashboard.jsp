@@ -297,12 +297,13 @@
                 const classId = encodeURIComponent(d.classId || '');
                 const a1 = document.getElementById('cd-students');
                 const a2 = document.getElementById('cd-materials');
-
+                const a3 = document.getElementById('cd-assignments');
                 if (a1)
                     a1.href = ctx + '/classroom/view/student-list?classId=' + classId;
                 if (a2)
                     a2.href = ctx + '/material/view/material-list?classId=' + classId;
-
+                if (a3)
+                    a3.href = ctx + '/classroom/assignment/view/list-assingment?classId=' + classId;
                 openModal();
             });
         })();

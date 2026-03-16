@@ -146,6 +146,14 @@
         <servlet-name>ListController</servlet-name>
         <servlet-class>controller.assignment.ListController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ListAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.ListAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.CreateAssignmentController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ListController</servlet-name>
         <url-pattern>/assignment/list</url-pattern>
@@ -285,6 +293,14 @@
     <servlet-mapping>
         <servlet-name>ExpelStudentController</servlet-name>
         <url-pattern>/classroom/student/expel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListAssignmentController</servlet-name>
+        <url-pattern>/classroom/assignment/view/list-assingment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateAssignmentController</servlet-name>
+        <url-pattern>/classroom/assignment/manage/create</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
