@@ -139,8 +139,8 @@
         <servlet-class>controller.classroom.UnenrollStudentController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ListController</servlet-name>
-        <servlet-class>controller.assignment.ListController</servlet-class>
+        <servlet-name>SubmissionListController</servlet-name>
+        <servlet-class>controller.assignment.SubmissionListController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ListAssignmentController</servlet-name>
@@ -149,6 +149,10 @@
     <servlet>
         <servlet-name>CreateAssignmentController</servlet-name>
         <servlet-class>controller.assignment.CreateAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.TakeAssignmentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RestoreStudentController</servlet-name>
@@ -171,8 +175,8 @@
         <servlet-class>controller.assignment.AddQuestionToAssignmentController</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ListController</servlet-name>
-        <url-pattern>/assignment/list</url-pattern>
+        <servlet-name>SubmissionListController</servlet-name>
+        <url-pattern>/assignment/view/submission</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
@@ -317,6 +321,18 @@
     <servlet-mapping>
         <servlet-name>CreateAssignmentController</servlet-name>
         <url-pattern>/assignment/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/take</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/finish</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/force-submit-violated</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ListQuestionBankController</servlet-name>
