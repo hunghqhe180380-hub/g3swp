@@ -155,8 +155,17 @@
         <servlet-class>controller.classroom.RestoreStudentController</servlet-class>
     </servlet>
     <servlet>
+
         <servlet-name>DeactiveClassController</servlet-name>
         <servlet-class>controller.classroom.DeactiveClassController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListQuestionBankController</servlet-name>
+        <servlet-class>controller.question.ListQuestionBankController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListQuestionAssignmentController</servlet-name>
+        <servlet-class>controller.question.ListQuestionAssignmentController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ListController</servlet-name>
@@ -294,17 +303,25 @@
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/manage/expel</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+    <!--    <servlet-mapping>
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/leave</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>ListAssignmentController</servlet-name>
-        <url-pattern>/classroom/assignment/view/list-assingment</url-pattern>
+        <url-pattern>/assignment/view/list-assignment</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateAssignmentController</servlet-name>
-        <url-pattern>/classroom/assignment/manage/create</url-pattern>
+        <url-pattern>/assignment/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListQuestionBankController</servlet-name>
+        <url-pattern>/question/view/list-question-bank</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListQuestionAssignmentController</servlet-name>
+        <url-pattern>/assignment/view/question</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RestoreStudentController</servlet-name>

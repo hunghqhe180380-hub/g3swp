@@ -4,24 +4,25 @@
  */
 package model;
 
-/**
- *
- * @author hung2
- */
+import java.util.List;
+
 public class AssignmentQuestion {
 
     private int id;
     private int assignmentId;
-    private int type;
+    private String type;
     private String prompt;
     private double points;
     private int order;
     private int level;
+    private String createdAt;
+    private String sourceType;
+    private List<AssignmentChoice> listAssignmentChoice;
 
     public AssignmentQuestion() {
     }
 
-    public AssignmentQuestion(int id, int assignmentId, int type, String prompt, double points, int order, int level) {
+    public AssignmentQuestion(int id, int assignmentId, String type, String prompt, double points, int order, int level, String createdAt, String sourceType, List<AssignmentChoice> listAssignmentChoice) {
         this.id = id;
         this.assignmentId = assignmentId;
         this.type = type;
@@ -29,6 +30,9 @@ public class AssignmentQuestion {
         this.points = points;
         this.order = order;
         this.level = level;
+        this.createdAt = createdAt;
+        this.sourceType = sourceType;
+        this.listAssignmentChoice = listAssignmentChoice;
     }
 
     public int getId() {
@@ -47,11 +51,11 @@ public class AssignmentQuestion {
         this.assignmentId = assignmentId;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -86,6 +90,31 @@ public class AssignmentQuestion {
     public void setLevel(int level) {
         this.level = level;
     }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public List<AssignmentChoice> getListAssignmentChoice() {
+        return listAssignmentChoice;
+    }
+
+    public void setListAssignmentChoice(List<AssignmentChoice> listAssignmentChoice) {
+        this.listAssignmentChoice = listAssignmentChoice;
+    }
+
     
-    
+   
 }

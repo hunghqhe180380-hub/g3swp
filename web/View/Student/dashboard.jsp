@@ -303,7 +303,7 @@
                 if (a2)
                     a2.href = ctx + '/material/view/material-list?classId=' + classId;
                 if (a3)
-                    a3.href = ctx + '/classroom/assignment/view/list-assingment?classId=' + classId;
+                    a3.href = ctx + '/assignment/view/list-assignment?classId=' + classId;
                 openModal();
             });
         })();
