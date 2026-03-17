@@ -139,20 +139,24 @@ public class EnrollmentDAO extends DBContext {
 
     // check student unenrolled from class by userId
     public boolean isUnenroll(String userId, String classId) {
-        boolean enroll = false;
-        String sql = "SELECT Status from [Enrollments] WHERE UserId =? and ClassId =?";
+        boolean unenrolled = false;
+        String sql = "SELECT [Status] FROM [Enrollments] WHERE [UserId] = ? AND [ClassId] = ?";
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             statement.setObject(2, classId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                enroll = resultSet.getBoolean("Status") ? true : false;
+                int status = resultSet.getInt("Status");
+                // convention: 1 = deactivated/unenrolled, 0 = active
+                unenrolled = (status == 1);
             }
+            resultSet.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return enroll;
+        return unenrolled;
     }
 
 }

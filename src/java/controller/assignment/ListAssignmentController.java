@@ -4,6 +4,7 @@
  */
 package controller.assignment;
 
+import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,13 @@ import model.User;
  * @author hung2
  */
 public class ListAssignmentController extends HttpServlet {
+
+    private EnrollmentDAO enrollDAO;
+
+    @Override
+    public void init() {
+        enrollDAO = new EnrollmentDAO();
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,6 +67,17 @@ public class ListAssignmentController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        String classId = request.getParameter("classId");
+
+        // For students, if they have unenrolled from this class, do not allow access
+        if (user != null
+                && user.getRole().equalsIgnoreCase("student")
+                && classId != null
+                && enrollDAO.isUnenroll(user.getUserID(), classId)) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
         if (user.getRole().equalsIgnoreCase("teacher")) {
             request.getRequestDispatcher("/view/assignment/teacher-assignment-list.jsp").forward(request, response);
             return;
