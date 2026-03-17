@@ -4,11 +4,18 @@
  */
 package controller.assignment;
 
+import dal.AssignmentAttemptDAO;
 import dal.AssignmentDAO;
 import dal.ClassroomDAO;
 import dal.EnrollmentDAO;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.io.PrintWriter;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Assignment;
 import model.Classroom;
+import model.SubmissionListItem;
 import model.User;
 
 /**
@@ -73,24 +81,78 @@ public class ListAssignmentController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
+
         request.setAttribute("classId", classId);
 
         //get list assignment by class'id
         AssignmentDAO assignmentDAO = new AssignmentDAO();
-        List<Assignment> listAssignment = assignmentDAO.getListAssignmentByClassId(classId);
-
-        request.setAttribute("listAssignment", listAssignment);
-
-        //get class'name by classId
         ClassroomDAO clsDAO = new ClassroomDAO();
+        AssignmentAttemptDAO attemptDAO = new AssignmentAttemptDAO();
+
+        List<Assignment> rawAssignments = assignmentDAO.getListAssignmentByClassId(classId);
+        List<Map<String, Object>> assignmentCards = new ArrayList<>();
+
+        String userId = user.getUserID();
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Assignment a : rawAssignments) {
+            Map<String, Object> item = new HashMap<>();
+
+            String typeLabel = "Mixed";
+            if (a.getType() == 1) {
+                typeLabel = "MCQ";
+            } else if (a.getType() == 2) {
+                typeLabel = "Essay";
+            }
+
+            LocalDateTime closeAt = null;
+            if (a.getCloseAt() != null && !a.getCloseAt().trim().isEmpty()) {
+                closeAt = LocalDateTime.parse(a.getCloseAt(), dateFmt);
+            }
+
+            String statusLabel = "Open";
+            if (closeAt != null && now.isAfter(closeAt)) {
+                statusLabel = "Closed";
+            }
+
+            int usedAttempts = attemptDAO.getAttemptCount(a.getId(), userId);
+
+            List<SubmissionListItem> allHistory = attemptDAO.getSubmissionList(String.valueOf(a.getId()));
+            List<SubmissionListItem> studentHistory = new ArrayList<>();
+
+            for (SubmissionListItem h : allHistory) {
+                if (h.getStudentId() != null && h.getStudentId().equals(userId)) {
+                    studentHistory.add(h);
+                }
+            }
+
+            item.put("id", a.getId());
+            item.put("title", a.getTitle());
+            item.put("description", a.getDescription());
+            item.put("type", typeLabel);
+            item.put("status", statusLabel);
+            item.put("duration", a.getDurationMinutes());
+            item.put("maxAttempts", a.getMaxAttempts());
+            item.put("usedAttempts", usedAttempts);
+            item.put("openAt", a.getOpenAt());
+            item.put("closeAt", a.getCloseAt());
+            item.put("history", studentHistory);
+
+            assignmentCards.add(item);
+        }
+
         Classroom cls = clsDAO.getClassInfoByClassId(classId);
+        request.setAttribute("listAssignment", assignmentCards);
         request.setAttribute("classroom", cls);
         if (user.getRole().equalsIgnoreCase("teacher")) {
-
+            
             request.getRequestDispatcher("/view/assignment/teacher-assignment-list.jsp").forward(request, response);
+            return;
         }
         if (user.getRole().equalsIgnoreCase("student")) {
             request.getRequestDispatcher("/view/assignment/student-assignment-list.jsp").forward(request, response);
