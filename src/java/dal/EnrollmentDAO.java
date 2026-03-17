@@ -108,7 +108,7 @@ public class EnrollmentDAO extends DBContext {
 //        }
 //        return list;
 //    }
-    public void kickOutStudent(String userId, String classId) {
+    public void deleteStudentFromEnrollment(String userId, String classId) {
         String sql = "delete from [Enrollments] where userId =? and classId =?";
         try {
             statement = connection.prepareStatement(sql);
@@ -121,12 +121,7 @@ public class EnrollmentDAO extends DBContext {
         }
     }
 
-    public void changeStudentStatus(String userId, String classId, String status) {
-        if (status.equals("0")) {
-            status = "1";
-        } else {
-            status = "0";
-        }
+    public void changeStudentStatus(String userId, String classId, String status) {        
         String sql = "UPDATE [Enrollments]\n"
                 + "SET [Status] = ?\n"
                 + "WHERE userId =? and classId =?";
@@ -142,6 +137,7 @@ public class EnrollmentDAO extends DBContext {
         }
     }
 
+    // check student unenrolled from class by userId
     public boolean isUnenroll(String userId, String classId) {
         boolean enroll = false;
         String sql = "SELECT Status from [Enrollments] WHERE UserId =? and ClassId =?";

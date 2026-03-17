@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author BINH
  */
 @MultipartConfig
-public class KickStudentController extends HttpServlet {
+public class DeleteStudentController extends HttpServlet {
 
     private EnrollmentDAO dao;
 
@@ -79,7 +79,7 @@ public class KickStudentController extends HttpServlet {
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
         String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
+        dao.deleteStudentFromEnrollment(userId, classId);
         response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
     }
 

@@ -116,21 +116,7 @@ public class StudentDAO extends DBContext {
             e.printStackTrace();
         }
     }
-
-    //leave class
-    public void leaveClassByClassId(String userId, String classId) {
-        try {
-            String sql = "DELETE FROM [dbo].[Enrollments]\n"
-                    + "      WHERE UserId = ? AND ClassId = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, userId);
-            statement.setObject(2, classId);
-            statement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     //get totalStudent in this class
     public int getTotalStudentByClassId(int classId) {
         int sum = 0;

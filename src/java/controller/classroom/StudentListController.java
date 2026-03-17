@@ -99,8 +99,7 @@ public class StudentListController extends HttpServlet {
                 // resolve : back user to /account/dashboard
                 response.sendRedirect(request.getContextPath() + "/account/dashboard");
             }
-        }
-        ////////////////////////////////
+        }        
 
     }
 

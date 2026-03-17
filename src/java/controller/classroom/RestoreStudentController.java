@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.teacher;
+package controller.classroom;
 
-import dal.StudentDAO;
+import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,9 +14,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author hung2
+ * @author BINH
  */
-public class ExpelStudentController extends HttpServlet {
+public class RestoreStudentController extends HttpServlet {
+
+    private EnrollmentDAO dao;
+
+    public void init() {
+        dao = new EnrollmentDAO();
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,16 +41,15 @@ public class ExpelStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ExpelStudentController</title>");
+            out.println("<title>Servlet RestoreStudentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ExpelStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RestoreStudentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -70,13 +75,10 @@ public class ExpelStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setContentType("application/json");
-        StudentDAO stDAO = new StudentDAO();
-        System.out.println("*&*&*&*&: " + request.getParameter("userId") + " " +  request.getParameter("classId"));
-        stDAO.leaveClassByClassId(request.getParameter("s.id"), request.getParameter("classId"));
-        PrintWriter out = response.getWriter();
-        out.write("{\"ok\": true}");
+        String classId = request.getParameter("classId");
+        String userId = request.getParameter("userId");                
+        dao.changeStudentStatus(userId, classId, "0");
+        response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
     }
 
     /**

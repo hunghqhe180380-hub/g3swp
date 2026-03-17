@@ -18,6 +18,28 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-student.css">
+        <style>
+            /* Restore button */
+            .rs-btn-restore-outline{
+                background: transparent;
+                border-color: #198754;
+                color: #198754;
+            }
+            .rs-btn-restore-outline:hover{
+                background: #198754;
+                color: #fff;
+            }
+            .rs-btn-restore{
+                background: #198754;
+                border-color: #198754;
+                color: #fff;
+            }
+            .rs-btn-restore:hover{
+                background: #157347;
+                border-color: #146c43;
+            }
+            .rs-modal-header.is-restore{ background: #198754; }
+        </style>
     </head>
     <body>
         <!-- ===== HEADER ===== -->
@@ -29,7 +51,7 @@
                             <c:when test="${isTeacher}">Teacher</c:when>
                             <c:otherwise>Student</c:otherwise>
                         </c:choose>
-                        &bull; Student List
+                            &bull; Student List
                     </div>
                     <h4 class="rs-header-title">
                         ${classes.name} <span class="rs-code">&bull; ${classes.classCode}</span>
@@ -192,15 +214,29 @@
                                             ${s.joinedAt}
                                         </td>
 
-                                        <%-- Kick: Teacher only --%>
+                                        <%-- Kick/Restore: Teacher only --%>
                                         <c:if test="${isTeacher}">
                                             <td style="text-align:right">                                            
-                                                <button type="button"
-                                                        class="rs-btn rs-btn-danger-outline rs-kick-btn"
-                                                        data-userid="${s.userId}"
-                                                        data-fullname="${fullName}">
-                                                    <i class="bi bi-person-dash"></i> Kick
-                                                </button>
+                                                <c:choose>
+                                                    <c:when test="${s.status == 1}">
+                                                        <button type="button"
+                                                                class="rs-btn rs-btn-restore-outline rs-action-btn"
+                                                                data-action="restore"
+                                                                data-userid="${s.userId}"
+                                                                data-fullname="${fullName}">
+                                                            <i class="bi bi-person-check"></i> Restore
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button type="button"
+                                                                class="rs-btn rs-btn-danger-outline rs-action-btn"
+                                                                data-action="kick"
+                                                                data-userid="${s.userId}"
+                                                                data-fullname="${fullName}">
+                                                            <i class="bi bi-person-dash"></i> Kick
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
                                         </c:if>
                                     </tr>
@@ -218,20 +254,22 @@
         <c:if test="${isTeacher}">
             <div class="rs-modal-backdrop" id="kickBackdrop">
                 <div class="rs-modal">
-                    <div class="rs-modal-header">
-                        <h5><i class="bi bi-person-dash"></i> Remove student?</h5>
+                    <div class="rs-modal-header" id="kickModalHeader">
+                        <h5 id="kickModalTitle"><i class="bi bi-person-dash"></i> Remove student?</h5>
                         <button class="rs-modal-close" id="kickModalClose" title="Close">&times;</button>
                     </div>
                     <div class="rs-modal-body">
-                        <p>You are removing <strong id="kickName">this student</strong>
-                            from <strong>${classes.name}</strong>.</p>
-                        <p class="rs-modal-hint">This only unenrolls the student from this class.</p>
+                        <p id="kickModalDesc">
+                            You are removing <strong id="kickName">this student</strong>
+                            from <strong>${classes.name}</strong>.
+                        </p>
+                        <p class="rs-modal-hint" id="kickModalHint">This only unenrolls the student from this class.</p>
                     </div>
                     <div class="rs-modal-footer">
                         <button class="rs-btn rs-btn-gray" id="kickCancel">Cancel</button>  
-                        <form action="${pageContext.request.contextPath}/classroom/manage/kick-student" method="POST">                        
-                            <button class="rs-btn rs-btn-danger" id="kickConfirmBtn">
-                                <i class="bi bi-check2-circle"></i> Remove
+                        <form action="#" method="POST" id="kickActionForm">                        
+                            <button class="rs-btn rs-btn-danger" id="kickConfirmBtn" type="button">
+                                <i class="bi bi-check2-circle"></i> Confirm
                             </button>   
                         </form>
                     </div>
@@ -337,13 +375,51 @@
             }
 
             var currentUserId = null;
+            var currentAction = 'kick';
             var backdrop = document.getElementById('kickBackdrop');
             var nameEl = document.getElementById('kickName');
             var btnOk = document.getElementById('kickConfirmBtn');
             var btnCancel = document.getElementById('kickCancel');
             var btnClose = document.getElementById('kickModalClose');
+            var headerEl = document.getElementById('kickModalHeader');
+            var titleEl = document.getElementById('kickModalTitle');
+            var descEl = document.getElementById('kickModalDesc');
+            var hintEl = document.getElementById('kickModalHint');
+            var actionForm = document.getElementById('kickActionForm');
 
-            function openModal(userId, fullName) {
+            function setMode(mode) {
+                currentAction = mode === 'restore' ? 'restore' : 'kick';
+                var isRestore = currentAction === 'restore';
+                if (headerEl)
+                    headerEl.classList.toggle('is-restore', isRestore);
+                if (titleEl)
+                    titleEl.innerHTML = isRestore
+                            ? '<i class="bi bi-person-check"></i> Restore student?'
+                            : '<i class="bi bi-person-dash"></i> Remove student?';
+                if (descEl)
+                    descEl.innerHTML = isRestore
+                            ? 'You are restoring <strong id="kickName">this student</strong> to <strong>${classes.name}</strong>.'
+                            : 'You are removing <strong id="kickName">this student</strong> from <strong>${classes.name}</strong>.';
+                if (hintEl)
+                    hintEl.textContent = isRestore
+                            ? 'This will re-enroll the student to this class.'
+                            : 'This only unenrolls the student from this class.';
+                if (btnOk) {
+                    btnOk.classList.toggle('rs-btn-danger', !isRestore);
+                    btnOk.classList.toggle('rs-btn-restore', isRestore);
+                    btnOk.innerHTML = isRestore
+                            ? '<i class="bi bi-check2-circle"></i> Restore'
+                            : '<i class="bi bi-check2-circle"></i> Remove';
+                }
+                if (actionForm) {
+                    actionForm.action = isRestore
+                            ? (ctx + '/classroom/manage/restore-student')
+                            : (ctx + '/classroom/manage/expel');
+                }
+            }
+
+            function openModal(userId, fullName, mode) {
+                setMode(mode);
                 currentUserId = userId;
                 if (nameEl)
                     nameEl.textContent = fullName || 'this student';
@@ -354,12 +430,13 @@
                 if (backdrop)
                     backdrop.classList.remove('is-open');
                 currentUserId = null;
+                currentAction = 'kick';
             }
 
             document.addEventListener('click', function (e) {
-                var btn = e.target.closest('.rs-kick-btn');
+                var btn = e.target.closest('.rs-action-btn');
                 if (btn)
-                    openModal(btn.dataset.userid, btn.dataset.fullname);
+                    openModal(btn.dataset.userid, btn.dataset.fullname, btn.dataset.action);
             });
             if (btnClose)
                 btnClose.addEventListener('click', closeModal);
@@ -377,40 +454,34 @@
 
             if (btnOk) {
                 btnOk.addEventListener('click', async function () {
-                    if (!currentUserId)
+                    if (!currentUserId || !actionForm)
                         return;
-                    var form = btnOk.closest('form');
                     try {
-                        var inputClass = form.querySelector('input[name="classId"]');
+                        // Assign classId
+                        var inputClass = actionForm.querySelector('input[name="classId"]');
                         if (!inputClass) {
                             inputClass = document.createElement('input');
                             inputClass.type = 'hidden';
                             inputClass.name = 'classId';
-                            form.appendChild(inputClass);
+                            actionForm.appendChild(inputClass);
                         }
                         inputClass.value = String(classId);
 
-                        // Gắn userId
-                        var inputUser = form.querySelector('input[name="userId"]');
+                        // Assign userId
+                        var inputUser = actionForm.querySelector('input[name="userId"]');
                         if (!inputUser) {
                             inputUser = document.createElement('input');
                             inputUser.type = 'hidden';
                             inputUser.name = 'userId';
-                            form.appendChild(inputUser);
+                            actionForm.appendChild(inputUser);
                         }
                         inputUser.value = currentUserId;
-                        form.submit();
-                        var kicked = getRows().find(function (tr) {
-                            var b = tr.querySelector('.rs-kick-btn');
-                            return b && b.dataset.userid === currentUserId;
-                        });
-                        if (kicked)
-                            kicked.remove();
+                        actionForm.submit();
                         closeModal();
                         filter();
                     } catch (err) {
                         console.error(err);
-                        alert('Cannot remove student.');
+                        alert(currentAction === 'restore' ? 'Cannot restore student.' : 'Cannot remove student.');
                     }
                 });
             }

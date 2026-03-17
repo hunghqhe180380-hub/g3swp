@@ -75,8 +75,8 @@
         <servlet-class>controller.classroom.StudentListController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>KickStudentController</servlet-name>
-        <servlet-class>controller.classroom.KickStudentController</servlet-class>
+        <servlet-name>DeleteStudentController</servlet-name>
+        <servlet-class>controller.classroom.DeleteStudentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MaterialListController</servlet-name>
@@ -97,10 +97,6 @@
     <servlet>
         <servlet-name>SoftDeleteUserController</servlet-name>
         <servlet-class>controller.admin.SoftDeleteUserController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SoftKickStudentController</servlet-name>
-        <servlet-class>controller.classroom.SoftKickStudentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RouteByRoleController</servlet-name>
@@ -125,11 +121,7 @@
     <servlet>
         <servlet-name>GenerateClasscodeController</servlet-name>
         <servlet-class>controller.teacher.GenerateClasscodeController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>LeaveClassController</servlet-name>
-        <servlet-class>controller.student.LeaveClassController</servlet-class>
-    </servlet>
+    </servlet>    
     <servlet>
         <servlet-name>SubjectListController</servlet-name>
         <servlet-class>controller.subject.SubjectListController</servlet-class>
@@ -139,8 +131,8 @@
         <servlet-class>controller.subject.CreateSubjectController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExpelStudentController</servlet-name>
-        <servlet-class>controller.teacher.ExpelStudentController</servlet-class>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <servlet-class>controller.classroom.UnenrollStudentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ListController</servlet-name>
@@ -153,6 +145,10 @@
     <servlet>
         <servlet-name>CreateAssignmentController</servlet-name>
         <servlet-class>controller.assignment.CreateAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RestoreStudentController</servlet-name>
+        <servlet-class>controller.classroom.RestoreStudentController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ListController</servlet-name>
@@ -219,8 +215,8 @@
         <url-pattern>/classroom/view/student-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>KickStudentController</servlet-name>
-        <url-pattern>/classroom/manage/kick-student</url-pattern>
+        <servlet-name>DeleteStudentController</servlet-name>
+        <url-pattern>/classroom/manage/delete-student</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ForgotPasswordController</servlet-name>
@@ -251,10 +247,6 @@
         <url-pattern>/admin/soft-delete-user</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SoftKickStudentController</servlet-name>
-        <url-pattern>/classroom/manage/soft-kick-student</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>RouteByRoleController</servlet-name>
         <url-pattern>/route</url-pattern>
     </servlet-mapping>
@@ -277,11 +269,7 @@
     <servlet-mapping>
         <servlet-name>GenerateClasscodeController</servlet-name>
         <url-pattern>/classroom/manage/generate-classcode</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>LeaveClassController</servlet-name>
-        <url-pattern>/classroom/leave</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>    
     <servlet-mapping>
         <servlet-name>SubjectListController</servlet-name>
         <url-pattern>/subject/view/subject-list</url-pattern>
@@ -291,16 +279,22 @@
         <url-pattern>/subject/manage/create</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExpelStudentController</servlet-name>
-        <url-pattern>/classroom/student/expel</url-pattern>
-    </servlet-mapping>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <url-pattern>/classroom/manage/expel</url-pattern>
     <servlet-mapping>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <url-pattern>/classroom/leave</url-pattern>
+    </servlet-mapping>
         <servlet-name>ListAssignmentController</servlet-name>
         <url-pattern>/classroom/assignment/view/list-assingment</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateAssignmentController</servlet-name>
         <url-pattern>/classroom/assignment/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestoreStudentController</servlet-name>
+        <url-pattern>/classroom/manage/restore-student</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
