@@ -72,8 +72,9 @@ public class ListQuestionAssignmentController extends HttpServlet {
             }
         }
         request.setAttribute("classId", classId);
+        request.setAttribute("assignmentId", assignmentId);
         request.setAttribute("listQuestion", listQuestion);
-        request.getRequestDispatcher("/view/question/question-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/question/assignment-question-list.jsp").forward(request, response);
     }
 
     /**

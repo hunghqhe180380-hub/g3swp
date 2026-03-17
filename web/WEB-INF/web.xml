@@ -155,7 +155,6 @@
         <servlet-class>controller.classroom.RestoreStudentController</servlet-class>
     </servlet>
     <servlet>
-
         <servlet-name>DeactiveClassController</servlet-name>
         <servlet-class>controller.classroom.DeactiveClassController</servlet-class>
     </servlet>
@@ -166,6 +165,10 @@
     <servlet>
         <servlet-name>ListQuestionAssignmentController</servlet-name>
         <servlet-class>controller.question.ListQuestionAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddQuestionToAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.AddQuestionToAssignmentController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ListController</servlet-name>
@@ -330,6 +333,10 @@
     <servlet-mapping>
         <servlet-name>DeactiveClassController</servlet-name>
         <url-pattern>/classroom/manage/deactive-class</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddQuestionToAssignmentController</servlet-name>
+        <url-pattern>/assignment/question/add</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

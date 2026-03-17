@@ -5,12 +5,15 @@
 
 package controller.question;
 
+import dal.QuestionBankDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.*;
+import model.QuestionBank;
 
 /**
  *
@@ -53,7 +56,11 @@ public class ListQuestionBankController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        QuestionBankDAO qbankDAO = new QuestionBankDAO();
+        List<QuestionBank> listQuestion = qbankDAO.getAllQuestionBank();
+        System.out.println("listquestion Bnakkk: " + listQuestion.size());
+        request.setAttribute("listQuestionBank", listQuestion);
+        request.getRequestDispatcher("/view/question/question-bank.jsp").forward(request, response);
     } 
 
     /** 

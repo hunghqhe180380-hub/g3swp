@@ -5,6 +5,7 @@
 package controller.assignment;
 
 import dal.AssignmentDAO;
+import dal.AssignmentQuestionDAO;
 import dal.ClassroomDAO;
 import dal.EnrollmentDAO;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import model.Assignment;
+import model.AssignmentQuestion;
 import model.Classroom;
 import model.User;
 
@@ -78,6 +80,7 @@ public class ListAssignmentController extends HttpServlet {
         String classId = request.getParameter("classId");
         request.setAttribute("classId", classId);
 
+        System.out.println("abccc: " + classId);
         //get list assignment by class'id
         AssignmentDAO assignmentDAO = new AssignmentDAO();
         List<Assignment> listAssignment = assignmentDAO.getListAssignmentByClassId(classId);
@@ -109,7 +112,7 @@ public class ListAssignmentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response);
     }
 
     /**

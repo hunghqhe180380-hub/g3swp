@@ -6,6 +6,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.QuestionBank;
@@ -18,6 +19,41 @@ public class QuestionBankDAO extends DBContext {
 
     protected PreparedStatement statement;
     protected ResultSet resultSet;
+
+    //get all question in question bank
+    public List<QuestionBank> getAllQuestionBank() {
+        List<QuestionBank> listQuestionBank = new ArrayList<>();
+        try {
+            String sql = "SELECT [Id]\n"
+                    + "      ,[SubjectId]\n"
+                    + "      ,[Type]\n"
+                    + "      ,[Prompt]\n"
+                    + "      ,[Level]\n"
+                    + "      ,[CreatedById]\n"
+                    + "      ,[CreatedAt]\n"
+                    + "      ,[IsPublic]\n"
+                    + "  FROM [dbo].[QuestionBank]";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
+            while (resultSet.next()) {
+                QuestionBank q = new QuestionBank(resultSet.getInt("Id"),
+                        resultSet.getString("SubjectId"),
+                        resultSet.getInt("Type"),
+                        resultSet.getString("Prompt"),
+                        resultSet.getInt("Level"),
+                        resultSet.getString("CreatedById"),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getInt("IsPublic"),
+                        qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
+
+                listQuestionBank.add(q);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listQuestionBank;
+    }
 
     //get question by subject'id
     public List<QuestionBank> getQuestionsBySubject(String subjectId) {
@@ -32,18 +68,18 @@ public class QuestionBankDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                QuestionBank q = new QuestionBank(
-                        rs.getInt("Id"),
-                        rs.getString("SubjectId"),
-                        rs.getInt("Type"),
-                        rs.getString("Prompt"),
-                        rs.getInt("Level"),
-                        rs.getDouble("DefaultPoints"),
-                        rs.getString("CreatedById"),
-                        rs.getString("CreatedAt")
-                );
+//                QuestionBank q = new QuestionBank(
+//                        rs.getInt("Id"),
+//                        rs.getString("SubjectId"),
+//                        rs.getInt("Type"),
+//                        rs.getString("Prompt"),
+//                        rs.getInt("Level"),
+//                        rs.getDouble("DefaultPoints"),
+//                        rs.getString("CreatedById"),
+//                        rs.getString("CreatedAt")
+//                );
 
-                list.add(q);
+                //  list.add(q);
             }
 
         } catch (Exception e) {
@@ -54,34 +90,39 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //get question by it's id
-    public QuestionBank getQuestionById(int id) {
-
-        String sql = "SELECT * FROM QuestionBank WHERE Id = ?";
-
+    //get all question in question bank
+    public QuestionBank getQuestionById(String questionId) {
+        QuestionBank qBank = new QuestionBank();
         try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return new QuestionBank(
-                        rs.getInt("Id"),
-                        rs.getString("SubjectId"),
-                        rs.getInt("Type"),
-                        rs.getString("Prompt"),
-                        rs.getInt("Level"),
-                        rs.getDouble("DefaultPoints"),
-                        rs.getString("CreatedById"),
-                        rs.getString("CreatedAt")
-                );
+            String sql = "SELECT [Id]\n"
+                    + "      ,[SubjectId]\n"
+                    + "      ,[Type]\n"
+                    + "      ,[Prompt]\n"
+                    + "      ,[Level]\n"
+                    + "      ,[CreatedById]\n"
+                    + "      ,[CreatedAt]\n"
+                    + "      ,[IsPublic]\n"
+                    + "  FROM [dbo].[QuestionBank]\n"
+                    + "Where Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, questionId);
+            resultSet = statement.executeQuery();
+            QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
+            if (resultSet.next()) {
+                qBank = new QuestionBank(resultSet.getInt("Id"),
+                        resultSet.getString("SubjectId"),
+                        resultSet.getInt("Type"),
+                        resultSet.getString("Prompt"),
+                        resultSet.getInt("Level"),
+                        resultSet.getString("CreatedById"),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getInt("IsPublic"),
+                        qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
+        return qBank;
     }
 
     //insert question into questionbank
@@ -94,16 +135,16 @@ public class QuestionBankDAO extends DBContext {
         """;
 
         try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-
-            ps.setString(1, q.getSubjectId());
-            ps.setInt(2, q.getType());
-            ps.setString(3, q.getPrompt());
-            ps.setInt(4, q.getLevel());
-            ps.setDouble(5, q.getDefaultPoints());
-            ps.setString(6, q.getCreatedById());
-
-            ps.executeUpdate();
+////            PreparedStatement ps = connection.prepareStatement(sql);
+////
+////            ps.setString(1, q.getSubjectId());
+////            ps.setInt(2, q.getType());
+////            ps.setString(3, q.getPrompt());
+////            ps.setInt(4, q.getLevel());
+////            ps.setDouble(5, q.getDefaultPoints());
+////            ps.setString(6, q.getCreatedById());
+//
+//            ps.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,29 +152,28 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //update question
-    public void updateQuestion(QuestionBank q) {
-
-        String sql = """
-        UPDATE QuestionBank
-        SET Prompt = ?, Level = ?, DefaultPoints = ?
-        WHERE Id = ?
-        """;
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-
-            ps.setString(1, q.getPrompt());
-            ps.setInt(2, q.getLevel());
-            ps.setDouble(3, q.getDefaultPoints());
-            ps.setInt(4, q.getId());
-
-            ps.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+//    public void updateQuestion(QuestionBank q) {
+//
+//        String sql = """
+//        UPDATE QuestionBank
+//        SET Prompt = ?, Level = ?, DefaultPoints = ?
+//        WHERE Id = ?
+//        """;
+//
+//        try {
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//
+//            ps.setString(1, q.getPrompt());
+//            ps.setInt(2, q.getLevel());
+//            ps.setDouble(3, q.getDefaultPoints());
+//            ps.setInt(4, q.getId());
+//
+//            ps.executeUpdate();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
     //delete question
     public void deleteQuestion(int id) {
 
@@ -151,37 +191,40 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //get random question in question bank
-    public List<QuestionBank> getRandomQuestionsBySubject(String subjectId, int number) {
+    public List<QuestionBank> getRandomQuestions(String subjectId, int level, int type, int numberQuestion, double pointPerQuestion) {
 
         List<QuestionBank> list = new ArrayList<>();
 
-        String sql = """
-        SELECT TOP (?) *
-        FROM QuestionBank
-        WHERE SubjectId = ?
-        ORDER BY NEWID()
-        """;
+        String sql = "  SELECT TOP (?) *\n"
+                + "FROM QuestionBank\n"
+                + "WHERE SubjectId = ?\n"
+                + "  AND Level = ?\n"
+                + "  AND Type = ?\n"
+                + "  AND IsPublic = 1\n"
+                + "ORDER BY NEWID();";
 
         try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql);
 
-            ps.setInt(1, number);
-            ps.setString(2, subjectId);
+            statement.setObject(1, numberQuestion);
+            statement.setObject(2, subjectId);
+            statement.setObject(3, level);
+            statement.setObject(4, type);
+            resultSet = statement.executeQuery();
 
-            ResultSet rs = ps.executeQuery();
+            QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
+            while (resultSet.next()) {
+                QuestionBank q = new QuestionBank(resultSet.getInt("Id"),
+                        resultSet.getString("SubjectId"),
+                        resultSet.getInt("Type"),
+                        resultSet.getString("Prompt"),
+                        resultSet.getInt("Level"),
+                        resultSet.getString("CreatedById"),
+                        resultSet.getString("CreatedAt"),
+                        resultSet.getInt("IsPublic"),
+                        qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
 
-            while (rs.next()) {
-                QuestionBank q = new QuestionBank(
-                        rs.getInt("Id"),
-                        rs.getString("SubjectId"),
-                        rs.getInt("Type"),
-                        rs.getString("Prompt"),
-                        rs.getInt("Level"),
-                        rs.getDouble("DefaultPoints"),
-                        rs.getString("CreatedById"),
-                        rs.getString("CreatedAt")
-                );
-
+                q.setSettingPoint(pointPerQuestion);
                 list.add(q);
             }
 
@@ -191,4 +234,18 @@ public class QuestionBankDAO extends DBContext {
 
         return list;
     }
+
+//    //get random questions by subject, type, level, number of question
+//    public List<QuestionBank> getRandomQuestionBankBySubjectId() {
+//        List<QuestionBank> listRandom = new ArrayList<>();
+//        try {
+//            String sql = "SELECT TOP (?) *\n"
+//                    + "FROM [dbo].[QuestionBank]\n"
+//                    + "WHERE Type = ?\n"
+//                    + "  AND Level = ?\n"
+//                    + "ORDER BY NEWID()";
+//
+//        } catch (Exception e) {
+//        }
+//    }
 }

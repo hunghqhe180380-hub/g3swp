@@ -1,6 +1,7 @@
 package dal;
 
-import java.sql.PreparedStatement;
+import java.security.Timestamp;
+import java.sql.*;
 import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -92,12 +93,44 @@ public class AssignmentDAO extends DBContext {
         return list;
     }
 
+    //get assignment by ID
+    public Assignment getAssignmentById(int id) {
+        try {
+            String sql = "SELECT Id, Title, Description, Type, DurationMinutes, MaxAttempts, "
+                    + "ClassId, OpenAt, CloseAt, CreatedAt, CreatedById "
+                    + "FROM Assignments WHERE Id = ?";
+
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Assignment(
+                        resultSet.getInt("Id"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Description"),
+                        resultSet.getInt("Type"),
+                        resultSet.getInt("DurationMinutes"),
+                        resultSet.getInt("MaxAttempts"),
+                        resultSet.getInt("ClassId"),
+                        resultSet.getTimestamp("OpenAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CloseAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getString("CreatedById")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //create assignment
-    public void insertAssignment(Assignment a) {
+    public void createAssignment(Assignment a) {
 
         String sql = "INSERT INTO Assignments (Title,Description,Type,DurationMinutes,"
                 + "MaxAttempts,ClassId,OpenAt,CloseAt,CreatedAt,CreatedById)"
-                + " VALUES (?,?,?,?,?,?,?,?,?,?)";
+                + " VALUES (?,?,?,?,?,?,?,?,GETDATE(),?)";
 
         try {
             PreparedStatement st = connection.prepareStatement(sql);
@@ -108,10 +141,24 @@ public class AssignmentDAO extends DBContext {
             st.setObject(4, a.getDurationMinutes());
             st.setObject(5, a.getMaxAttempts());
             st.setObject(6, a.getClassId());
-            st.setObject(7, a.getOpenAt());
-            st.setObject(8, a.getCloseAt());
-            st.setObject(9, a.getCreatedAt());
-            st.setObject(10, a.getCreatedById());
+            java.sql.Timestamp openAt = null;
+            java.sql.Timestamp closeAt = null;
+
+            if (a.getOpenAt() != null && !a.getOpenAt().isEmpty()) {
+                openAt = java.sql.Timestamp.valueOf(
+                        a.getOpenAt().replace("T", " ") + ":00"
+                );
+            }
+
+            if (a.getCloseAt() != null && !a.getCloseAt().isEmpty()) {
+                closeAt = java.sql.Timestamp.valueOf(
+                        a.getCloseAt().replace("T", " ") + ":00"
+                );
+            }
+
+            st.setTimestamp(7, openAt);
+            st.setTimestamp(8, closeAt);;
+            st.setObject(9, a.getCreatedById());
 
             st.executeUpdate();
 
