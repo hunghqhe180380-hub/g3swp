@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author hung2
@@ -15,23 +17,28 @@ public class QuestionBank {
     private int type;
     private String prompt;
     private int level;
-    private double defaultPoints;
     private String createdById;
     private String createdAt;
+    private int isPublic;
+    private List<QuestionBankChoice> listQuestionBankChoice;
+    /*
+    (settingPoint) --- this variable use to set point to this question when use random question
+     */
+    private double settingPoint;
 
     public QuestionBank() {
     }
 
-    public QuestionBank(int id, String subjectId, int type, String prompt, int level,
-                        double defaultPoints, String createdById, String createdAt) {
+    public QuestionBank(int id, String subjectId, int type, String prompt, int level, String createdById, String createdAt, int isPublic, List<QuestionBankChoice> listQuestionBankChoice) {
         this.id = id;
         this.subjectId = subjectId;
         this.type = type;
         this.prompt = prompt;
         this.level = level;
-        this.defaultPoints = defaultPoints;
         this.createdById = createdById;
         this.createdAt = createdAt;
+        this.isPublic = isPublic;
+        this.listQuestionBankChoice = listQuestionBankChoice;
     }
 
     public int getId() {
@@ -74,14 +81,6 @@ public class QuestionBank {
         this.level = level;
     }
 
-    public double getDefaultPoints() {
-        return defaultPoints;
-    }
-
-    public void setDefaultPoints(double defaultPoints) {
-        this.defaultPoints = defaultPoints;
-    }
-
     public String getCreatedById() {
         return createdById;
     }
@@ -97,4 +96,29 @@ public class QuestionBank {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public int getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(int isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public List<QuestionBankChoice> getListQuestionBankChoice() {
+        return listQuestionBankChoice;
+    }
+
+    public void setListQuestionBankChoice(List<QuestionBankChoice> listQuestionBankChoice) {
+        this.listQuestionBankChoice = listQuestionBankChoice;
+    }
+
+    public double getSettingPoint() {
+        return settingPoint;
+    }
+
+    public void setSettingPoint(double settingPoint) {
+        this.settingPoint = settingPoint;
+    }
+
 }

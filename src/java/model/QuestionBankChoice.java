@@ -51,12 +51,12 @@ public class QuestionBankChoice {
         this.text = text;
     }
 
-    public boolean isCorrect() {
+    public boolean isIsCorrect() {
         return isCorrect;
     }
 
-    public void setCorrect(boolean correct) {
-        isCorrect = correct;
+    public void setIsCorrect(boolean isCorrect) {
+        this.isCorrect = isCorrect;
     }
 
     public int getOrder() {
@@ -66,4 +66,6 @@ public class QuestionBankChoice {
     public void setOrder(int order) {
         this.order = order;
     }
+
+
 }

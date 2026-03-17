@@ -25,28 +25,33 @@ public class QuestionBankChoiceDAO extends DBContext {
         List<QuestionBankChoice> list = new ArrayList<>();
 
         String sql = """
-        SELECT *
-        FROM QuestionBankChoices
+        SELECT [Id]
+              ,[QuestionBankId]
+              ,[Text]
+              ,[IsCorrect]
+              ,[Order]
+          FROM [dbo].[QuestionBankChoices]
         WHERE QuestionBankId = ?
         ORDER BY [Order]
         """;
 
         try {
 
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, questionId);
+           statement = connection.prepareStatement(sql);
+            statement.setInt(1, questionId);
 
-            ResultSet rs = ps.executeQuery();
+            resultSet = statement.executeQuery();
 
-            while (rs.next()) {
+            while (resultSet.next()) {
 
                 QuestionBankChoice c = new QuestionBankChoice();
 
-                c.setId(rs.getInt("Id"));
-                c.setQuestionBankId(rs.getInt("QuestionBankId"));
-                c.setText(rs.getString("Text"));
-                c.setCorrect(rs.getBoolean("IsCorrect"));
-                c.setOrder(rs.getInt("Order"));
+                c.setId(resultSet.getInt("Id"));
+                c.setQuestionBankId(resultSet.getInt("QuestionBankId"));
+                c.setText(resultSet.getString("Text"));
+                System.out.println("xxxx: " + resultSet.getString("Text"));
+                c.setIsCorrect(resultSet.getBoolean("IsCorrect"));
+                c.setOrder(resultSet.getInt("Order"));
 
                 list.add(c);
             }
@@ -58,56 +63,54 @@ public class QuestionBankChoiceDAO extends DBContext {
         return list;
     }
 
-    //create choice
-    public void insertChoice(QuestionBankChoice c) {
-
-        String sql = """
-        INSERT INTO QuestionBankChoices
-        (QuestionBankId, Text, IsCorrect, [Order])
-        VALUES (?, ?, ?, ?)
-        """;
-
-        try {
-
-            PreparedStatement ps = connection.prepareStatement(sql);
-
-            ps.setInt(1, c.getQuestionBankId());
-            ps.setString(2, c.getText());
-            ps.setBoolean(3, c.isCorrect());
-            ps.setInt(4, c.getOrder());
-
-            ps.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+//    //create choice
+//    public void insertChoice(QuestionBankChoice c) {
+//
+//        String sql = """
+//        INSERT INTO QuestionBankChoices
+//        (QuestionBankId, Text, IsCorrect, [Order])
+//        VALUES (?, ?, ?, ?)
+//        """;
+//
+//        try {
+//
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//
+//            ps.setInt(1, c.getQuestionBankId());
+//            ps.setString(2, c.getText());
+//            ps.setBoolean(3, c.isCorrect());
+//            ps.setInt(4, c.getOrder());
+//
+//            ps.executeUpdate();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
     //update choice
-    public void updateChoice(QuestionBankChoice c) {
-
-        String sql = """
-        UPDATE QuestionBankChoices
-        SET Text = ?, IsCorrect = ?, [Order] = ?
-        WHERE Id = ?
-        """;
-
-        try {
-
-            PreparedStatement ps = connection.prepareStatement(sql);
-
-            ps.setString(1, c.getText());
-            ps.setBoolean(2, c.isCorrect());
-            ps.setInt(3, c.getOrder());
-            ps.setInt(4, c.getId());
-
-            ps.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+//    public void updateChoice(QuestionBankChoice c) {
+//
+//        String sql = """
+//        UPDATE QuestionBankChoices
+//        SET Text = ?, IsCorrect = ?, [Order] = ?
+//        WHERE Id = ?
+//        """;
+//
+//        try {
+//
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//
+//            ps.setString(1, c.getText());
+//            ps.setBoolean(2, c.isCorrect());
+//            ps.setInt(3, c.getOrder());
+//            ps.setInt(4, c.getId());
+//
+//            ps.executeUpdate();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
     //delete choice by question'id
     public void deleteChoicesByQuestionId(int questionId) {
 
