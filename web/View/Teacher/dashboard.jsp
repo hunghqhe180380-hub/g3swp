@@ -193,7 +193,7 @@
 
                         <a class="class-detail__btn is-purple" id="cd-edit" href="#">Edit Class</a>
 
-                        <form id="cd-delete-form" method="post" action="${ctx}/classroom/manage/delete-class" class="class-detail__delete">
+                        <form id="cd-delete-form" method="post" action="${ctx}/classroom/manage/deactive-class" class="class-detail__delete">
                             <input type="hidden" name="classId" id="cd-classId" value="" />
                             <button type="submit" class="class-detail__btn is-red"
                                     onclick="return confirm('Delete this class?');">

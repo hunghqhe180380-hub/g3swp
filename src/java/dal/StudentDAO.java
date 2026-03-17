@@ -29,6 +29,7 @@ public class StudentDAO extends DBContext {
                     + "    e.ClassId,\n"
                     + "    c.Name AS Class_name,\n"
                     + "    c.CreatedAt,\n"
+                    + "    c.Status,\n"
                     + "    t.Id AS TeacherId,\n"
                     + "    t.FullName AS TeacherName,\n"
                     + "    s.subject_name,\n"
@@ -45,7 +46,7 @@ public class StudentDAO extends DBContext {
                     + "LEFT JOIN Users t\n"
                     + "    ON c.TeacherId = t.Id\n"
                     + "\n"
-                    + "WHERE e.UserId = ? AND e.Status = 0";
+                    + "WHERE e.UserId = ? AND e.Status = 0 AND c.Status = 0";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             resultSet = statement.executeQuery();
@@ -61,6 +62,7 @@ public class StudentDAO extends DBContext {
                 cls.setTeacherName(resultSet.getString("TeacherName"));
                 cls.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
+                cls.setStatus(resultSet.getInt("Status"));
                 cls.setSum(getTotalStudentByClassId(resultSet.getInt("ClassId")));
                 listClassroom.add(cls);
             }

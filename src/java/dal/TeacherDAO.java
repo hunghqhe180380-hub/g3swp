@@ -35,7 +35,8 @@ public class TeacherDAO extends DBContext {
                     + "           ,[TeacherId]\n"
                     + "           ,[CreatedAt]\n"
                     + "           ,[MaxStudents]\n"
-                    + "           ,[TimeExpiryClassCode])"
+                    + "           ,[TimeExpiryClassCode]\n"
+                    + "           ,[Status])"
                     + "     VALUES\n"
                     + "           (?\n"
                     + "           ,?\n"
@@ -43,7 +44,8 @@ public class TeacherDAO extends DBContext {
                     + "           ,?\n"
                     + "           ,GETDATE()\n"
                     + "           ,?\n"
-                    + "           ,DATEADD(MINUTE, 2, GETDATE())"
+                    + "           ,DATEADD(MINUTE, 2, GETDATE())\n"
+                    + "           ,0"
                     + ")";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, className);
@@ -61,7 +63,7 @@ public class TeacherDAO extends DBContext {
     //check class  exist
     public boolean isExistClass(String teacherId, String className, String subjectId) {
         String sql = "SELECT [Name], [SubjectId], [TeacherId] FROM [dbo].[Classrooms]\n"
-                + "where [Name] = ? and [SubjectId] = ? and [TeacherId] = ?";
+                + "where [Name] = ? and [SubjectId] = ? and [TeacherId] = ? AND [Status] = 0";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, className);
@@ -101,15 +103,15 @@ public class TeacherDAO extends DBContext {
         String sql = "SELECT c.Id, CASE \n"
                 + "                       WHEN c.TimeExpiryClassCode < GETDATE() THEN NULL\n"
                 + "                        ELSE c.ClassCode\n"
-                + "                   END AS ClassCode, c.TimeExpiryClassCode,c.Name, s.subject_name, c.MaxStudents, c.CreatedAt,\n"
+                + "                   END AS ClassCode, c.TimeExpiryClassCode,c.Name, s.subject_name, c.MaxStudents, c.CreatedAt, c.Status,\n"
                 + "                                  COUNT(e.UserId) AS TotalStudents \n"
                 + "                                              FROM Classrooms c\n"
                 + "                                            LEFT JOIN Enrollments e\n"
                 + "                                               ON c.Id = e.ClassId AND e.Status = 0 \n"
                 + "                						JOIN Subjects  s\n"
                 + "										ON c.SubjectId = s.Id\n"
-                + "WHERE c.TeacherId = ?\n"
-                + "                                GROUP BY c.Id, c.Name, s.subject_name, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode";
+                + "WHERE c.TeacherId = ? AND c.Status = 0\n"
+                + "                                GROUP BY c.Id, c.Name, s.subject_name, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode, c.Status";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -123,6 +125,7 @@ public class TeacherDAO extends DBContext {
                 cls.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cls.setSum(resultSet.getInt("TotalStudents"));
                 cls.setClassCode(resultSet.getString("ClassCode"));
+                cls.setStatus(resultSet.getInt("Status"));
                 cls.setCreatedAt(resultSet.getTimestamp("CreatedAt")
                         .toLocalDateTime()
                         .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
@@ -151,7 +154,7 @@ public class TeacherDAO extends DBContext {
                     + "                FROM Classrooms c \n"
                     + "                LEFT JOIN Enrollments e \n"
                     + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
-                    + "                Where c.Id = ? \n"
+                    + "                Where c.Id = ? AND c.Status = 0 \n"
                     + "                GROUP BY c.Id, c.Name, c.SubjectId, c.MaxStudents";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);

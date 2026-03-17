@@ -79,6 +79,11 @@ public class StudentListController extends HttpServlet {
         // resolve : back user to /account/dashboard
 
         Classroom cl = classDAO.getClassInfoByClassId(classId);
+        // Block accessing deactive classroom for non-admin roles
+        if (cl != null && cl.getId() != 0 && cl.getStatus() == 1 && !user.getRole().equals("Admin")) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
         String[] status = request.getParameterValues("txtStatus");
         List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId, status);
         sort(request, enrolls);

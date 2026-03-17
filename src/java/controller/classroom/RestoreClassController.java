@@ -6,19 +6,19 @@ package controller.classroom;
 
 import dal.ClassroomDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import model.User;
 
 /**
  *
- * @author hung2
+ * @author BINH
  */
-public class DeleteClassController extends HttpServlet {
+public class RestoreClassController extends HttpServlet {
 
     private ClassroomDAO dao;
 
@@ -43,10 +43,10 @@ public class DeleteClassController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteClassController</title>");
+            out.println("<title>Servlet RestoreStudentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteClassController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RestoreStudentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -81,21 +81,12 @@ public class DeleteClassController extends HttpServlet {
         String pageIndex = request.getParameter("index");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
-
-        if (user.getRole().equals("Admin")) {
-            //class have student joined ? not allow to delete class : allow to delete class
-            String msg = null;
-            if (dao.hasStudentInClass(classId)) {
-                msg = "This class has students. Not allowed to delete.";
-            } else {
-                msg = "Delete class success!";
-                dao.deleteClassroom(classId);
-            }
-            ses.setAttribute("msg", msg);
-            response.sendRedirect(request.getContextPath() + "/classroom/view/class-list?index=" + pageIndex);
-        } else {
+        if (!"Admin".equals(user.getRole())) {
             response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
         }
+        dao.setClassroomStatus(classId, 0);               
+        response.sendRedirect(request.getContextPath() + "/classroom/view/class-list?index=" + pageIndex);
     }
 
     /**

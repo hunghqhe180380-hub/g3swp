@@ -29,7 +29,7 @@ public class SubjectDAO extends DBContext {
             String sql = "SELECT s.Id, s.subject_name, COUNT(c.teacherId) AS total_teacher, "
                     + "COUNT(c.Id) AS total_classes, s.is_active, s.create_at "
                     + "FROM Subjects s "
-                    + "LEFT JOIN Classrooms c ON s.Id = c.SubjectId "
+                    + "LEFT JOIN Classrooms c ON s.Id = c.SubjectId AND c.Status = 0 "
                     + "GROUP BY s.Id, s.subject_name, s.is_active, s.create_at";
             statement = connection.prepareStatement(sql);
             resultSet = statement.executeQuery();

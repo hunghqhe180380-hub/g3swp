@@ -59,6 +59,7 @@ public class ClassroomDAO extends DBContext {
                 classes.setMaxStudent(resultSet.getInt("MaxStudents"));
                 classes.setSum(resultSet.getInt("TotalStudent"));
                 classes.setTimeExpiryClassCode(resultSet.getTimestamp("TimeExpiryClassCode").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                classes.setStatus(resultSet.getInt("Status"));
                 list.add(classes);
             }
             statement.close();
@@ -130,6 +131,7 @@ public class ClassroomDAO extends DBContext {
                 cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 cl.setMaxStudent(resultSet.getInt("MaxStudents"));
                 cl.setSum(resultSet.getInt("TotalStudent"));
+                cl.setStatus(resultSet.getInt("Status"));
             }
             resultSet.close();
             statement.close();
@@ -139,11 +141,24 @@ public class ClassroomDAO extends DBContext {
         return cl;
     }
 
-    public void deleteClassroom(String classId) {
-        String sql = "delete from [Classrooms] where Id = ?";
+    public void deleteClassroom(String classId) {        
+        String sql = "DELETE FROM [Classrooms] WHERE Id = ?";
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setClassroomStatus(String classId, int status) {
+        String sql = "UPDATE [Classrooms] SET [Status] = ? WHERE Id = ?";
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, status);
+            statement.setObject(2, classId);
             statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
@@ -156,7 +171,7 @@ public class ClassroomDAO extends DBContext {
         try {
             String sql = "SELECT  [Id]\n"
                     + "  FROM [dbo].[Classrooms]\n"
-                    + "  where ClassCode = ? and TimeExpiryClassCode >= GETDATE()";
+                    + "  where ClassCode = ? and TimeExpiryClassCode >= GETDATE() AND [Status] = 0";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classCode);
             resultSet = statement.executeQuery();
@@ -207,7 +222,7 @@ public class ClassroomDAO extends DBContext {
         }
         return false;
     }
-    
+
     //check teacher create this class or not by class's Id?
     public boolean isClassCreatedByTeacher(String userId, String classId) {
         try {

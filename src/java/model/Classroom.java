@@ -23,6 +23,7 @@ public class Classroom {
     private int maxStudent;
     private int sum;
     private String timeExpiryClassCode;
+    private int status;
 
     public Classroom() {
     }
@@ -129,5 +130,11 @@ public class Classroom {
         this.timeExpiryClassCode = timeExpiryClassCode;
     }
 
-    
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

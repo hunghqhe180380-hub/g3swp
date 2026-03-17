@@ -318,8 +318,8 @@
         }
     }
     (function () {
-        var isTeacher = ${isTeacher};
-        var classId = ${classId};
+        var isTeacher = ${not empty isTeacher ? isTeacher : false};
+        var classId = '${classId}';
         var ctx = '${pageContext.request.contextPath}';
 
         var q = document.getElementById('q');

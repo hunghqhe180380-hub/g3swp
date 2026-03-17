@@ -16,9 +16,9 @@ import model.User;
 
 /**
  *
- * @author hung2
+ * @author BINH
  */
-public class DeleteClassController extends HttpServlet {
+public class DeactiveClassController extends HttpServlet {
 
     private ClassroomDAO dao;
 
@@ -81,21 +81,32 @@ public class DeleteClassController extends HttpServlet {
         String pageIndex = request.getParameter("index");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
+       
+        // class have student joined ? not allow to deactivate : allow to deactivate
+        String msg;
+        if (dao.hasStudentInClass(classId)) {            
+            msg = "This class has students. Not allowed to delete.";
+        } else {
+            msg = "Deactivate class success!";
+            // Deactivate class (soft delete): Status = 1
+            dao.setClassroomStatus(classId, 1);
+        }
 
         if (user.getRole().equals("Admin")) {
-            //class have student joined ? not allow to delete class : allow to delete class
-            String msg = null;
-            if (dao.hasStudentInClass(classId)) {
-                msg = "This class has students. Not allowed to delete.";
-            } else {
-                msg = "Delete class success!";
-                dao.deleteClassroom(classId);
-            }
+            // keep the same session key used by DeleteClassController
             ses.setAttribute("msg", msg);
             response.sendRedirect(request.getContextPath() + "/classroom/view/class-list?index=" + pageIndex);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
         }
+
+        if (user.getRole().equals("Teacher")) {
+            // keep the session key used by Teacher dashboard
+            ses.setAttribute("msgDeleteThisClass", msg);
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
     }
 
     /**

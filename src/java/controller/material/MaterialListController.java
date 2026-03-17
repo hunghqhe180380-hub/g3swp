@@ -78,6 +78,12 @@ public class MaterialListController extends HttpServlet {
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
 
+        // Classroom is deactive or not found (MaterialDAO filters Status=0)
+        if (cl == null || cl.getId() == 0) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
         // If student has unenrolled from this class, do not allow accessing materials
         if (user != null && user.getRole().equalsIgnoreCase("Student")
                 && enrollDAO.isUnenroll(user.getUserID(), classId)) {

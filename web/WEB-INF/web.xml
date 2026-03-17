@@ -71,6 +71,10 @@
         <servlet-class>controller.classroom.DeleteClassController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>RestoreClassController</servlet-name>
+        <servlet-class>controller.classroom.RestoreClassController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>StudentListController</servlet-name>
         <servlet-class>controller.classroom.StudentListController</servlet-class>
     </servlet>
@@ -121,7 +125,7 @@
     <servlet>
         <servlet-name>GenerateClasscodeController</servlet-name>
         <servlet-class>controller.teacher.GenerateClasscodeController</servlet-class>
-    </servlet>    
+    </servlet>
     <servlet>
         <servlet-name>SubjectListController</servlet-name>
         <servlet-class>controller.subject.SubjectListController</servlet-class>
@@ -150,6 +154,10 @@
         <servlet-name>RestoreStudentController</servlet-name>
         <servlet-class>controller.classroom.RestoreStudentController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DeactiveClassController</servlet-name>
+        <servlet-class>controller.classroom.DeactiveClassController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ListController</servlet-name>
         <url-pattern>/assignment/list</url-pattern>
@@ -157,6 +165,10 @@
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestoreClassController</servlet-name>
+        <url-pattern>/classroom/manage/restore-class</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteUserController</servlet-name>
@@ -269,7 +281,7 @@
     <servlet-mapping>
         <servlet-name>GenerateClasscodeController</servlet-name>
         <url-pattern>/classroom/manage/generate-classcode</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SubjectListController</servlet-name>
         <url-pattern>/subject/view/subject-list</url-pattern>
@@ -297,6 +309,10 @@
     <servlet-mapping>
         <servlet-name>RestoreStudentController</servlet-name>
         <url-pattern>/classroom/manage/restore-student</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeactiveClassController</servlet-name>
+        <url-pattern>/classroom/manage/deactive-class</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

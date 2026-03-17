@@ -43,6 +43,13 @@
                 <div class="section-head">
                     <h2 class="section-title">Classes <span class="count">(${fn:length(classes)})</span></h2>
 
+                    <c:if test="${not empty sessionScope.msg}">
+                        <div class="alert-msg">
+                            <c:out value="${sessionScope.msg}"/>
+                        </div>
+                        <c:remove var="msg" scope="session"/>
+                    </c:if>
+
                     <form class="search" action="${ctx}/classroom/view/class-list" method="get">
                         <input class="search__input" type="search" name="search"
                                value="<c:out value="${search}"/>"
@@ -77,7 +84,7 @@
                                 </th>
                                 <th>Subject's ID</th>
                                 <th>Subject's Name</th>
-                                <th>Time Expiry Class Code</th>                                 
+                                <th>Status</th>
                                 <th onclick="sort('TeacherName')" style="cursor:pointer">
                                     Teacher
                                     <span id="iconTeacherName">
@@ -118,7 +125,16 @@
                                         </div>
                                     </td>
                                     <td class="code"><c:out value="${cl.subjectName}"/></td>
-                                    <td class="timeExpiryClassCode"><c:out value="${cl.timeExpiryClassCode}"/></td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${cl.status == 0}">
+                                                <span class="badge" style="background:#e8fff3;color:#0f5132;padding:4px 10px;border-radius:999px;font-weight:600;">Active</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge" style="background:#fff3cd;color:#664d03;padding:4px 10px;border-radius:999px;font-weight:600;">Deactive</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td class="muted"><c:out value="${cl.teacherName}"/></td>
 
                                     <td><span class="num"><c:out value="${cl.sum}"/></span></td>
@@ -131,11 +147,29 @@
                                             <a class="btn-mini" href="${ctx}/admin/assignment-list?classId=${cl.id}">Assignments</a>
                                             <a class="btn-mini" href="${ctx}/classroom/view/student-list?classId=${cl.id}">Students</a>
 
-                                            <form action="${ctx}/classroom/manage/delete-class" method="post">
-                                                <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
-                                                <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
-                                                <button class="btn-mini btn-mini--danger" type="submit">Delete</button>
-                                            </form>
+                                            <c:choose>
+                                                <c:when test="${cl.status == 0}">
+                                                    <form action="${ctx}/classroom/manage/deactive-class" method="post">
+                                                        <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
+                                                        <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
+                                                        <button class="btn-mini btn-mini--danger" type="submit">Deactivate</button>
+                                                    </form>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <form action="${ctx}/classroom/manage/restore-class" method="post">
+                                                        <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
+                                                        <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
+                                                        <button class="btn-mini" type="submit">Active</button>
+                                                    </form>
+
+                                                    <form action="${ctx}/classroom/manage/delete-class" method="post"
+                                                          onsubmit="return confirm('Delete this class permanently? This action cannot be undone.');">
+                                                        <input type="hidden" name="classId" value="<c:out value="${cl.id}"/>">
+                                                        <input type="hidden" name="index" value="<c:out value="${page.index}"/>">
+                                                        <button class="btn-mini btn-mini--danger" type="submit">Delete permanently</button>
+                                                    </form>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </td>
                                 </tr>
@@ -144,7 +178,7 @@
                             <!-- FALLBACK -->
                             <c:if test="${empty classes}">
                                 <tr>
-                                    <td colspan="6" class="empty">No classes yet.</td>
+                                    <td colspan="9" class="empty">No classes yet.</td>
                                 </tr>
                             </c:if>
                         </tbody>
@@ -184,6 +218,19 @@
     </body>
 </html>
 <style>
+    .alert-msg{
+        margin-left: auto;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #1e3a8a;
+        font-weight: 600;
+        border: 1px solid rgba(30,58,138,.15);
+        max-width: 520px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     th:hover {
         background-color: #f3f3f3;
     }
@@ -191,6 +238,10 @@
         font-size: 12px;
         margin-left: 4px;
     }    
+    /* keep columns tidy after removing expiry column */
+    .table td, .table th {
+        vertical-align: middle;
+    }
 </style>
 <script>
     function sort(x) {
