@@ -281,10 +281,12 @@
     <servlet-mapping>
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/manage/expel</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/leave</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ListAssignmentController</servlet-name>
         <url-pattern>/classroom/assignment/view/list-assingment</url-pattern>
     </servlet-mapping>

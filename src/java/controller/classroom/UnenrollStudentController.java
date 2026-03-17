@@ -87,7 +87,7 @@ public class UnenrollStudentController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
         } else {
             // Student: get ID from session
-            User user = (User) request.getSession().getAttribute("user");            
+            User user = (User) request.getSession().getAttribute("user");
             dao.changeStudentStatus(user.getUserID(), classId, "1"); // 1 = Deactive
             response.sendRedirect(request.getContextPath() + "/account/dashboard");
         }
