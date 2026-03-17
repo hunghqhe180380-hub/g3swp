@@ -2,60 +2,49 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.assignment;
 
-import dal.AssignmentDAO;
-import dal.ClassroomDAO;
+package controller.question;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import model.Assignment;
-import model.Classroom;
-import model.User;
 
 /**
  *
  * @author hung2
  */
-public class ListAssignmentController extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+public class ListQuestionBankController extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListAssignmentController</title>");
+            out.println("<title>Servlet ListQuestionBank</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListAssignmentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ListQuestionBank at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -63,35 +52,12 @@ public class ListAssignmentController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        String classId = request.getParameter("classId");
-        request.setAttribute("classId", classId);
+    throws ServletException, IOException {
+        processRequest(request, response);
+    } 
 
-        //get list assignment by class'id
-        AssignmentDAO assignmentDAO = new AssignmentDAO();
-        List<Assignment> listAssignment = assignmentDAO.getListAssignmentByClassId(classId);
-
-        request.setAttribute("listAssignment", listAssignment);
-        
-        //get class'name by classId
-        ClassroomDAO clsDAO = new ClassroomDAO();
-        Classroom cls = clsDAO.getClassInfoByClassId(classId);
-        request.setAttribute("classroom", cls);
-        if (user.getRole().equalsIgnoreCase("teacher")) {
-            request.getRequestDispatcher("/view/assignment/teacher-assignment-list.jsp").forward(request, response);
-            return;
-        }
-        if (user.getRole().equalsIgnoreCase("student")) {
-            request.getRequestDispatcher("/view/assignment/student-assignment-list.jsp").forward(request, response);
-            return;
-        }
-    }
-
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -99,13 +65,12 @@ public class ListAssignmentController extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

@@ -57,6 +57,8 @@ public class CreateAssignmentController extends HttpServlet {
     throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        String classId = request.getParameter("classId");
+        request.setAttribute("classId", classId);
         if(user.getRole().equalsIgnoreCase("teacher")){
             request.getRequestDispatcher("/view/assignment/create-assignment.jsp").forward(request, response);
         }

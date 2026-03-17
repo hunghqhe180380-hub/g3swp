@@ -2,6 +2,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.SubmissionListItem;
@@ -15,6 +16,46 @@ public class AssignmentDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
+    public List<Assignment> getListAssignmentByClassId(String classId) {
+        List<Assignment> listAssignment = new ArrayList<>();
+
+        try {
+            String sql = "SELECT Id, Title, Description, Type, DurationMinutes, MaxAttempts, "
+                    + "ClassId, OpenAt, CloseAt, CreatedAt, CreatedById "
+                    + "FROM Assignments WHERE ClassId = ?";
+
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, classId);
+
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+
+                Assignment a = new Assignment(
+                        resultSet.getInt("Id"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Description"),
+                        resultSet.getInt("Type"),
+                        resultSet.getInt("DurationMinutes"),
+                        resultSet.getInt("MaxAttempts"),
+                        resultSet.getInt("ClassId"),
+                        resultSet.getTimestamp("OpenAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CloseAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getString("CreatedById")
+                );
+
+                listAssignment.add(a);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listAssignment;
+    }
+
+    //get list submissions by classId
     public List<SubmissionListItem> getSubmissionsByClass(int classId) {
         List<SubmissionListItem> list = new ArrayList<>();
         try {
@@ -61,16 +102,16 @@ public class AssignmentDAO extends DBContext {
         try {
             PreparedStatement st = connection.prepareStatement(sql);
 
-            st.setString(1, a.getTitle());
-            st.setString(2, a.getDescription());
-            st.setInt(3, a.getType());
-            st.setInt(4, a.getDurationMinutes());
-            st.setInt(5, a.getMaxAttempts());
-            st.setInt(6, a.getClassId());
-            st.setString(7, a.getOpenAt());
-            st.setString(8, a.getCloseAt());
-            st.setString(9, a.getCreatedAt());
-            st.setString(10, a.getCreatedById());
+            st.setObject(1, a.getTitle());
+            st.setObject(2, a.getDescription());
+            st.setObject(3, a.getType());
+            st.setObject(4, a.getDurationMinutes());
+            st.setObject(5, a.getMaxAttempts());
+            st.setObject(6, a.getClassId());
+            st.setObject(7, a.getOpenAt());
+            st.setObject(8, a.getCloseAt());
+            st.setObject(9, a.getCreatedAt());
+            st.setObject(10, a.getCreatedById());
 
             st.executeUpdate();
 

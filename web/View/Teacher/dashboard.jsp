@@ -366,7 +366,7 @@
 
             document.getElementById('cd-students').href = ctx + '/classroom/view/student-list?classId=' + classId;
             document.getElementById('cd-materials').href = ctx + '/material/view/material-list?classId=' + classId;
-            document.getElementById('cd-assignments').href = ctx + '/classroom/assignment/view/list-assingment?classId=' + classId;
+            document.getElementById('cd-assignments').href = ctx + '/assignment/view/list-assingment?classId=' + classId;
             document.getElementById('cd-edit').href = ctx + '/classroom/manage/edit?classId=' + classId;
 
             const shouldRevealCode =
