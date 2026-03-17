@@ -181,7 +181,7 @@
                     <h4 class="mb-0">Math test</h4>
                 </div>
 
-                <a href="${ctx}/assignment/view/list-assingment?classId=${requestScope.classId}" class="btn btn-light">
+                <a href="${ctx}/assignment/view/list-assignment?classId=${requestScope.classId}" class="btn btn-light">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
 

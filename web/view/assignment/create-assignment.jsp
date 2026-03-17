@@ -107,7 +107,7 @@
                 <div>ClassName * SubjectName</div>
             </div>
 
-            <a href="${ctx}/assignment/view/list-assingment?classId=${requestScope.classId}" class="btn btn-light">
+            <a href="${ctx}/assignment/view/list-assignment?classId=${requestScope.classId}" class="btn btn-light">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
 

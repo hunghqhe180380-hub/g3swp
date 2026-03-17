@@ -61,6 +61,11 @@ public class CreateAssignmentController extends HttpServlet {
         request.setAttribute("classId", classId);
         if(user.getRole().equalsIgnoreCase("teacher")){
             request.getRequestDispatcher("/view/assignment/create-assignment.jsp").forward(request, response);
+            return;
+        }
+        if(user.getRole().equalsIgnoreCase("student")){
+            request.getRequestDispatcher("/account/dashboard").forward(request, response);
+            return;
         }
     } 
 

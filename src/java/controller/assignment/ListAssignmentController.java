@@ -38,10 +38,10 @@ public class ListAssignmentController extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -65,10 +65,10 @@ public class ListAssignmentController extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -76,7 +76,20 @@ public class ListAssignmentController extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
+        request.setAttribute("classId", classId);
+
+        //get list assignment by class'id
+        AssignmentDAO assignmentDAO = new AssignmentDAO();
+        List<Assignment> listAssignment = assignmentDAO.getListAssignmentByClassId(classId);
+
+        request.setAttribute("listAssignment", listAssignment);
+
+        //get class'name by classId
+        ClassroomDAO clsDAO = new ClassroomDAO();
+        Classroom cls = clsDAO.getClassInfoByClassId(classId);
+        request.setAttribute("classroom", cls);
         if (user.getRole().equalsIgnoreCase("teacher")) {
+
             request.getRequestDispatcher("/view/assignment/teacher-assignment-list.jsp").forward(request, response);
         }
         if (user.getRole().equalsIgnoreCase("student")) {
@@ -88,10 +101,10 @@ public class ListAssignmentController extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
