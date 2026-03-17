@@ -232,4 +232,89 @@ public class AssignmentAttemptDAO extends DBContext {
         }
         return 0;
     }
+
+    /**
+     * Create a new attempt for a student taking an assignment
+     * @param status - 1=InProgress, 2=Submitted, 5=Violated
+     */
+    public int createAttempt(int assignmentId, String userId, int attemptNumber, int durationMinutes, int status) {
+        try {
+            String sql = "INSERT INTO AssignmentAttempts (AssignmentId, UserId, AttemptNumber, StartedAt, Status, DurationMinutes, MaxScore, RequiresManualGrading) "
+                    + "VALUES (?, ?, ?, GETUTCDATE(), ?, ?, 0, 0)";
+
+            statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            statement.setInt(1, assignmentId);
+            statement.setString(2, userId);
+            statement.setInt(3, attemptNumber);
+            statement.setInt(4, status);
+            statement.setInt(5, durationMinutes);
+            statement.executeUpdate();
+
+            ResultSet rs = statement.getGeneratedKeys();
+            int attemptId = 0;
+            if (rs.next()) {
+                attemptId = rs.getInt(1);
+            }
+            rs.close();
+            statement.close();
+            return attemptId;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Get attempt count for a user/assignment (to calculate next attempt number)
+     */
+    public int getAttemptCount(int assignmentId, String userId) {
+        try {
+            String sql = "SELECT COUNT(*) AS cnt FROM AssignmentAttempts "
+                    + "WHERE AssignmentId = ? AND UserId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, assignmentId);
+            statement.setString(2, userId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int cnt = resultSet.getInt("cnt");
+                resultSet.close();
+                statement.close();
+                return cnt;
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Update attempt with scores after submission
+     */
+    public void updateAttemptScores(int attemptId, double autoScore, double maxScore, boolean hasEssay, Double finalScore) {
+        try {
+            String sql = "UPDATE AssignmentAttempts SET "
+                    + "AutoScore = ?, "
+                    + "MaxScore = ?, "
+                    + "RequiresManualGrading = ?, "
+                    + "FinalScore = ? "
+                    + "WHERE Id = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setDouble(1, autoScore);
+            ps.setDouble(2, maxScore);
+            ps.setBoolean(3, hasEssay);
+            if (finalScore != null) {
+                ps.setDouble(4, finalScore);
+            } else {
+                ps.setNull(4, java.sql.Types.DOUBLE);
+            }
+            ps.setInt(5, attemptId);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
