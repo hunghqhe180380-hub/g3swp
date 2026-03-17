@@ -4,6 +4,7 @@
  */
 package controller.material;
 
+import dal.EnrollmentDAO;
 import dal.MaterialDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,9 +27,11 @@ import model.*;
 public class MaterialListController extends HttpServlet {
 
     private MaterialDAO dao;
+    private EnrollmentDAO enrollDAO;
 
     public void init() {
         dao = new MaterialDAO();
+        enrollDAO = new EnrollmentDAO();
     }
 
     /**
@@ -74,6 +77,14 @@ public class MaterialListController extends HttpServlet {
         Classroom cl = dao.getClassInfoByClassId(classId);
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
+
+        // If student has unenrolled from this class, do not allow accessing materials
+        if (user != null && user.getRole().equalsIgnoreCase("Student")
+                && enrollDAO.isUnenroll(user.getUserID(), classId)) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
         List<Material> materials = dao.getMaterialByClassId(search, classId);
         sort(request, materials);
         request.setAttribute("classes", cl);

@@ -45,7 +45,7 @@ public class StudentDAO extends DBContext {
                     + "LEFT JOIN Users t\n"
                     + "    ON c.TeacherId = t.Id\n"
                     + "\n"
-                    + "WHERE e.UserId = ?";
+                    + "WHERE e.UserId = ? AND e.Status = 0";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             resultSet = statement.executeQuery();

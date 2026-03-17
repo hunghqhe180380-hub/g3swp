@@ -92,8 +92,16 @@ public class StudentListController extends HttpServlet {
         if (user.getRole().equals("Admin")) {
             request.getRequestDispatcher("/view/classroom/student-admin.jsp").forward(request, response);
         } else {
-            //role: Teacher or Student
-            if (classDAO.isStudentInClass(user.getUserID(), classId) || classDAO.isClassCreatedByTeacher(user.getUserID(), classId)) {
+            // role: Teacher or Student
+            // extra gate: if student has unenrolled from this class, do not allow access
+            if (user.getRole().equalsIgnoreCase("Student")
+                    && enrollDAO.isUnenroll(user.getUserID(), classId)) {
+                response.sendRedirect(request.getContextPath() + "/account/dashboard");
+                return;
+            }
+
+            if (classDAO.isStudentInClass(user.getUserID(), classId)
+                    || classDAO.isClassCreatedByTeacher(user.getUserID(), classId)) {
                 request.getRequestDispatcher("/view/classroom/student-user.jsp").forward(request, response);
             } else {
                 // resolve : back user to /account/dashboard
