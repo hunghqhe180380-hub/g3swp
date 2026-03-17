@@ -1,0 +1,129 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 17, 2026, 9:06:57 PM
+    Author     : BINH
+*/
+/* ===== Page Hero ===== */
+.page-hero {
+    background: linear-gradient(90deg, #6366f1, #22d3ee);
+    color: #fff;
+    border-radius: 0;
+    padding: .75rem 1rem;
+}
+
+.page-hero__inner {
+    min-height: 72px;
+}
+
+/* ===== Toolbar ===== */
+.toolbar .card-body {
+    min-height: 60px;
+}
+
+/* ===== Table ===== */
+.submissions-table-wrap {
+    max-height: 68vh;
+}
+
+.sticky-top {
+    top: 0;
+    z-index: 2;
+}
+
+/* Force full width */
+.section-shell {
+    max-width: 100% !important;
+}
+
+/* ===== Status Badges ===== */
+.badge-soft-success {
+    background: #e8fff3;
+    color: #16a34a;
+}
+
+.badge-soft-primary {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.badge-soft-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.badge-soft-warning {
+    background: #fff7ed;
+    color: #d97706;
+}
+
+/* ===== Score Widgets ===== */
+.score-cell {
+    display: inline-block;
+    min-width: 160px;
+}
+
+.score-line {
+    display: flex;
+    justify-content: flex-end;
+    gap: .35rem;
+    align-items: baseline;
+}
+
+.score-badge {
+    font-weight: 700;
+    padding: .15rem .35rem;
+    border-radius: .35rem;
+}
+
+.score-denom {
+    color: #6b7280;
+}
+
+.mini-hint {
+    color: #9ca3af;
+    font-size: .75rem;
+    text-align: right;
+    margin-top: .1rem;
+}
+
+.score-mcq {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.score-essay {
+    background: #f5ecff;
+    color: #6d28d9;
+}
+
+.score-final {
+    background: #e9ffe9;
+    color: #0f766e;
+}
+
+.score-pending {
+    background: #fff7ed;
+    color: #b45309;
+}
+
+/* ===== Progress Bars ===== */
+.progress-thin {
+    height: 6px;
+    background: #f3f4f6;
+    margin-top: .25rem;
+}
+
+.bg-mcq {
+    background: linear-gradient(90deg, #38bdf8, #22d3ee);
+}
+
+.bg-essay {
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.bg-final {
+    background: linear-gradient(90deg, #34d399, #10b981);
+}

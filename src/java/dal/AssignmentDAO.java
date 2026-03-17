@@ -92,6 +92,38 @@ public class AssignmentDAO extends DBContext {
         return list;
     }
 
+    //get assignment by ID
+    public Assignment getAssignmentById(int id) {
+        try {
+            String sql = "SELECT Id, Title, Description, Type, DurationMinutes, MaxAttempts, "
+                    + "ClassId, OpenAt, CloseAt, CreatedAt, CreatedById "
+                    + "FROM Assignments WHERE Id = ?";
+
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Assignment(
+                        resultSet.getInt("Id"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Description"),
+                        resultSet.getInt("Type"),
+                        resultSet.getInt("DurationMinutes"),
+                        resultSet.getInt("MaxAttempts"),
+                        resultSet.getInt("ClassId"),
+                        resultSet.getTimestamp("OpenAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CloseAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getString("CreatedById")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //create assignment
     public void insertAssignment(Assignment a) {
 

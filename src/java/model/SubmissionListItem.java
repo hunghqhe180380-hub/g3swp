@@ -1,8 +1,11 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class SubmissionListItem {
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private int attemptId;
     private int attemptNumber;
@@ -178,5 +181,47 @@ public class SubmissionListItem {
 
     public void setRequiresManual(boolean requiresManual) {
         this.requiresManual = requiresManual;
+    }
+
+    // === Helper methods for JSP display ===
+
+    public String getStartedAtStr() {
+        return startedAt != null ? startedAt.format(DATE_FORMAT) : "—";
+    }
+
+    public String getSubmittedAtStr() {
+        return submittedAt != null ? submittedAt.format(DATE_FORMAT) : "—";
+    }
+
+    public String getMcqScoreFmt() {
+        return String.format("%.1f", mcqScore);
+    }
+
+    public String getMcqMaxFmt() {
+        return String.format("%.1f", mcqMax);
+    }
+
+    public String getEssayScoreFmt() {
+        return essayScore != null ? String.format("%.1f", essayScore) : "—";
+    }
+
+    public String getEssayMaxFmt() {
+        return String.format("%.1f", essayMax);
+    }
+
+    public boolean isEssayScoreAvailable() {
+        return essayScore != null;
+    }
+
+    public String getFinalScoreFmt() {
+        return finalScore != null ? String.format("%.1f", finalScore) : "—";
+    }
+
+    public String getFinalMaxFmt() {
+        return String.format("%.1f", finalMax);
+    }
+
+    public boolean isFinalScoreAvailable() {
+        return finalScore != null;
     }
 }

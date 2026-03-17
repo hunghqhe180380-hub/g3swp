@@ -249,10 +249,10 @@
                                     <a href="${ctx}/assignment/view/question?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-primary btn-sm me-2">
                                         <i class="bi bi-pencil"></i> Detail
                                     </a>
-
-                                    <button class="btn btn-outline-secondary btn-sm me-2">
+                                    
+                                    <a href="${ctx}/assignment/view/submission?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-secondary btn-sm me-2">
                                         <i class="bi bi-people"></i> Submissions
-                                    </button>
+                                    </a>
 
                                     <button class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-trash"></i> Delete
