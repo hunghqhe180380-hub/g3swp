@@ -204,7 +204,7 @@
                 <c:otherwise>
 
                     <!-- bảng assignment thật -->
-                    <c:forEach items="${requestScope.listAssignment}" var="a">
+                    <c:forEach items="${listAssignment}" var="a">
 
                         <div class="card assignment-card p-3">
 
@@ -228,14 +228,14 @@
 
                                         <i class="bi bi-arrow-repeat"></i> Attempts: ${a.maxAttempts}
 
-                                        <span class="badge badge-type ms-2">
-                                            <c:if test="${a.type == 1}">
+                                        <span class="badge badge-type ms-2">                                            
+                                            <c:if test="${a.type == 'MCQ'}">
                                                 MCQ
                                             </c:if>
-                                            <c:if test="${a.type == 2}">
+                                            <c:if test="${a.type == 'Essay'}">
                                                 Essay
                                             </c:if>
-                                            <c:if test="${a.type == 3}">
+                                            <c:if test="${a.type == 'Mixed'}">
                                                 Mixed
                                             </c:if>
                                         </span>
