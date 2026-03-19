@@ -31,7 +31,7 @@ public class TakeAssignmentController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String assignmentIdStr = request.getParameter("assignmentId");        
+        String assignmentIdStr = request.getParameter("assignmentId");
         int assignmentId = Integer.parseInt(assignmentIdStr);
 
         // Get user from session

@@ -58,7 +58,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     background: #fff7ed;
     color: #d97706;
 }
-
+.badge-soft-danger{
+    background: #fff7ed;
+    color: #dc2626;
+}
 /* ===== Score Widgets ===== */
 .score-cell {
     display: inline-block;
