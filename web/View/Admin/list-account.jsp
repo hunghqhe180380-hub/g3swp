@@ -213,6 +213,7 @@
                     </table>
                 </div>
 
+                <!-- PAGING -->
                 <div class="pager">                    
                     <c:url var="basePath" value="/admin/user-list">
                         <c:if test="${not empty search}">
@@ -248,15 +249,6 @@
         </main>
     </body>
 </html>
-<style>
-    th:hover {
-        background-color: #f3f3f3;
-    }
-    th span {
-        font-size: 12px;
-        margin-left: 4px;
-    }
-</style>
 <script>
     function sort(x) {
         reset(x);

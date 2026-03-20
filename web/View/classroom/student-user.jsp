@@ -19,6 +19,11 @@
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-student.css">
         <style>
+            /* Pager */
+            .pager{ margin-top: 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+            .pg{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:8px; border:1px solid #dee2e6; background:#fff; font-size:14px; font-weight:700; color:#334155; text-decoration:none; transition:border-color .12s,background .12s,color .12s; user-select:none; }
+            .pg:hover{ border-color:#94a3b8; color:#0f172a; }
+            .pg.is-active{ background:#2563eb; border-color:#2563eb; color:#fff; }
             /* Restore button */
             .rs-btn-restore-outline{
                 background: transparent;
@@ -38,7 +43,9 @@
                 background: #157347;
                 border-color: #146c43;
             }
-            .rs-modal-header.is-restore{ background: #198754; }
+            .rs-modal-header.is-restore{
+                background: #198754;
+            }
         </style>
     </head>
     <body>
@@ -51,10 +58,10 @@
                             <c:when test="${isTeacher}">Teacher</c:when>
                             <c:otherwise>Student</c:otherwise>
                         </c:choose>
-                            &bull; Student List
+                        &bull; Student List
                     </div>
                     <h4 class="rs-header-title">
-                        ${classes.name} <span class="rs-code">&bull; ${classes.classCode}</span>
+                        ${classes.name} <span class="rs-code">&bull; ${classes.subjectName}</span>
                     </h4>
                 </div>
 
@@ -85,9 +92,9 @@
                     <span class="rs-search-icon"><i class="bi bi-search"></i></span>
                     <input id="q" type="text"
                            placeholder="Search name<c:if test='${isTeacher}'>, username</c:if> or email…">
-                </div>
+                    </div>
 
-                <form action="${ctx}/classroom/view/student-list" method="get" id="frmSort" hidden>                        
+                    <form action="${ctx}/classroom/view/student-list" method="get" id="frmSort" hidden>                        
                     <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                                        
                     <input type="hidden" name="search" value="<c:out value="${search}"/>">
                     <input type="hidden" name="classId" value="<c:out value='${classId}'/>">                                                
@@ -144,7 +151,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <c:forEach var="s" items="${enrolls}" varStatus="loop">
+                                <c:forEach var="s" items="${enrolls}" varStatus="loop" begin="${page.start}" end="${page.end}">
                                     <c:set var="fullName"    value="${not empty s.user.fullName    ? s.user.fullName    : '(unknown)'}" />
                                     <c:set var="userName"    value="${not empty s.user.userName    ? s.user.userName    : ''}" />
                                     <c:set var="email"       value="${not empty s.user.email       ? s.user.email       : ''}" />
@@ -152,8 +159,8 @@
                                     <c:set var="account"     value="${not empty s.user.accountCode ? s.user.accountCode : ''}" />
                                     <c:set var="roleInClass" value="${not empty s.roleInClass      ? s.roleInClass      : 'Student'}" />
                                     <c:set var="avatarUrl"   value="${not empty s.user.urlImgProfile
-                                                                      ? s.user.urlImgProfile
-                                                                      : pageContext.request.contextPath.concat('/uploads/avatars/avatarDefault.png')}" />
+                                                                      ? ctx.concat(s.user.urlImgProfile)
+                                                                      : ctx.concat('/uploads/avatars/avatarDefault.png')}" />
 
                                     <%-- Role pill class --%>
                                     <c:set var="roleCls" value="pill pill-emerald" />
@@ -247,6 +254,32 @@
                 </c:otherwise>
             </c:choose>
 
+            <!-- PAGING -->
+            <div class="pager">                    
+                <c:url var="basePath" value="/classroom/view/student-list">
+                    <c:if test="${not empty search}">
+                        <c:param name="search" value="${search}"/>
+                    </c:if>
+                    <c:param name="classId" value="${classId}"/>
+                </c:url>
+
+                <c:if test="${page.index!=0}">
+                    <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                    <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+                </c:if>
+
+                <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                    <a class="pg ${index==page.index ? 'is-active' : ''}"
+                       href="${basePath}&index=${index}">
+                        ${index+1}
+                    </a>
+                </c:forEach>
+
+                <c:if test="${page.index!=page.totalPage-1}">
+                    <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                    <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                </c:if>
+            </div>
         </div>
         <!-- /MAIN CONTENT -->
 

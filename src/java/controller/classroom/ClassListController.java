@@ -140,7 +140,7 @@ public class ClassListController extends HttpServlet {
 
     private void paging(HttpServletRequest request, List<Classroom> classes)
             throws ServletException, IOException {
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("clsp"));
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.class"));
         int size = classes.size();        
         int index = 0;
         try {

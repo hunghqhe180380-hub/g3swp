@@ -235,9 +235,9 @@
         background-color: #f3f3f3;
     }
     th span {
-        font-size: 12px;
+        font-size: 11px;
         margin-left: 4px;
-    }    
+    }
     /* keep columns tidy after removing expiry column */
     .table td, .table th {
         vertical-align: middle;

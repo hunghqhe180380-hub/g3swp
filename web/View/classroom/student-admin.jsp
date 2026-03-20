@@ -84,10 +84,10 @@
                 </div>
 
                 <!-- TABLE CARD -->
-                <div class="card">
+                <div class="card table-wrap">
                     <table class="table">
                         <thead>
-                            <tr>                                
+                            <tr>
                                 <th onclick="sort('FullName')" style="cursor:pointer">
                                     Name
                                     <span id="iconFullName">
@@ -99,7 +99,9 @@
                                     </span>
                                 </th>
                                 <th>User</th>
-                                <th>Email</th>                                
+                                <th>Account</th>
+                                <th>Email</th>
+                                <th>Phone</th>
                                 <th onclick="sort('Joined')" style="cursor:pointer">
                                     Joined
                                     <span id="iconJoined">
@@ -116,7 +118,7 @@
                         </thead>
 
                         <tbody>
-                            <c:forEach items="${enrolls}" var="enroll">
+                            <c:forEach items="${enrolls}" var="enroll" begin="${page.start}" end="${page.end}">
                                 <tr>
                                     <td class="name">
                                         <c:out value="${enroll.user.fullName}"/>
@@ -126,10 +128,18 @@
                                         <c:out value="${enroll.user.userName}"/>
                                     </td>
 
+                                    <td>
+                                        <code class="account-code"><c:out value="${enroll.user.accountCode}"/></code>
+                                    </td>
+
                                     <td class="email">
                                         <a class="email__link" href="mailto:<c:out value='${enroll.user.email}'/>">
                                             <c:out value="${enroll.user.email}"/>
                                         </a>
+                                    </td>
+
+                                    <td class="phone muted">
+                                        <c:out value="${enroll.user.phoneNumber}"/>
                                     </td>
 
                                     <td class="muted">
@@ -138,7 +148,7 @@
 
                                     <td class="actions">
                                         <c:if test="${enroll.status == 0}">
-                                            <form action="${ctx}/classroom/manage/soft-kick-student" method="post"
+                                            <form action="${ctx}/classroom/manage/expel" method="post"
                                                   onsubmit="return confirm('Deactive this student from the class?');">
                                                 <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                                 <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
@@ -156,14 +166,14 @@
                                             </form>
                                         </c:if>
                                         <c:if test="${enroll.status == 1}">
-                                            <form action="${ctx}/classroom/manage/soft-kick-student" method="post"
+                                            <form action="${ctx}/classroom/manage/restore-student" method="post"
                                                   onsubmit="return confirm('Restore this student to the class?');">
                                                 <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                                 <input type="hidden" name="status" value="<c:out value="${enroll.status}"/>">
                                                 <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
 
                                                 <button class="btn-restore" type="submit" title="Restore / Re-activate">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                                     <circle cx="9" cy="7" r="4" />
@@ -174,13 +184,13 @@
                                         </c:if>
                                     </td>
                                     <td class="actions">
-                                        <form action="${ctx}/classroom/manage/kick-student" method="post"
+                                        <form action="${ctx}/classroom/manage/delete-student" method="post"
                                               onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY delete this student? This action cannot be undone.');">
                                             <input type="hidden" name="userId" value="<c:out value='${enroll.userId}'/>">
                                             <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
 
                                             <button class="btn-kick" type="submit" title="Delete Permanently">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="3 6 5 6 21 6"></polyline>
                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -195,7 +205,7 @@
 
                             <c:if test="${empty enrolls}">
                                 <tr>
-                                    <td colspan="5" class="empty">
+                                    <td colspan="8" class="empty">
                                         No students in this class yet.
                                     </td>
                                 </tr>
@@ -203,18 +213,45 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- PAGING -->
+                <div class="pager">                    
+                    <c:url var="basePath" value="/classroom/view/student-list">
+                        <c:if test="${not empty search}">
+                            <c:param name="search" value="${search}"/>
+                        </c:if>
+                        <c:param name="classId" value="${classId}"/>
+                    </c:url>
+
+                    <c:if test="${page.index!=0}">
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+                    </c:if>
+
+                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                        <a class="pg ${index==page.index ? 'is-active' : ''}"
+                           href="${basePath}&index=${index}">
+                            ${index+1}
+                        </a>
+                    </c:forEach>
+
+                    <c:if test="${page.index!=page.totalPage-1}">
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                    </c:if>
+                </div>
             </div>
         </main>
     </body>
 </html>
 <style>
-    th:hover {
-        background-color: #f3f3f3;
-    }
-    th span {
-        font-size: 12px;
-        margin-left: 4px;
-    }
+    th:hover { background-color: #f3f3f3; }
+    th span { font-size: 11px; margin-left: 4px; }
+    /* Pager */
+    .pager{ margin-top: 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .pg{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:8px; border:1px solid #e2e8f0; background:#fff; font-size:14px; font-weight:700; color:#334155; text-decoration:none; transition:border-color .12s,background .12s,color .12s; user-select:none; }
+    .pg:hover{ border-color:#94a3b8; color:#0f172a; }
+    .pg.is-active{ background:var(--primary); border-color:var(--primary); color:#fff; }
 </style>
 <script>
     function sort(x) {

@@ -29,7 +29,7 @@
                     <div class="header__label">Materials</div>
                     <h4 class="header__title">
                         <c:out value="${classes.name}"/>
-                        <span class="header__code">• <c:out value="${classes.classCode}"/></span>
+                        <span class="header__code">• <c:out value="${classes.subjectName}"/></span>
                     </h4>
                 </div>
                 <div style="display:flex; gap:8px;">
@@ -84,7 +84,7 @@
                     </c:when>
 
                     <c:otherwise>
-                        <c:forEach items="${materials}" var="material">
+                        <c:forEach items="${materials}" var="material" begin="${page.start}" end="${page.end}">
                             <div class="material-card" data-title="${fn:toLowerCase(material.title)}">
 
                                 <!-- Card header row -->
@@ -227,6 +227,32 @@
                     </c:otherwise>
                 </c:choose>
 
+                <!-- PAGING -->
+                <div class="pager">                    
+                    <c:url var="basePath" value="/material/view/material-list">
+                        <c:if test="${not empty search}">
+                            <c:param name="search" value="${search}"/>
+                        </c:if>
+                        <c:param name="classId" value="${classes.id}"/>
+                    </c:url>
+
+                    <c:if test="${page.index!=0}">
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+                    </c:if>
+
+                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                        <a class="pg ${index==page.index ? 'is-active' : ''}"
+                           href="${basePath}&index=${index}">
+                            ${index+1}
+                        </a>
+                    </c:forEach>
+
+                    <c:if test="${page.index!=page.totalPage-1}">
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                    </c:if>
+                </div>
             </div>
         </div>
     </div>
@@ -260,3 +286,10 @@
 
 </body>
 </html>
+<style>
+    /* Pager */
+    .pager{ margin-top: 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .pg{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:8px; border:1px solid #e2e8f0; background:#fff; font-size:14px; font-weight:700; color:#334155; text-decoration:none; transition:border-color .12s,background .12s,color .12s; user-select:none; }
+    .pg:hover{ border-color:#94a3b8; color:#0f172a; }
+    .pg.is-active{ background:#2563eb; border-color:#2563eb; color:#fff; }
+</style>

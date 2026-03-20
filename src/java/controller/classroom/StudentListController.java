@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.*;
+import util.PagingUtil;
 
 /**
  *
@@ -87,6 +88,7 @@ public class StudentListController extends HttpServlet {
         String[] status = request.getParameterValues("txtStatus");
         List<Enrollment> enrolls = enrollDAO.getEnrollmentByClassId(search, classId, status);
         sort(request, enrolls);
+        paging(request, enrolls);
         request.setAttribute("classes", cl);
         request.setAttribute("classId", classId);
         request.setAttribute("search", search);
@@ -146,6 +148,22 @@ public class StudentListController extends HttpServlet {
             }
             Collections.sort(enrolls, cmp);
         }
+    }
+    
+    private void paging(HttpServletRequest request, List<Enrollment> enrolls)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.student"));
+        int size = enrolls.size();        
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     /**

@@ -75,7 +75,7 @@ public class UserListController extends HttpServlet {
 
         // filter by status (Active/Deactive)
         if (statuses != null && statuses.length > 0) {
-            java.util.List<String> st = java.util.Arrays.asList(statuses);
+            List<String> st = java.util.Arrays.asList(statuses);
 
             users.removeIf(u -> {
                 int isDeleted = u.getIsDeleted();
@@ -148,7 +148,7 @@ public class UserListController extends HttpServlet {
 
     private void paging(HttpServletRequest request, List<User> users)
             throws ServletException, IOException {
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.user"));
         int size = users.size();        
         int index = 0;
         try {

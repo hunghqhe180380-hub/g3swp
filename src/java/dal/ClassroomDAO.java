@@ -110,10 +110,11 @@ public class ClassroomDAO extends DBContext {
 
     //class's id, name, subject's id, teacherId, create_at, maxStudent, timeExpiryClassCode, teacher name, total student
     public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.*,b.FullName as TeacherName,"
+        String sql = "SELECT a.*,b.FullName as TeacherName,s.subject_name,"
                 + "(SELECT COUNT(*) FROM [Enrollments] WHERE ClassId = a.Id) as TotalStudent\n"
                 + "FROM [Classrooms] as a\n"
                 + "JOIN [Users] as b ON a.TeacherId = b.Id\n"
+                 + "JOIN [Subjects] s on s.id = a.SubjectId \n"
                 + "WHERE a.Id = ?";
 
         Classroom cl = new Classroom();
@@ -126,6 +127,7 @@ public class ClassroomDAO extends DBContext {
                 cl.setName(resultSet.getString("Name"));
                 // cl.setClassCode(resultSet.getString("ClassCode"));
                 cl.setSubjectId(resultSet.getString("SubjectId"));
+                cl.setSubjectName(resultSet.getString("subject_name"));
                 cl.setTeacherId(resultSet.getString("TeacherId"));
                 cl.setTeacherName(resultSet.getString("TeacherName"));
                 cl.setCreatedAt(resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));

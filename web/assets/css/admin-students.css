@@ -157,8 +157,13 @@ a{ text-decoration:none; color: inherit; }
 }
 
 /* Table */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 .table{
     width: 100%;
+    min-width: 900px;
     border-collapse: collapse;
 }
 .table thead th{
@@ -167,11 +172,19 @@ a{ text-decoration:none; color: inherit; }
     padding: 14px 16px;
     background: rgba(2,6,23,0.02);
     border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+.table thead th:hover{
+    background-color: #f3f3f3;
+}
+.table thead th span{
+    font-size: 11px;
+    margin-left: 4px;
 }
 .th-actions{ width: 74px; }
 
 .table tbody td{
-    padding: 16px;
+    padding: 14px 16px;
     border-bottom: 1px solid #edf2f7;
     vertical-align: middle;
 }
@@ -179,18 +192,36 @@ a{ text-decoration:none; color: inherit; }
     background: rgba(37,99,235,0.04);
 }
 
-.name{ font-weight: 700; }
-.muted{ color: var(--muted); }
+.name{ font-weight: 700; white-space: nowrap; }
+.muted{ color: var(--muted); font-size: 13px; }
 .mono{
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 14px;
+    font-size: 13px;
+    color: #475569;
 }
 .email__link{
     color: var(--primary);
     font-weight: 600;
+    font-size: 13px;
 }
 .email__link:hover{
     text-decoration: underline;
+}
+.account-code{
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #7c3aed;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.phone{
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Kick button (icon) */
@@ -260,6 +291,41 @@ a{ text-decoration:none; color: inherit; }
     color: var(--muted);
 }
 
+/* ===== PAGER ===== */
+.pager {
+    margin-top: 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.pg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+    transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+    user-select: none;
+}
+.pg:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+.pg.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
 /* Responsive */
 @media (max-width: 900px){
     .toolbar{
@@ -271,5 +337,13 @@ a{ text-decoration:none; color: inherit; }
         width: 100%;
     }
     .actions{ text-align:left; }
+}
+@media (max-width: 640px){
+    .table-wrap{ border-radius: 0; margin: 0 -22px; }
+    .table thead th,
+    .table tbody td{
+        padding: 10px 12px;
+    }
+    .email__link{ max-width: 160px; overflow: hidden; text-overflow: ellipsis; display: block; }
 }
 

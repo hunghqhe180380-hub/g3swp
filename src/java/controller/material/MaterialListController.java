@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.*;
+import util.PagingUtil;
 
 /**
  *
@@ -93,6 +94,7 @@ public class MaterialListController extends HttpServlet {
 
         List<Material> materials = dao.getMaterialByClassId(search, classId);
         sort(request, materials);
+        paging(request, materials);
         request.setAttribute("classes", cl);
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
@@ -133,6 +135,22 @@ public class MaterialListController extends HttpServlet {
             }
             Collections.sort(materials, cmp);
         }
+    }
+    
+    private void paging(HttpServletRequest request, List<Material> materials)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.material"));
+        int size = materials.size();        
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     /**

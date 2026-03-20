@@ -22,9 +22,12 @@ public class EnrollmentDAO extends DBContext {
     protected ResultSet resultSet;
 
     public List<Enrollment> getEnrollmentByClassId(String search, String classId, String[] status) {
-        String sql = "SELECT a.*,b.* FROM [Enrollments] as a\n"
-                + "JOIN [Users] as b ON a.UserId = b.Id\n"
-                + "WHERE a.ClassId =?";
+        String sql = "SELECT a.Id AS EnrollId, a.ClassId, a.UserId, a.RoleInClass, a.JoinedAt, a.Status,\n"
+                + "b.Id AS UserDbId, b.FullName, b.UserName, b.Email, b.PhoneNumber,\n"
+                + "b.AccountCode, b.AvatarUrl, b.IsDeleted\n"
+                + "FROM [Enrollments] AS a\n"
+                + "JOIN [Users] AS b ON a.UserId = b.Id\n"
+                + "WHERE a.ClassId = ?";
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?)";
         }
@@ -58,11 +61,16 @@ public class EnrollmentDAO extends DBContext {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Enrollment enroll = new Enrollment();
-                enroll.setId(resultSet.getInt("Id"));
+                enroll.setId(resultSet.getInt("EnrollId"));
                 enroll.setClassId(resultSet.getInt("ClassId"));
                 enroll.setUserId(resultSet.getString("UserId"));
-                enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"),
-                         resultSet.getString("Email"), resultSet.getString("PhoneNumber"),
+                enroll.setUser(new User(resultSet.getString("AvatarUrl"),
+                         resultSet.getString("UserDbId"), 
+                         resultSet.getString("RoleInClass"),
+                         resultSet.getString("UserName"),
+                         resultSet.getString("FullName"),
+                         resultSet.getString("Email"),
+                         resultSet.getString("PhoneNumber"),
                          resultSet.getString("AccountCode")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
                 enroll.setJoinedAt(resultSet.getTimestamp("JoinedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));

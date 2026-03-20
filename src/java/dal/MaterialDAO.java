@@ -48,9 +48,11 @@ public class MaterialDAO extends DBContext {
     }
 
     public Classroom getClassInfoByClassId(String classId) {
-        String sql = "SELECT a.*, "
+        String sql = "SELECT a.*,s.subject_name, "
                 + "(SELECT COUNT(*) FROM [Materials] WHERE ClassId = a.Id) as TotalMaterial "
-                + "FROM [Classrooms] as a WHERE a.Id = ? AND a.Status = 0";
+                + "FROM [Classrooms] as a \n"
+                + "JOIN [Subjects] s on s.id = a.SubjectId \n"
+                + "WHERE a.Id = ? AND a.Status = 0";
         Classroom cl = new Classroom();
         try {
             statement = connection.prepareStatement(sql);
@@ -60,7 +62,8 @@ public class MaterialDAO extends DBContext {
                 cl.setId(resultSet.getInt("Id"));
                 cl.setName(resultSet.getString("Name"));
                 cl.setSum(resultSet.getInt("TotalMaterial"));
-                cl.setStatus(resultSet.getInt("Status"));
+                cl.setStatus(resultSet.getInt("Status"));                
+                cl.setSubjectName(resultSet.getString("subject_name"));
             }
             resultSet.close();
             statement.close();

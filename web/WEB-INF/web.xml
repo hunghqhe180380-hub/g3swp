@@ -310,10 +310,10 @@
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/manage/expel</url-pattern>
     </servlet-mapping>
-    <!--    <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UnenrollStudentController</servlet-name>
         <url-pattern>/classroom/leave</url-pattern>
-    </servlet-mapping>-->
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ListAssignmentController</servlet-name>
         <url-pattern>/assignment/view/list-assignment</url-pattern>
@@ -358,12 +358,20 @@
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
     <context-param>
-        <param-name>nrpp</param-name>
+        <param-name>paging.user</param-name>
         <param-value>6</param-value>
     </context-param>
     <context-param>
-        <param-name>clsp</param-name>
-        <param-value>5</param-value>
+        <param-name>paging.class</param-name>
+        <param-value>6</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.student</param-name>
+        <param-value>10</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.material</param-name>
+        <param-value>10</param-value>
     </context-param>
     <servlet>
         <servlet-name>ConfirmEmailChangeController</servlet-name>

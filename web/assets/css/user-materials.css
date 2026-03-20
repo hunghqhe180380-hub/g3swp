@@ -381,6 +381,41 @@ a {
     font-size: 14px;
 }
 
+/* ========== PAGER ========== */
+.pager {
+    margin-top: 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.pg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+    transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+    user-select: none;
+}
+.pg:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+.pg.is-active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 576px) {
     .toolbar {
