@@ -73,6 +73,10 @@ public class ClassListController extends HttpServlet {
         String search = request.getParameter("search");
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
+        if(!user.getRole().equalsIgnoreCase("Admin")){
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
         List<Classroom> classes = dao.getAllClassBySearch(search);
         sort(request, classes);
         paging(request, classes);

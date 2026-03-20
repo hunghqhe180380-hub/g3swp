@@ -218,7 +218,7 @@ public class MaterialEditController extends HttpServlet {
 
     private boolean isOwner(Classroom cls, User user) {
         return user != null && user.getUserID() != null
-                && user.getUserID().equals(cls.getTeacherId());
+                && (user.getUserID().equals(cls.getTeacherId()) || user.getRole().equalsIgnoreCase("Admin"));
     }
 
     private int parseId(String s) {

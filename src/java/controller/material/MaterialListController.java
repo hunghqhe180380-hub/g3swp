@@ -98,11 +98,7 @@ public class MaterialListController extends HttpServlet {
         request.setAttribute("classes", cl);
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
-        if (user.getRole().equals("Admin")) {
-            request.getRequestDispatcher("/view/material/list-admin.jsp").forward(request, response);
-        } else {
-            request.getRequestDispatcher("/view/material/list-user.jsp").forward(request, response);
-        }
+        request.getRequestDispatcher("/view/material/list-material.jsp").forward(request, response);
     }
 
     private void sort(HttpServletRequest request, List<Material> materials)
@@ -136,11 +132,11 @@ public class MaterialListController extends HttpServlet {
             Collections.sort(materials, cmp);
         }
     }
-    
+
     private void paging(HttpServletRequest request, List<Material> materials)
             throws ServletException, IOException {
         int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.material"));
-        int size = materials.size();        
+        int size = materials.size();
         int index = 0;
         try {
             index = Integer.parseInt(request.getParameter("index"));

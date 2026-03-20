@@ -367,7 +367,7 @@
     </context-param>
     <context-param>
         <param-name>paging.student</param-name>
-        <param-value>10</param-value>
+        <param-value>20</param-value>
     </context-param>
     <context-param>
         <param-name>paging.material</param-name>

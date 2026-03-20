@@ -36,11 +36,18 @@
                     <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
                         <a class="btn btn-white" href="${ctx}/material/manage/upload?classId=${classes.id}">
                             <i class="bi bi-plus-lg"></i> Add material
+                        </a>                        
+                    </c:if>
+                    <c:if test="${fn:toLowerCase(user.role) ne 'admin'}">
+                        <a class="btn btn-outline-white" href="${ctx}/account/dashboard">
+                            <i class="bi bi-arrow-left"></i> Back
                         </a>
                     </c:if>
-                    <a class="btn btn-outline-white" href="${ctx}/account/dashboard">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
+                    <c:if test="${fn:toLowerCase(user.role) eq 'admin'}">
+                        <a class="btn btn-outline-white" href="${ctx}/classroom/view/class-list">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -125,7 +132,7 @@
                                             </span>
                                         </c:if>
 
-                                        <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
+                                        <c:if test="${fn:toLowerCase(user.role) ne 'student'}">
                                             <a class="btn btn-outline-primary"
                                                href="${ctx}/material/manage/edit?id=${material.id}">
                                                 <i class="bi bi-pencil-square"></i> Edit
@@ -288,8 +295,37 @@
 </html>
 <style>
     /* Pager */
-    .pager{ margin-top: 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-    .pg{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:8px; border:1px solid #e2e8f0; background:#fff; font-size:14px; font-weight:700; color:#334155; text-decoration:none; transition:border-color .12s,background .12s,color .12s; user-select:none; }
-    .pg:hover{ border-color:#94a3b8; color:#0f172a; }
-    .pg.is-active{ background:#2563eb; border-color:#2563eb; color:#fff; }
+    .pager{
+        margin-top: 14px;
+        display:flex;
+        gap:6px;
+        flex-wrap:wrap;
+        align-items:center;
+    }
+    .pg{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:36px;
+        height:36px;
+        padding:0 10px;
+        border-radius:8px;
+        border:1px solid #e2e8f0;
+        background:#fff;
+        font-size:14px;
+        font-weight:700;
+        color:#334155;
+        text-decoration:none;
+        transition:border-color .12s,background .12s,color .12s;
+        user-select:none;
+    }
+    .pg:hover{
+        border-color:#94a3b8;
+        color:#0f172a;
+    }
+    .pg.is-active{
+        background:#2563eb;
+        border-color:#2563eb;
+        color:#fff;
+    }
 </style>
