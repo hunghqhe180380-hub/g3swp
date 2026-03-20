@@ -381,4 +381,12 @@
         <servlet-name>ConfirmEmailChangeController</servlet-name>
         <url-pattern>/account/confirm-email-change</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>AddQuestionPageController</servlet-name>
+        <servlet-class>controller.question.AddQuestionPageController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddQuestionPageController</servlet-name>
+        <url-pattern>/question/view/add-question</url-pattern>
+    </servlet-mapping>
 </web-app>

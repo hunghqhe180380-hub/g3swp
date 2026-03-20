@@ -69,19 +69,28 @@
 
                             <div class="assignment-card"
                                  data-index="${loop.index}"
-                                 data-title="${fn:toLowerCase(a.title)}"
-                                 data-class="${fn:toLowerCase(classroom.name)}"
-                                 data-status="${fn:toLowerCase(a.status)}">
+                                 data-title="${fn:escapeXml(a.title)}"
+                                 data-description="${empty a.description ? '' : fn:escapeXml(a.description)}"
+                                 data-type="${a.type}"
+                                 data-status="${a.status}"
+                                 data-class-name="${fn:escapeXml(classroom.name)}"
+                                 data-duration="${a.duration}"
+                                 data-max-attempts="${a.maxAttempts}"
+                                 data-used-attempts="${a.usedAttempts}"
+                                 data-open-at="${a.openAt}"
+                                 data-close-at="${a.closeAt}"
+                                 data-start-url="${ctx}/assignment/take?assignmentId=${a.id}&classId=${classId}"
+                                 data-search-title="${fn:toLowerCase(a.title)}"
+                                 data-search-class="${fn:toLowerCase(classroom.name)}"
+                                 data-filter-status="${fn:toLowerCase(a.status)}">
 
                                 <div class="assignment-card__topbar"></div>
 
                                 <div class="assignment-card__head">
-                                    <div>
-                                        <h3 class="assignment-card__title">
-                                            <i class="bi bi-clipboard-check"></i>
-                                            <span>${a.title}</span>
-                                        </h3>
-                                    </div>
+                                    <h3 class="assignment-card__title">
+                                        <i class="bi bi-clipboard-check"></i>
+                                        <span>${a.title}</span>
+                                    </h3>
 
                                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
                                         <c:choose>
@@ -114,23 +123,6 @@
                                 <div class="assignment-progress">
                                     <div class="assignment-progress__bar" style="width:${progressPercent > 100 ? 100 : progressPercent}%"></div>
                                 </div>
-
-                                <script type="application/json" class="assignment-json">
-                                    {
-                                    "id": "${a.id}",
-                                    "title": "${fn:escapeXml(a.title)}",
-                                    "description": "${empty a.description ? '' : fn:escapeXml(a.description)}",
-                                    "type": "${a.type}",
-                                    "status": "${a.status}",
-                                    "className": "${fn:escapeXml(classroom.name)}",
-                                    "duration": "${a.duration}",
-                                    "maxAttempts": "${a.maxAttempts}",
-                                    "usedAttempts": "${a.usedAttempts}",
-                                    "openAt": "${a.openAt}",
-                                    "closeAt": "${a.closeAt}",
-                                    "startUrl": "${ctx}/view/assignment/take-assignment.jsp?assignmentId=${a.id}&classId=${classId}"
-                                    }
-                                </script>
 
                                 <div class="assignment-history-data d-none">
                                     <c:forEach items="${a.history}" var="h">
@@ -303,6 +295,14 @@
                 let activeCard = null;
                 let currentFilter = 'all';
 
+                function lockPageScroll() {
+                    document.body.classList.add('modal-opened');
+                }
+
+                function unlockPageScroll() {
+                    document.body.classList.remove('modal-opened');
+                }
+
                 function applyChipClass(el, value, kind) {
                     el.className = 'chip';
 
@@ -391,8 +391,18 @@
                 function openDetail(card) {
                     activeCard = card;
 
-                    const rawJson = card.querySelector('.assignment-json').textContent.trim();
-                    const data = JSON.parse(rawJson);
+                    const data = {
+                        title: card.dataset.title || '',
+                        description: card.dataset.description || '',
+                        type: card.dataset.type || '',
+                        status: card.dataset.status || '',
+                        className: card.dataset.className || '',
+                        duration: card.dataset.duration || '',
+                        maxAttempts: card.dataset.maxAttempts || '0',
+                        usedAttempts: card.dataset.usedAttempts || '0',
+                        closeAt: card.dataset.closeAt || '',
+                        startUrl: card.dataset.startUrl || '#'
+                    };
 
                     detailTitle.textContent = data.title;
                     detailClassName.textContent = data.className;
@@ -433,13 +443,13 @@
                     }
 
                     detailModal.classList.add('is-open');
-                    document.body.style.overflow = 'hidden';
+                    lockPageScroll();
                 }
 
                 function closeDetail() {
                     detailModal.classList.remove('is-open');
                     if (!historyModal.classList.contains('is-open')) {
-                        document.body.style.overflow = '';
+                        unlockPageScroll();
                     }
                 }
 
@@ -447,20 +457,22 @@
                     if (!activeCard)
                         return;
 
-                    const rawJson = activeCard.querySelector('.assignment-json').textContent.trim();
-                    const data = JSON.parse(rawJson);
+                    const data = {
+                        title: activeCard.dataset.title || '',
+                        maxAttempts: activeCard.dataset.maxAttempts || '0'
+                    };
 
                     historyTitle.textContent = data.title;
                     renderHistoryRows(activeCard, data.maxAttempts);
 
                     historyModal.classList.add('is-open');
-                    document.body.style.overflow = 'hidden';
+                    lockPageScroll();
                 }
 
                 function closeHistory() {
                     historyModal.classList.remove('is-open');
                     if (!detailModal.classList.contains('is-open')) {
-                        document.body.style.overflow = '';
+                        unlockPageScroll();
                     }
                 }
 
@@ -469,9 +481,9 @@
                     let visible = 0;
 
                     cards.forEach(card => {
-                        const title = card.dataset.title || '';
-                        const className = card.dataset.class || '';
-                        const status = card.dataset.status || '';
+                        const title = card.dataset.searchTitle || '';
+                        const className = card.dataset.searchClass || '';
+                        const status = card.dataset.filterStatus || '';
 
                         const matchKeyword = !keyword || title.includes(keyword) || className.includes(keyword);
                         const matchStatus = currentFilter === 'all' || status === currentFilter;

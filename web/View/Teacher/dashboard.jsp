@@ -106,6 +106,7 @@
                                 </div>
 
                                 <button class="btn btn-primary search-btn" type="submit" id="btnSearchClass">Search</button>
+                                <a class="btn btn-primary search-btn" href="${ctx}/question/view/list-question-bank">Question Bank</a>
                                 <a class="btn btn-primary join-btn" href="${ctx}/classroom/manage/create">+ New Class</a>
                             </div>
                         </form>
@@ -445,4 +446,13 @@
         border-radius: 6px;
         border: 1px solid #cbd5e1;
     }
+    .class-detail__btn.is-cyan{
+        background: rgba(20, 184, 166, 0.12);
+        border-color: rgba(20, 184, 166, 0.18);
+        color: #0f766e;
+    }
+    .question-btn{
+    min-width: 110px;
+    min-height: 44px;
+}
 </style>

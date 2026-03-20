@@ -233,6 +233,7 @@ body.dash-page{
     font-size: 15px;
 }
 
+.question-btn,
 .search-btn,
 .join-btn{
     display: inline-flex;
@@ -249,6 +250,9 @@ body.dash-page{
 
     text-decoration: none;
     white-space: nowrap;
+}
+.question-btn{
+    min-width: 110px;
 }
 
 .search-btn{
@@ -821,5 +825,6 @@ body.modal-open { overflow: hidden; }
     .section-top{ align-items: stretch; }
     .class-tools{ width: 100%; }
     .join-btn{ width: 100%; }
+    .question-btn{ width: 100%; }
     .search-btn { width: 100%; }
 }
