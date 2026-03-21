@@ -293,7 +293,7 @@ public class ProfileController extends HttpServlet {
                     return;
                 }
 
-                validation.InputValidator inputValidator = new validation.InputValidator();
+                util.InputValidator inputValidator = new util.InputValidator();
                 if (inputValidator.isPassword(newPassword.trim()) != null) {
                     response.sendRedirect(request.getContextPath() + "/account/profile?tab=password&err=new_invalid");
                     return;

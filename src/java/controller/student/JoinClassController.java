@@ -21,7 +21,7 @@ import java.util.Map;
 import message.Message;
 import model.Classroom;
 import model.User;
-import validation.InputValidator;
+import util.InputValidator;
 
 /**
  *

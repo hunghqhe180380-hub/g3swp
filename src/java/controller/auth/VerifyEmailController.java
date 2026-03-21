@@ -20,7 +20,7 @@ import java.util.Map;
 import message.Message;
 import model.Token;
 import util.EmailService;
-import validation.InputValidator;
+import util.InputValidator;
 
 /**
  *

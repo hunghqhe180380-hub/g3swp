@@ -19,7 +19,7 @@ import java.util.UUID;
 import model.Classroom;
 import model.Material;
 import model.User;
-import validation.MaterialValidator;
+import util.MaterialValidator;
 
 /**
  * Handles Upload (Create) material.

@@ -19,7 +19,7 @@ import java.util.Map;
 import message.Message;
 import model.Subject;
 import model.User;
-import validation.InputValidator;
+import util.InputValidator;
 
 /**
  *

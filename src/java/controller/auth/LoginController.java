@@ -19,7 +19,7 @@ import message.Message;
 import model.Token;
 import model.User;
 import util.EmailService;
-import validation.InputValidator;
+import util.InputValidator;
 
 /**
  *
