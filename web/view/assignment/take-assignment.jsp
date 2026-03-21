@@ -78,8 +78,8 @@
                         <c:forEach var="q" items="${questions}" varStatus="s">
                             <div class="qpanel"
                                  data-index="${s.index}"
-                                 data-qid="${q.id}"
-                                 data-type="${q.type == '1' ? 'MCQ' : 'Essay'}"
+                                 data-qid="${q.id}"                                 
+                                 data-type="${q.type == '1' ? 'SCQ' : q.type == '2' ? 'MCQ' : 'Essay'}"
                                  <c:if test="${s.index != currentIndex}">style="display:none"</c:if>>
 
                                 <div class="qtitle-row mb-3">
@@ -90,12 +90,28 @@
                                 </div>
 
                                 <c:choose>
-                                    <%-- MCQ (type = "1") --%>
+                                    <%-- SCQ (type = "1") - single correct answer (radio) --%>
                                     <c:when test="${q.type == '1'}">
                                         <c:forEach var="choice" items="${q.listAssignmentChoice}">
                                             <c:set var="cid" value="c${s.index}_${choice.id}" />
                                             <label class="opt" for="${cid}">
                                                 <input type="radio"
+                                                       id="${cid}"
+                                                       name="q-${q.id}"
+                                                       value="${choice.id}"
+                                                       data-qid="${q.id}"
+                                                       data-kind="scq" />
+                                                <span>${choice.text}</span>
+                                            </label>
+                                        </c:forEach>
+                                    </c:when>
+
+                                    <%-- MCQ (type = "2") - multiple correct answers (checkbox) --%>
+                                    <c:when test="${q.type == '2'}">
+                                        <c:forEach var="choice" items="${q.listAssignmentChoice}">
+                                            <c:set var="cid" value="c${s.index}_${choice.id}" />
+                                            <label class="opt" for="${cid}">
+                                                <input type="checkbox"
                                                        id="${cid}"
                                                        name="q-${q.id}"
                                                        value="${choice.id}"
@@ -106,7 +122,7 @@
                                         </c:forEach>
                                     </c:when>
 
-                                    <%-- Essay (type = "2") --%>
+                                    <%-- Essay (type = "3") --%>
                                     <c:otherwise>
                                         <textarea class="essay-box"
                                                   name="essay-${q.id}"
@@ -293,10 +309,12 @@
                     var cnt = 0;
                     qPanels.forEach(function (panel) {
                         var type = panel.dataset.type;
-                        if (type === 'MCQ') {
-                            var checked = panel.querySelector('input[type="radio"]:checked');
+                        if (type === 'SCQ' || type === 'MCQ') {
+                            // SCQ = radio (single), MCQ = checkbox (multi) — answered if any is checked
+                            var checked = panel.querySelector('input:checked');
                             if (checked) cnt++;
                         } else {
+                            // Essay
                             var textarea = panel.querySelector('textarea');
                             if (textarea && textarea.value.trim().length > 0) cnt++;
                         }
@@ -308,8 +326,8 @@
                         if (panel) {
                             var type = panel.dataset.type;
                             var isAnswered = false;
-                            if (type === 'MCQ') {
-                                var checked = panel.querySelector('input[type="radio"]:checked');
+                            if (type === 'SCQ' || type === 'MCQ') {
+                                var checked = panel.querySelector('input:checked');
                                 isAnswered = !!checked;
                             } else {
                                 var textarea = panel.querySelector('textarea');
@@ -357,9 +375,9 @@
                     if (index < total - 1) show(index + 1);
                 }, {passive: true});
 
-                // Listen for answer changes
+                // Listen for answer changes (radio + checkbox for SCQ/MCQ, textarea for Essay)
                 qPanels.forEach(function (panel) {
-                    panel.querySelectorAll('input[type="radio"]').forEach(function (r) {
+                    panel.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function (r) {
                         r.addEventListener('change', updateAnsweredCount, {passive: true});
                     });
                     var textarea = panel.querySelector('textarea');

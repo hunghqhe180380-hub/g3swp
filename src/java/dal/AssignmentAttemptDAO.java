@@ -239,8 +239,8 @@ public class AssignmentAttemptDAO extends DBContext {
      */
     public int createAttempt(int assignmentId, String userId, int attemptNumber, int durationMinutes, int status) {
         try {
-            String sql = "INSERT INTO AssignmentAttempts (AssignmentId, UserId, AttemptNumber, StartedAt, Status, DurationMinutes, MaxScore, RequiresManualGrading) "
-                    + "VALUES (?, ?, ?, GETUTCDATE(), ?, ?, 0, 0)";
+            String sql = "INSERT INTO AssignmentAttempts (AssignmentId, UserId, AttemptNumber, StartedAt, SubmittedAt, Status, DurationMinutes, MaxScore, RequiresManualGrading) "
+                    + "VALUES (?, ?, ?, GETUTCDATE(), GETUTCDATE(), ?, ?, 0, 0)";
 
             statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, assignmentId);

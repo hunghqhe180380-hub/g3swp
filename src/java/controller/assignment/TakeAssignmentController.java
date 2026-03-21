@@ -158,10 +158,10 @@ public class TakeAssignmentController extends HttpServlet {
 
         for (AssignmentQuestion q : questions) {
             int qId = q.getId();
-            String qType = q.getType(); // "1" = MCQ, "2" = Essay
+            String qType = q.getType(); // "1" = SCQ, "2" = MCQ, "3" = Essay
 
             if ("1".equals(qType)) {
-                // MCQ
+                // SCQ - single correct answer
                 mcqMax += q.getPoints();
                 String selectedChoiceIdStr = request.getParameter("q-" + qId);
                 boolean isCorrect = false;
@@ -169,7 +169,6 @@ public class TakeAssignmentController extends HttpServlet {
                 if (selectedChoiceIdStr != null && !selectedChoiceIdStr.isEmpty()) {
                     int selectedChoiceId = Integer.parseInt(selectedChoiceIdStr);
 
-                    // Check if this choice is correct
                     List<model.AssignmentChoice> choices = q.getListAssignmentChoice();
                     if (choices != null) {
                         for (model.AssignmentChoice c : choices) {
@@ -182,19 +181,47 @@ public class TakeAssignmentController extends HttpServlet {
                     }
                 }
 
-                // Insert answer
                 answerDao.saveAnswer(attemptId, qId,
                         selectedChoiceIdStr != null && !selectedChoiceIdStr.isEmpty()
                             ? Integer.parseInt(selectedChoiceIdStr) : null,
                         null, isCorrect);
 
+            } else if ("2".equals(qType)) {
+                // MCQ - multiple correct answers
+                mcqMax += q.getPoints();
+                String[] selectedIds = request.getParameterValues("q-" + qId);
+                boolean allCorrect = false;
+
+                if (selectedIds != null && selectedIds.length > 0) {
+                    List<model.AssignmentChoice> choices = q.getListAssignmentChoice();
+                    List<model.AssignmentChoice> correctChoices = choices.stream()
+                            .filter(model.AssignmentChoice::isIsCorrect).toList();
+
+                    if (selectedIds.length == correctChoices.size()) {
+                        boolean allSelectedCorrect = true;
+                        for (String sid : selectedIds) {
+                            int cid = Integer.parseInt(sid);
+                            boolean found = false;
+                            for (model.AssignmentChoice c : correctChoices) {
+                                if (c.getId() == cid) { found = true; break; }
+                            }
+                            if (!found) { allSelectedCorrect = false; break; }
+                        }
+                        allCorrect = allSelectedCorrect;
+                    }
+                    if (allCorrect) mcqScore += q.getPoints();
+                }
+
+                // Save multiple answers as comma-separated IDs in content field
+                String content = (selectedIds != null) ? String.join(",", selectedIds) : null;
+                answerDao.saveAnswer(attemptId, qId, null, content, allCorrect);
+
             } else {
-                // Essay
+                // Essay (type "3")
                 hasEssay = true;
                 essayMax += q.getPoints();
                 String textAnswer = request.getParameter("essay-" + qId);
 
-                // Insert answer (no grading for essay)
                 answerDao.saveAnswer(attemptId, qId, null, textAnswer, null);
             }
         }
