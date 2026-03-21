@@ -6,7 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="isTeacher" value="${fn:toUpperCase(sessionScope.user.role) == 'TEACHER'}" />
+<c:set var="isAdmin" value="${fn:toUpperCase(sessionScope.user.role) == 'ADMIN'}" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,128 +21,7 @@
         <link rel="stylesheet"
               href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-        <style>
-
-            body{
-                background:#f5f6fa;
-                font-family: Arial;
-            }
-
-            .header{
-                background: linear-gradient(90deg,#6a5af9,#2ec5ce);
-                color:white;
-                padding:15px 40px;
-            }
-
-            .assignment-card{
-                border-radius:10px;
-                border:1px solid #e0e0e0;
-                margin-bottom:20px;
-                position:relative;
-                overflow:hidden;
-                transition:0.2s;
-            }
-
-            .assignment-card:hover{
-                transform:translateY(-5px);
-                box-shadow:0 10px 25px rgba(0,0,0,0.15);
-            }
-
-            .assignment-card::before{
-                content:"";
-                height:4px;
-                width:100%;
-                background: linear-gradient(90deg,#6a5af9,#2ec5ce);
-                position:absolute;
-                top:0;
-                left:0;
-            }
-
-            .assignment-meta{
-                color:#777;
-                font-size:14px;
-            }
-
-            .badge-type{
-                background:#eee;
-                color:#555;
-            }
-
-            .empty-wrapper{
-                min-height:70vh;
-
-                display:flex;
-                align-items: center;
-                justify-content:center;
-
-                padding:20px;
-            }
-
-            .empty-screen{
-
-                width:780px;
-                max-width:95%;
-
-                background:white;
-
-                border-radius:18px;
-
-                padding:100px 60px;   /* tăng chiều cao */
-
-                min-height:420px;     /* đảm bảo card cao */
-
-                text-align:center;
-
-                border:1px solid #e9ecef;
-
-                box-shadow:
-                    0 25px 50px rgba(0,0,0,0.06);
-            }
-
-            .empty-icon{
-
-                width:100px;
-                height:100px;
-
-                margin:auto;
-                margin-bottom:30px;
-
-                display:flex;
-                align-items:center;
-                justify-content:center;
-
-                border-radius:20px;
-
-                background:white;
-
-                border:3px solid #2563eb;
-
-                color:#2563eb;
-
-                font-size:44px;
-
-                box-shadow:
-                    0 8px 20px rgba(37,99,235,0.15);
-            }
-
-            .empty-screen h3{
-                font-weight:700;
-                margin-bottom:12px;
-            }
-
-            .empty-screen p{
-                font-size:16px;
-                color:#6c757d;
-                margin-bottom:30px;
-            }
-
-            .empty-screen .btn{
-                padding:12px 28px;
-                font-weight:500;
-                border-radius:10px;
-            }
-
-        </style>
+        <link rel="stylesheet" href="${ctx}/assets/css/teacher-assignment-list.css">
 
     </head>
 
@@ -149,19 +31,24 @@
 
             <div>
                 <div style="font-size:14px">Assignment</div>
-                <h3>Assignments • Class ${classroom.name}</h3>
+                <h3>Assignments • ${classroom.name}</h3>
             </div>
 
             <div>
+                <c:if test="${isTeacher}">
+                    <a href="${ctx}/assignment/manage/create?classId=${requestScope.classId}" class="btn btn-light me-2">
+                        <i class="bi bi-plus-lg"></i> Create assignment
+                    </a>
 
-                <a href="${ctx}/assignment/manage/create?classId=${requestScope.classId}" class="btn btn-light me-2">
-                    <i class="bi bi-plus-lg"></i> Create assignment
-                </a>
-
-                <a href="${ctx}/account/dashboard" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
-
+                    <a href="${ctx}/account/dashboard" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </c:if>
+                <c:if test="${isAdmin}">                    
+                    <a href="${ctx}/classroom/view/class-list" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </c:if>
             </div>
 
         </div>
@@ -171,6 +58,35 @@
             <div class="mb-3">
                 <strong>Class ID:</strong> ${classId}
             </div>
+
+            <!-- Toolbar: search + type filter + total -->
+            <div class="d-flex align-items-center gap-3 mb-3" style="flex-wrap:wrap;">
+                <div style="flex:1;">
+                    <form class="rs-search" style="min-width:500px;"
+                          action="${ctx}/assignment/view/list-assignment" method="get" id="frmSearch">
+                        <i class="bi bi-search rs-search__icon"></i>
+                        <input class="rs-search__input" type="search" name="search" id="searchInput"
+                               value="<c:out value='${search}'/>"
+                               placeholder="Search by title…" autocomplete="off">
+                        <input type="hidden" name="classId" value="${classroom.id}">
+                        <button class="rs-search__submit" type="submit">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+                <!-- Multi-type pill filters (client-side) -->
+                <div class="filter-pills" id="filterPills">
+                    <button type="button" class="fpill is-active" data-type="">All</button>
+                    <button type="button" class="fpill fpill-scq"   data-type="1"><i class="bi bi-check2-square"></i> SCQ</button>
+                    <button type="button" class="fpill fpill-mcq"   data-type="2"><i class="bi bi-list-ul"></i> MCQ</button>
+                    <button type="button" class="fpill fpill-essay"  data-type="3"><i class="bi bi-card-text"></i> Essay</button>
+                </div>
+
+                <div style="font-size:14px;color:#6c757d;white-space:nowrap;">
+                    Total: <strong id="totalCount"><c:out value="${fn:length(listAssignment)}"/></strong>
+                </div>
+            </div>
+
             <c:choose>
 
                 <c:when test="${empty listAssignment}">
@@ -184,16 +100,16 @@
                             </div>
 
                             <h5>No assignments yet</h5>
-
-                            <p class="text-muted">
-                                Create your first assignment for this class
-                            </p>
-
-                            <a href="${ctx}/assignment/manage/create?classId=${requestScope.classId}" class="btn btn-primary">
-                                <i class="bi bi-plus-lg"></i>
-                                Create assignment
-                            </a>
-
+                            <c:if test="${isTeacher || isAdmin}">
+                                <p class="text-muted">
+                                    Create your first assignment for this class
+                                </p>
+                                
+                                <a href="${ctx}/assignment/manage/create?classId=${requestScope.classId}" class="btn btn-primary">
+                                    <i class="bi bi-plus-lg"></i>
+                                    Create assignment
+                                </a>
+                            </c:if>
                         </div>
 
                     </div>
@@ -204,9 +120,11 @@
                 <c:otherwise>
 
                     <!-- bảng assignment thật -->
-                    <c:forEach items="${listAssignment}" var="a">
+                    <c:forEach items="${listAssignment}" var="a" begin="${page.start}" end="${page.end}">
 
-                        <div class="card assignment-card p-3">
+                        <div class="card assignment-card p-3"
+                             data-type="${a.type}"
+                             data-title="${fn:toLowerCase(fn:escapeXml(a.title))}">
 
                             <div class="d-flex justify-content-between">
 
@@ -220,7 +138,7 @@
 
                                     <div class="assignment-meta">
 
-                                        <i class="bi bi-folder"></i> Class ${className}
+                                        <i class="bi bi-folder"></i> Class ${classroom.name}
                                         &nbsp;&nbsp;
 
                                         <i class="bi bi-calendar"></i> Due: ${a.closeAt}
@@ -245,11 +163,11 @@
                                 </div>
 
                                 <div class="d-flex align-items-center">
-
-                                    <a href="${ctx}/assignment/view/question?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-primary btn-sm me-2">
-                                        <i class="bi bi-pencil"></i> Detail
-                                    </a>
-                                    
+                                    <c:if test="${isTeacher}">
+                                        <a href="${ctx}/assignment/view/question?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-primary btn-sm me-2">
+                                            <i class="bi bi-pencil"></i> Detail
+                                        </a>
+                                    </c:if>
                                     <a href="${ctx}/assignment/view/submission?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-secondary btn-sm me-2">
                                         <i class="bi bi-people"></i> Submissions
                                     </a>
@@ -270,8 +188,88 @@
 
             </c:choose>
 
+            <!-- PAGING -->
+            <c:if test="${not empty listAssignment}">
+                <div class="pager">                    
+                    <c:url var="basePath" value="/assignment/view/list-assignment">
+                        <c:if test="${not empty search}">
+                            <c:param name="search" value="${search}"/>
+                        </c:if>
+                        <c:param name="classId" value="${classroom.id}"/>
+                    </c:url>
 
+                    <c:if test="${page.index!=0}">
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+                    </c:if>
+
+                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                        <a class="pg ${index==page.index ? 'is-active' : ''}"
+                           href="${basePath}&index=${index}">
+                            ${index+1}
+                        </a>
+                    </c:forEach>
+
+                    <c:if test="${page.index!=page.totalPage-1}">
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
 
-    </body>
+    <script>
+        (function () {
+            var pills      = Array.from(document.querySelectorAll('#filterPills .fpill'));
+            var allCards   = Array.from(document.querySelectorAll('.assignment-card'));
+            var totalEl    = document.getElementById('totalCount');
+            var activeTypes = new Set();
+
+            function applyFilter() {
+                var types = activeTypes.size > 0 && !activeTypes.has('') ? activeTypes : null;
+                var count = 0;
+
+                allCards.forEach(function (card) {
+                    var ctype = card.dataset.type || '';
+                    var show  = !types || types.has(ctype);
+                    card.style.display = show ? '' : 'none';
+                    if (show) count++;
+                });
+
+                if (totalEl) totalEl.textContent = count;
+            }
+
+            function updateActivePills() {
+                pills.forEach(function (p) {
+                    p.classList.toggle('is-active', activeTypes.has(p.dataset.type));
+                });
+            }
+
+            pills.forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    var t = pill.dataset.type;
+
+                    if (t === '') {
+                        activeTypes.clear();
+                    } else {
+                        activeTypes.delete('');
+                        if (activeTypes.has(t)) {
+                            activeTypes.delete(t);
+                        } else {
+                            activeTypes.add(t);
+                        }
+                        if (activeTypes.size === 0) activeTypes.add('');
+                    }
+
+                    updateActivePills();
+                    applyFilter();
+                });
+            });
+
+            updateActivePills();
+            applyFilter();
+        })();
+    </script>
+
+</body>
 </html>

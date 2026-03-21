@@ -157,6 +157,91 @@ a {
     background: transparent;
 }
 
+.search__submit {
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    transition: color .12s;
+}
+
+.search__submit:hover {
+    color: #2563eb;
+}
+
+/* ========== FILTER PILLS (multi-select) ========== */
+.filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.fpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.fpill:hover {
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.fpill.is-active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+.fpill.is-active:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+/* Variant colours for non-active pills */
+.fpill-file.is-active {
+    background: #0f766e;
+    border-color: #0f766e;
+}
+.fpill-file.is-active:hover {
+    background: #0d635a;
+    border-color: #0d635a;
+}
+
+.fpill-index.is-active {
+    background: #0369a1;
+    border-color: #0369a1;
+}
+.fpill-index.is-active:hover {
+    background: #024e82;
+    border-color: #024e82;
+}
+
+.fpill-video.is-active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+}
+.fpill-video.is-active:hover {
+    background: #4338ca;
+    border-color: #4338ca;
+}
+
 .total {
     font-size: 14px;
     color: #64748b;
@@ -425,6 +510,12 @@ a {
 
     .search {
         max-width: none;
+        flex-wrap: wrap;
+    }
+
+    .filter-pills {
+        width: 100%;
+        justify-content: flex-start;
     }
 
     .pill {

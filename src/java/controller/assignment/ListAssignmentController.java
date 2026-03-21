@@ -6,15 +6,12 @@ package controller.assignment;
 
 import dal.AssignmentAttemptDAO;
 import dal.AssignmentDAO;
-import dal.AssignmentQuestionDAO;
 import dal.ClassroomDAO;
 import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.io.PrintWriter;
 import java.util.Map;
 import jakarta.servlet.ServletException;
@@ -22,14 +19,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import model.Assignment;
-import model.AssignmentQuestion;
 import model.Classroom;
 import model.SubmissionListItem;
 import model.User;
+import util.PagingUtil;
 
 /**
  *
@@ -87,16 +83,17 @@ public class ListAssignmentController extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
-
+        String search = request.getParameter("search");
+        
         request.setAttribute("classId", classId);
-
+        request.setAttribute("search", search);
         System.out.println("abccc: " + classId);
         //get list assignment by class'id
         AssignmentDAO assignmentDAO = new AssignmentDAO();
         ClassroomDAO clsDAO = new ClassroomDAO();
         AssignmentAttemptDAO attemptDAO = new AssignmentAttemptDAO();
 
-        List<Assignment> rawAssignments = assignmentDAO.getListAssignmentByClassId(classId);
+        List<Assignment> rawAssignments = assignmentDAO.getListAssignmentByClassId(search, classId);
         List<Map<String, Object>> assignmentCards = new ArrayList<>();
 
         String userId = user.getUserID();
@@ -108,8 +105,10 @@ public class ListAssignmentController extends HttpServlet {
 
             String typeLabel = "Mixed";
             if (a.getType() == 1) {
-                typeLabel = "MCQ";
+                typeLabel = "SCQ";
             } else if (a.getType() == 2) {
+                typeLabel = "MCQ";
+            } else if (a.getType() == 3) {
                 typeLabel = "Essay";
             }
 
@@ -150,17 +149,32 @@ public class ListAssignmentController extends HttpServlet {
         }
 
         Classroom cls = clsDAO.getClassInfoByClassId(classId);
+        paging(request, assignmentCards);
         request.setAttribute("listAssignment", assignmentCards);
         request.setAttribute("classroom", cls);
-        if (user.getRole().equalsIgnoreCase("teacher")) {
-            
+        if (!user.getRole().equalsIgnoreCase("student")) {
             request.getRequestDispatcher("/view/assignment/teacher-assignment-list.jsp").forward(request, response);
             return;
-        }
-        if (user.getRole().equalsIgnoreCase("student")) {
+        } else {
             request.getRequestDispatcher("/view/assignment/student-assignment-list.jsp").forward(request, response);
             return;
         }
+    }
+
+    private void paging(HttpServletRequest request, List<Map<String, Object>> assignments)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.assignment"));
+        int size = assignments.size();
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     /**

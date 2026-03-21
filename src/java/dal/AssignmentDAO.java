@@ -17,16 +17,21 @@ public class AssignmentDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Assignment> getListAssignmentByClassId(String classId) {
+    public List<Assignment> getListAssignmentByClassId(String search, String classId) {
         List<Assignment> listAssignment = new ArrayList<>();
 
         try {
             String sql = "SELECT Id, Title, Description, Type, DurationMinutes, MaxAttempts, "
                     + "ClassId, OpenAt, CloseAt, CreatedAt, CreatedById "
                     + "FROM Assignments WHERE ClassId = ?";
-
+            if (search != null && !search.trim().isEmpty()) {
+                sql += " AND LOWER(Title) LIKE ?";
+            }
             statement = connection.prepareStatement(sql);
             statement.setString(1, classId);
+            if (search != null && !search.trim().isEmpty()) {
+                statement.setString(2, "%" + search.toLowerCase() + "%");
+            }
 
             resultSet = statement.executeQuery();
 

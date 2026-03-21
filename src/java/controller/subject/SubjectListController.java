@@ -109,7 +109,7 @@ public class SubjectListController extends HttpServlet {
 
     private void paging(HttpServletRequest request, List<Subject> listSubject)
             throws ServletException, IOException {
-        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("nrpp"));
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.subject"));
         int size = listSubject.size();
         int index = 0;
         try {

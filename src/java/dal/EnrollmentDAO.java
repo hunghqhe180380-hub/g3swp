@@ -21,16 +21,13 @@ public class EnrollmentDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Enrollment> getEnrollmentByClassId(String search, String classId, String[] status) {
+    public List<Enrollment> getEnrollmentByClassId(String classId, String[] status) {
         String sql = "SELECT a.Id AS EnrollId, a.ClassId, a.UserId, a.RoleInClass, a.JoinedAt, a.Status,\n"
                 + "b.Id AS UserDbId, b.FullName, b.UserName, b.Email, b.PhoneNumber,\n"
                 + "b.AccountCode, b.AvatarUrl, b.IsDeleted\n"
                 + "FROM [Enrollments] AS a\n"
                 + "JOIN [Users] AS b ON a.UserId = b.Id\n"
                 + "WHERE a.ClassId = ?";
-        if (search != null && !search.trim().isEmpty()) {
-            sql += " AND (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?)";
-        }
         boolean hasStatus = (status != null && status.length > 0);
         if (hasStatus) {
             sql += (" AND a.Status IN (");
@@ -47,12 +44,6 @@ public class EnrollmentDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             int paramIndex = 2;
-            if (search != null && !search.trim().isEmpty()) {
-                String pattern = "%" + search.toLowerCase() + "%";
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-            }
             if (hasStatus) {
                 for (String s : status) {
                     statement.setObject(paramIndex++, s);

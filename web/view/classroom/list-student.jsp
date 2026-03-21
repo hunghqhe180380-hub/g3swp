@@ -3,6 +3,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<c:set var="isStaff" value="${fn:toUpperCase(sessionScope.user.role) == 'TEACHER'|| fn:toUpperCase(sessionScope.user.role) == 'ADMIN'}" />
+<c:set var="isAdmin" value="${fn:toUpperCase(sessionScope.user.role) == 'ADMIN'}" />
 <c:set var="isTeacher" value="${fn:toUpperCase(sessionScope.user.role) == 'TEACHER'}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="fnState" value="${param.txtFullName != null ? param.txtFullName : '0'}"/>
@@ -17,13 +19,42 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-student.css">
+        <link rel="stylesheet" href="${ctx}/assets/css/list-student.css">
         <style>
             /* Pager */
-            .pager{ margin-top: 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-            .pg{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:8px; border:1px solid #dee2e6; background:#fff; font-size:14px; font-weight:700; color:#334155; text-decoration:none; transition:border-color .12s,background .12s,color .12s; user-select:none; }
-            .pg:hover{ border-color:#94a3b8; color:#0f172a; }
-            .pg.is-active{ background:#2563eb; border-color:#2563eb; color:#fff; }
+            .pager{
+                margin-top: 14px;
+                display:flex;
+                gap:6px;
+                flex-wrap:wrap;
+                align-items:center;
+            }
+            .pg{
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                min-width:36px;
+                height:36px;
+                padding:0 10px;
+                border-radius:8px;
+                border:1px solid #dee2e6;
+                background:#fff;
+                font-size:14px;
+                font-weight:700;
+                color:#334155;
+                text-decoration:none;
+                transition:border-color .12s,background .12s,color .12s;
+                user-select:none;
+            }
+            .pg:hover{
+                border-color:#94a3b8;
+                color:#0f172a;
+            }
+            .pg.is-active{
+                background:#2563eb;
+                border-color:#2563eb;
+                color:#fff;
+            }
             /* Restore button */
             .rs-btn-restore-outline{
                 background: transparent;
@@ -55,6 +86,7 @@
                 <div class="rs-header-meta">
                     <div class="rs-header-label">
                         <c:choose>
+                            <c:when test="${isAdmin}">Admin</c:when>
                             <c:when test="${isTeacher}">Teacher</c:when>
                             <c:otherwise>Student</c:otherwise>
                         </c:choose>
@@ -66,18 +98,30 @@
                 </div>
 
                 <div class="rs-header-actions">
-                    <a class="rs-btn rs-btn-slate"
-                       href="${pageContext.request.contextPath}/material/view/material-list?classId=${classId}">
-                        <i class="bi bi-files"></i> Materials
-                    </a>
-                    <a class="rs-btn rs-btn-slate"
-                       href="${pageContext.request.contextPath}">
-                        <i class="bi bi-clipboard2-check"></i> Assignments
-                    </a>
-                    <a class="rs-btn rs-btn-outline-light"
-                       href="${pageContext.request.contextPath}/account/dashboard">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
+                    <c:if test='${not isAdmin}'>
+                        <a class="rs-btn rs-btn-slate"
+                           href="${ctx}/material/view/material-list?classId=${classId}">
+                            <i class="bi bi-files"></i> Materials
+                        </a>
+                        <a class="rs-btn rs-btn-slate"
+                           href="${ctx}">
+                            <i class="bi bi-clipboard2-check"></i> Assignments
+                        </a>
+                    </c:if>
+                    <c:choose>
+                        <c:when test="${isAdmin}">
+                            <a class="rs-btn rs-btn-outline-light"
+                               href="${ctx}/classroom/view/class-list">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <a class="rs-btn rs-btn-outline-light"
+                               href="${ctx}/account/dashboard">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
@@ -89,19 +133,30 @@
             <!-- Toolbar -->
             <div class="rs-toolbar">
                 <div class="rs-search">
-                    <span class="rs-search-icon"><i class="bi bi-search"></i></span>
-                    <input id="q" type="text"
-                           placeholder="Search name<c:if test='${isTeacher}'>, username</c:if> or email…">
-                    </div>
+                    <form action="${ctx}/classroom/view/student-list" method="get" id="frmSearch" style="display:contents">
+                        <span class="rs-search-icon"><i class="bi bi-search"></i></span>
+                        <input id="q" type="text" name="txtSearch"
+                               placeholder="Search name<c:if test='${isStaff}'>, username</c:if> or email…"
+                               value="${fn:escapeXml(param.txtSearch)}">
+                        <select name="txtStatus" onchange="this.form.submit()" style="border:none;border-left:1px solid #dee2e6;padding:0 8px;outline:none;cursor:pointer;background:transparent;font-size:14px;color:#495057;">
+                            <option value="">All</option>
+                            <option value="0" ${param.txtStatus == '0' ? 'selected' : ''}>Active</option>
+                            <option value="1" ${param.txtStatus == '1' ? 'selected' : ''}>Deactive</option>
+                        </select>
+                        <input type="hidden" name="classId" value="${classId}">
+                    </form>
+                </div>
 
-                    <form action="${ctx}/classroom/view/student-list" method="get" id="frmSort" hidden>                        
-                    <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">                                        
-                    <input type="hidden" name="search" value="<c:out value="${search}"/>">
-                    <input type="hidden" name="classId" value="<c:out value='${classId}'/>">                                                
+                <form action="${ctx}/classroom/view/student-list" method="get" id="frmSort">
+                    <input type="hidden" name="txtSearch" value="${fn:escapeXml(param.txtSearch)}">
+                    <input type="hidden" name="txtStatus" value="${fn:escapeXml(param.txtStatus)}">
+                    <input type="hidden" id="txtFullName" name="txtFullName" value="<c:out value="${param.txtFullName != null ? param.txtFullName : 0}"/>">
+                    <input type="hidden" id="txtJoined"   name="txtJoined"   value="<c:out value="${param.txtJoined   != null ? param.txtJoined   : 0}"/>">
+                    <input type="hidden" name="classId" value="${classId}">
                 </form>
 
                 <div class="rs-toolbar-right">
-                    <c:if test="${isTeacher}">
+                    <c:if test="${isStaff}">
                         <button id="btnCopyEmails" class="rs-btn rs-btn-gray">
                             <i class="bi bi-clipboard-check"></i> Copy emails
                         </button>
@@ -130,10 +185,10 @@
                         <table class="rs-table" id="rosterTable">
                             <thead>
                                 <tr>
-                                    <th style="width:44px"></th>
-                                    <th onclick="sort('FullName')" style="cursor:pointer">
-                                        Name
-                                        <span id="iconFullName">
+                                    <c:if test="${isStaff}"><th style="width:44px"></th></c:if>
+                                        <th onclick="sort('FullName')" style="cursor:pointer">
+                                            Name
+                                            <span id="iconFullName">
                                             <c:choose>
                                                 <c:when test="${fnState == '1'}">▲</c:when>
                                                 <c:when test="${fnState == '2'}">▼</c:when>
@@ -141,13 +196,16 @@
                                             </c:choose>
                                         </span>
                                     </th>
-                                    <c:if test="${isTeacher}"><th>Username</th></c:if>
+                                    <c:if test="${isStaff}"><th>Username</th></c:if>
                                         <th>Email</th>
                                         <th>Phone</th>
-                                        <th>Account</th>
-                                    <c:if test="${isTeacher}"><th>Role</th></c:if>
+                                    <c:if test="${isAdmin}"><th>Account</th></c:if>                                        
+                                    <c:if test="${isStaff}"><th>Role</th></c:if>
                                         <th>Joined</th>
-                                    <c:if test="${isTeacher}"><th style="width:90px"></th></c:if>
+                                    <c:if test="${isStaff}">
+                                        <th style="width:45px"><c:if test="${isAdmin}">Status</c:if></th>
+                                    </c:if>
+                                    <c:if test="${isAdmin}"><th style="width:45px"></th></c:if>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,19 +234,21 @@
                                         data-username="${fn:toLowerCase(userName)}">
 
                                         <%-- Col 1: số thứ tự (Teacher) | trống (Student) --%>
-                                        <td class="rs-td-num">
-                                            <c:if test="${isTeacher}">${loop.index + 1}</c:if>
+                                        <c:if test="${isStaff}">
+                                            <td class="rs-td-num">
+                                                ${loop.index + 1}
                                             </td>
+                                        </c:if>
 
                                         <%-- Col 2: avatar + tên --%>
                                         <td>
                                             <div class="rs-name-cell">
                                                 <img src="${avatarUrl}" alt="avatar"
                                                      class="rs-avatar-img" loading="lazy"
-                                                     onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/uploads/avatars/avatarDefault.png'">
+                                                     onerror="this.onerror=null;this.src='${ctx}/uploads/avatars/avatarDefault.png'">
                                                 <div>
                                                     <div class="rs-name rs-truncate" title="${fullName}">${fullName}</div>
-                                                    <c:if test="${isTeacher}">
+                                                    <c:if test="${isStaff}">
                                                         <div class="rs-name-sub rs-truncate" title="${email}">${email}</div>
                                                     </c:if>
                                                 </div>
@@ -196,7 +256,7 @@
                                         </td>
 
                                         <%-- Username: Teacher only --%>
-                                        <c:if test="${isTeacher}">
+                                        <c:if test="${isStaff}">
                                             <td class="rs-truncate" title="${userName}">${userName}</td>
                                         </c:if>
 
@@ -209,10 +269,12 @@
                                         <td class="rs-td-muted rs-truncate" title="${phone}">${phone}</td>
 
                                         <%-- Account code --%>
-                                        <td><code class="rs-code-badge">${account}</code></td>
+                                        <c:if test="${isAdmin}">
+                                            <td><code class="rs-code-badge">${account}</code></td>
+                                            </c:if>
 
                                         <%-- Role pill: Teacher only --%>
-                                        <c:if test="${isTeacher}">
+                                        <c:if test="${isStaff}">
                                             <td><span class="${roleCls}">${roleInClass}</span></td>
                                             </c:if>
 
@@ -222,12 +284,12 @@
                                         </td>
 
                                         <%-- Kick/Restore: Teacher only --%>
-                                        <c:if test="${isTeacher}">
+                                        <c:if test="${isStaff}">
                                             <td style="text-align:right">                                            
                                                 <c:choose>
                                                     <c:when test="${s.status == 1}">
                                                         <button type="button"
-                                                                class="rs-btn rs-btn-restore-outline rs-action-btn"
+                                                                class="rs-btn rs-btn-restore-outline"
                                                                 data-action="restore"
                                                                 data-userid="${s.userId}"
                                                                 data-fullname="${fullName}">
@@ -236,7 +298,7 @@
                                                     </c:when>
                                                     <c:otherwise>
                                                         <button type="button"
-                                                                class="rs-btn rs-btn-danger-outline rs-action-btn"
+                                                                class="rs-btn rs-btn-danger-outline"
                                                                 data-action="kick"
                                                                 data-userid="${s.userId}"
                                                                 data-fullname="${fullName}">
@@ -245,6 +307,26 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
+                                        </c:if>
+                                        <c:if test="${isAdmin}">
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                <form action="${ctx}/classroom/manage/delete-student" method="post"
+                                                      style="margin: 0; display: inline-block;"
+                                                      onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY delete this student? This action cannot be undone.');">
+                                                    <input type="hidden" name="userId" value="<c:out value='${s.userId}'/>">
+                                                    <input type="hidden" name="classId" value="<c:out value='${classId}'/>">
+
+                                                    <button class="rs-btn rs-btn-danger-outline" type="submit" title="Delete Permanently">
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </td>                                            
                                         </c:if>
                                     </tr>
                                 </c:forEach>
@@ -255,36 +337,41 @@
             </c:choose>
 
             <!-- PAGING -->
-            <div class="pager">                    
-                <c:url var="basePath" value="/classroom/view/student-list">
-                    <c:if test="${not empty search}">
-                        <c:param name="search" value="${search}"/>
+            <c:if test="${not empty enrolls}">
+                <div class="pager">
+                    <c:url var="basePath" value="/classroom/view/student-list">
+                        <c:param name="classId" value="${classId}"/>
+                        <c:if test="${not empty param.txtSearch}">
+                            <c:param name="txtSearch" value="${param.txtSearch}"/>
+                        </c:if>
+                        <c:if test="${not empty param.txtStatus}">
+                            <c:param name="txtStatus" value="${param.txtStatus}"/>
+                        </c:if>
+                    </c:url>
+
+                    <c:if test="${page.index!=0}">
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
                     </c:if>
-                    <c:param name="classId" value="${classId}"/>
-                </c:url>
 
-                <c:if test="${page.index!=0}">
-                    <a class="pg" href="${basePath}&index=0">&laquo;</a>
-                    <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
-                </c:if>
+                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                        <a class="pg ${index==page.index ? 'is-active' : ''}"
+                           href="${basePath}&index=${index}">
+                            ${index+1}
+                        </a>
+                    </c:forEach>
 
-                <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
-                    <a class="pg ${index==page.index ? 'is-active' : ''}"
-                       href="${basePath}&index=${index}">
-                        ${index+1}
-                    </a>
-                </c:forEach>
-
-                <c:if test="${page.index!=page.totalPage-1}">
-                    <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
-                    <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
-                </c:if>
-            </div>
+                    <c:if test="${page.index!=page.totalPage-1}">
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
         <!-- /MAIN CONTENT -->
 
         <!-- ===== KICK MODAL — vanilla JS ===== -->
-        <c:if test="${isTeacher}">
+        <c:if test="${isStaff}">
             <div class="rs-modal-backdrop" id="kickBackdrop">
                 <div class="rs-modal">
                     <div class="rs-modal-header" id="kickModalHeader">
@@ -313,27 +400,52 @@
 </html>
 <script>
     function sort(x) {
-        reset(x);
-
-        let el = document.getElementById("txt" + x);
-        let state = parseInt(el.value);
-        if (isNaN(state))
-            state = 0;
-
-        let newState = (state + 1) % 3;
-        el.value = newState;
-
-        updateIcon(x, newState);
-        document.getElementById("frmSort").submit();
-    }
-
-    function reset(x) {
-        ["FullName"].forEach(f => {
+        ["FullName", "Joined"].forEach(f => {
             if (f !== x) {
                 document.getElementById("txt" + f).value = 0;
                 updateIcon(f, 0);
             }
         });
+
+        let el = document.getElementById("txt" + x);
+        let state = parseInt(el.value);
+        if (isNaN(state))
+            state = 0;
+        let newState = (state + 1) % 3;
+        el.value = newState;
+        updateIcon(x, newState);
+
+        // Keep current search term in the sort form
+        var searchInput = document.getElementById("q");
+        var sortForm = document.getElementById("frmSort");
+        if (sortForm) {
+            var searchHidden = sortForm.querySelector('input[name="txtSearch"]');
+            if (searchHidden)
+                searchHidden.value = searchInput ? searchInput.value.trim() : '';
+            var statusSelect = document.querySelector('#frmSearch select[name="txtStatus"]');
+            var statusHidden = sortForm.querySelector('input[name="txtStatus"]');
+            if (statusHidden && statusSelect)
+                statusHidden.value = statusSelect.value;
+            sortForm.submit();
+        }
+    }
+
+    function updateIcon(field, state) {
+        if (!field || !state)
+            return;
+        const icon = document.getElementById("icon" + field);
+        if (!icon)
+            return;
+        switch (state) {
+            case 1:
+                icon.textContent = "▲";
+                break;
+            case 2:
+                icon.textContent = "▼";
+                break;
+            default:
+                icon.textContent = "⇅";
+        }
     }
     function updateIcon(field, state) {
         const icon = document.getElementById("icon" + field);
@@ -351,38 +463,17 @@
         }
     }
     (function () {
-        var isTeacher = ${not empty isTeacher ? isTeacher : false};
+        var isStaff = ${not empty isStaff ? isStaff : false};
         var classId = '${classId}';
         var ctx = '${pageContext.request.contextPath}';
 
-        var q = document.getElementById('q');
-        var total = document.getElementById('totalCount');
         var tbody = document.querySelector('#rosterTable tbody');
 
         function getRows() {
             return tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
         }
 
-        function filter() {
-            var term = (q ? q.value : '').trim().toLowerCase();
-            var visible = 0;
-            getRows().forEach(function (r) {
-                var match = !term
-                        || (r.dataset.name || '').includes(term)
-                        || (r.dataset.email || '').includes(term)
-                        || (r.dataset.username || '').includes(term);
-                r.style.display = match ? '' : 'none';
-                if (match)
-                    visible++;
-            });
-            if (total)
-                total.textContent = String(visible);
-        }
-
-        if (q)
-            q.addEventListener('input', filter, {passive: true});
-
-        if (isTeacher) {
+        if (isStaff) {
             var btnCopy = document.getElementById('btnCopyEmails');
             if (btnCopy) {
                 btnCopy.addEventListener('click', async function () {
@@ -511,7 +602,6 @@
                         inputUser.value = currentUserId;
                         actionForm.submit();
                         closeModal();
-                        filter();
                     } catch (err) {
                         console.error(err);
                         alert(currentAction === 'restore' ? 'Cannot restore student.' : 'Cannot remove student.');
@@ -520,6 +610,5 @@
             }
         }
 
-        filter();
     })();
 </script>

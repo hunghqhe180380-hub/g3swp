@@ -57,18 +57,30 @@
     <div class="page">
         <div class="wrap">
 
-            <!-- Toolbar: search + total -->
+            <!-- Toolbar: search + multi-type filter + total -->
             <div class="toolbar">
-                <form class="search" action="${ctx}/material/view/material-list" method="get">
+                <form class="search" action="${ctx}/material/view/material-list" method="get" id="frmSearch">
                     <span class="search__icon">
                         <i class="bi bi-search"></i>
                     </span>
                     <input class="search__input" type="search" name="search" id="searchInput"
                            value="<c:out value='${search}'/>"
-                           placeholder="Search materials by title or description...">
+                           placeholder="Search materials by title or description..." autocomplete="off">
                     <input type="hidden" name="classId" value="${classes.id}">
+                    <button class="search__submit" type="submit">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
                 </form>
-                <div class="total">Total: <strong><c:out value="${classes.sum}"/></strong></div>
+
+                <!-- Multi-type pill filters (client-side only) -->
+                <div class="filter-pills" id="filterPills">
+                    <button type="button" class="fpill is-active" data-type="">All</button>
+                    <button type="button" class="fpill fpill-file"  data-type="file"><i class="bi bi-paperclip"></i> File</button>
+                    <button type="button" class="fpill fpill-index" data-type="index"><i class="bi bi-list-task"></i> Index</button>
+                    <button type="button" class="fpill fpill-video" data-type="video"><i class="bi bi-play-btn"></i> Video/Link</button>
+                </div>
+
+                <div class="total">Total: <strong id="totalCount"><c:out value="${classes.sum}"/></strong></div>
             </div>
 
             <!-- Material list -->
@@ -80,8 +92,8 @@
                         <div class="empty">
                             <div class="empty__icon"><i class="bi bi-journal-text"></i></div>
                             <div class="empty__title">No materials yet</div>
-                            <div class="empty__sub">Drop a link, upload a file, or paste an index to get started.</div>
                             <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
+                                <div class="empty__sub">Drop a link, upload a file, or paste an index to get started.</div>
                                 <a class="btn btn-outline-primary" style="margin-top:14px;"
                                    href="${ctx}/material/manage/upload?classId=${classes.id}">
                                     <i class="bi bi-plus-lg"></i> Add material
@@ -92,7 +104,18 @@
 
                     <c:otherwise>
                         <c:forEach items="${materials}" var="material" begin="${page.start}" end="${page.end}">
-                            <div class="material-card" data-title="${fn:toLowerCase(material.title)}">
+                            <c:set var="matType">
+                                <c:choose>
+                                    <c:when test="${not empty material.externalUrl}">video</c:when>
+                                    <c:when test="${not empty material.indexContent}">index</c:when>
+                                    <c:when test="${not empty material.fileUrl}">file</c:when>
+                                    <c:otherwise></c:otherwise>
+                                </c:choose>
+                            </c:set>
+                            <div class="material-card"
+                                 data-title="${fn:toLowerCase(fn:escapeXml(material.title))}"
+                                 data-desc="${fn:toLowerCase(fn:escapeXml(material.description))}"
+                                 data-type="${matType}">
 
                                 <!-- Card header row -->
                                 <div class="card-row">
@@ -233,8 +256,9 @@
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
-
-                <!-- PAGING -->
+            </div>
+            <!-- PAGING -->
+            <c:if test="${not empty materials}">
                 <div class="pager">                    
                     <c:url var="basePath" value="/material/view/material-list">
                         <c:if test="${not empty search}">
@@ -260,7 +284,7 @@
                         <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
                     </c:if>
                 </div>
-            </div>
+            </c:if>
         </div>
     </div>
 
@@ -281,14 +305,56 @@
             }
         }
 
-        // Live search filter
-        document.getElementById('searchInput').addEventListener('input', function () {
-            var term = this.value.trim().toLowerCase();
-            document.querySelectorAll('.material-card').forEach(function (card) {
-                var title = card.getAttribute('data-title') || '';
-                card.style.display = (!term || title.includes(term)) ? '' : 'none';
+        (function () {
+            var pills       = Array.from(document.querySelectorAll('#filterPills .fpill'));
+            var allCards    = Array.from(document.querySelectorAll('.material-card'));
+            var totalEl     = document.getElementById('totalCount');
+            var activeTypes  = new Set();
+
+            function applyFilter() {
+                var types = activeTypes.size > 0 && !activeTypes.has('') ? activeTypes : null;
+                var count = 0;
+
+                allCards.forEach(function (card) {
+                    var ctype = card.dataset.type || '';
+                    var show  = !types || types.has(ctype);
+                    card.style.display = show ? '' : 'none';
+                    if (show) count++;
+                });
+
+                if (totalEl) totalEl.textContent = count;
+            }
+
+            function updateActivePills() {
+                pills.forEach(function (p) {
+                    p.classList.toggle('is-active', activeTypes.has(p.dataset.type));
+                });
+            }
+
+            pills.forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    var t = pill.dataset.type;
+
+                    if (t === '') {
+                        activeTypes.clear();
+                    } else {
+                        activeTypes.delete('');
+                        if (activeTypes.has(t)) {
+                            activeTypes.delete(t);
+                        } else {
+                            activeTypes.add(t);
+                        }
+                        if (activeTypes.size === 0) activeTypes.add('');
+                    }
+
+                    updateActivePills();
+                    applyFilter();
+                });
             });
-        });
+
+            updateActivePills();
+            applyFilter();
+        })();
     </script>
 
 </body>
@@ -316,8 +382,7 @@
         font-weight:700;
         color:#334155;
         text-decoration:none;
-        transition:border-color .12s,background .12s,color .12s;
-        user-select:none;
+        transition:border-color .12s,background .12s,color .12s;        
     }
     .pg:hover{
         border-color:#94a3b8;

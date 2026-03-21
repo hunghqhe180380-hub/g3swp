@@ -144,7 +144,7 @@
                                     <td class="actions">
                                         <div class="btnstack">
                                             <a class="btn-mini" href="${ctx}/material/view/material-list?classId=${cl.id}&index=${page.index}">Materials</a>
-                                            <a class="btn-mini" href="${ctx}/admin/assignment-list?classId=${cl.id}">Assignments</a>
+                                            <a class="btn-mini" href="${ctx}/assignment/view/list-assignment?classId=${cl.id}">Assignments</a>
                                             <a class="btn-mini" href="${ctx}/classroom/view/student-list?classId=${cl.id}">Students</a>
 
                                             <c:choose>
