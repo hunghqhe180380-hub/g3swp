@@ -126,7 +126,7 @@ public class ListAssignmentController extends HttpServlet {
 
             int usedAttempts = attemptDAO.getAttemptCount(a.getId(), userId);
 
-            List<SubmissionListItem> allHistory = attemptDAO.getSubmissionList(String.valueOf(a.getId()));
+            List<SubmissionListItem> allHistory = attemptDAO.getSubmissionList(null,null,String.valueOf(a.getId()));
             List<SubmissionListItem> studentHistory = new ArrayList<>();
 
             for (SubmissionListItem h : allHistory) {

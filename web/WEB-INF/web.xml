@@ -381,6 +381,10 @@
         <param-name>paging.assignment</param-name>
         <param-value>10</param-value>
     </context-param>
+    <context-param>
+        <param-name>paging.submission</param-name>
+        <param-value>20</param-value>
+    </context-param>
     <servlet>
         <servlet-name>ConfirmEmailChangeController</servlet-name>
         <servlet-class>controller.account.ConfirmEmailChangeController</servlet-class>

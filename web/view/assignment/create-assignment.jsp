@@ -47,7 +47,7 @@
                 <div class="ca-layout">
                     <section class="ca-board">
                         <form id="assignmentForm" action="#" method="post">
-                            <input type="hidden" id="activeMode" value="auto">
+                            <input type="hidden" name="modeCreate" id="activeMode" value="auto">
 
                             <!-- Assignment details -->
                             <div class="ca-section">
@@ -103,6 +103,7 @@
 
                             <!-- AUTO MODE -->
                             <div class="ca-mode-panel" id="autoModePanel">
+                                <input type="hidden" name="modeCreate" id="activeMode" value="manual">
                                 <div class="ca-section">
                                     <div class="ca-section__head">
                                         <div class="ca-section__title">
@@ -585,6 +586,7 @@
                     manualSelectedWrap.innerHTML = selected.map(q =>
                         '<div class="ca-selected-card">' +
                                 '   <div class="ca-selected-card__main">' +
+                                '<input type="hidden" name="questionId" value="' + q.id + '">' +
                                 '       <div class="ca-selected-card__title">' + escapeHtml(q.prompt) + '</div>' +
                                 '       <div class="ca-selected-card__meta">' +
                                 '           <span class="ca-mini-badge">' + escapeHtml(q.type) + '</span>' +
@@ -593,7 +595,7 @@
                                 '   </div>' +
                                 '   <div class="ca-selected-card__side">' +
                                 '       <label>Points</label>' +
-                                '       <input class="ca-control ca-manual-point" data-question-id="' + q.id + '" type="number" min="1" value="' + (q.points || '') + '">' +
+                                '       <input name="pointOfQuestion"  class="ca-control ca-manual-point" data-question-id="' + q.id + '" type="number" min="1" value="' + (q.points || '') + '">' +
                                 '       <button type="button" class="ca-icon-btn" data-remove-question="' + q.id + '">' +
                                 '           <i class="bi bi-trash3"></i>' +
                                 '       </button>' +

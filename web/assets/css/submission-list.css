@@ -130,3 +130,141 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .bg-final {
     background: linear-gradient(90deg, #34d399, #10b981);
 }
+
+/* Pager */
+.pager{
+    margin-top: 14px;
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+.pg{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:36px;
+    height:36px;
+    padding:0 10px;
+    border-radius:8px;
+    border:1px solid #dee2e6;
+    background:#fff;
+    font-size:14px;
+    font-weight:700;
+    color:#334155;
+    text-decoration:none;
+    transition:border-color .12s,background .12s,color .12s;
+    user-select:none;
+}
+.pg:hover{
+    border-color:#94a3b8;
+    color:#0f172a;
+}
+.pg.is-active{
+    background:#2563eb;
+    border-color:#2563eb;
+    color:#fff;
+}
+/* Restore button */
+.rs-btn-restore-outline{
+    background: transparent;
+    border-color: #198754;
+    color: #198754;
+}
+.rs-btn-restore-outline:hover{
+    background: #198754;
+    color: #fff;
+}
+.rs-btn-restore{
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+.rs-btn-restore:hover{
+    background: #157347;
+    border-color: #146c43;
+}
+.rs-modal-header.is-restore{
+    background: #198754;
+}
+
+/* ===== Search Form ===== */
+.rs-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 6px 10px;
+    width: 260px;
+}
+
+.rs-search__icon { color: #6c757d; }
+
+.rs-search__input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    background: transparent;
+    color: #212529;
+}
+
+.rs-search__submit {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    transition: color .12s;
+}
+
+.rs-search__submit:hover { color: #2563eb; }
+
+/* ===== Filter Pills ===== */
+.filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.fpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.fpill:hover { border-color: #9ca3af; color: #111827; }
+
+.fpill.is-active { background: #2563eb; border-color: #2563eb; color: #fff; }
+.fpill.is-active:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+.fpill-inprogress.is-active { background: #374151; border-color: #374151; }
+.fpill-inprogress.is-active:hover { background: #1f2937; border-color: #1f2937; }
+
+.fpill-submitted.is-active  { background: #4f46e5; border-color: #4f46e5; }
+.fpill-submitted.is-active:hover { background: #4338ca; border-color: #4338ca; }
+
+.fpill-graded.is-active     { background: #16a34a; border-color: #16a34a; }
+.fpill-graded.is-active:hover { background: #15803d; border-color: #15803d; }
+
+.fpill-late.is-active       { background: #d97706; border-color: #d97706; }
+.fpill-late.is-active:hover  { background: #b45309; border-color: #b45309; }
+
+.fpill-violated.is-active   { background: #dc2626; border-color: #dc2626; }
+.fpill-violated.is-active:hover { background: #b91c1c; border-color: #b91c1c; }

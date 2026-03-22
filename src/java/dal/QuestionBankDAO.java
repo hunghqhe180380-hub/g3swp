@@ -91,21 +91,22 @@ public class QuestionBankDAO extends DBContext {
 
     //get question by it's id
     //get all question in question bank
-    public QuestionBank getQuestionById(String questionId) {
+    public QuestionBank getQuestionById(String questionId, String teacherId, double settingPoint) {
         QuestionBank qBank = new QuestionBank();
         try {
             String sql = "SELECT [Id]\n"
                     + "      ,[SubjectId]\n"
                     + "      ,[Type]\n"
                     + "      ,[Prompt]\n"
-                    + "      ,[Level]\n"
+                    + "      ,[Chapter]\n"
                     + "      ,[CreatedById]\n"
                     + "      ,[CreatedAt]\n"
                     + "      ,[Status]\n"
                     + "  FROM [dbo].[QuestionBank]\n"
-                    + "Where Id = ?";
+                    + "Where Id = ? And CreatedById = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, questionId);
+            statement.setObject(2, teacherId);
             resultSet = statement.executeQuery();
             QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
             if (resultSet.next()) {
@@ -113,11 +114,12 @@ public class QuestionBankDAO extends DBContext {
                         resultSet.getString("SubjectId"),
                         resultSet.getInt("Type"),
                         resultSet.getString("Prompt"),
-                        resultSet.getInt("Level"),
+                        resultSet.getInt("Chapter"),
                         resultSet.getString("CreatedById"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         resultSet.getInt("Status"),
                         qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
+                qBank.setSettingPoint(settingPoint);
             }
         } catch (Exception e) {
             e.printStackTrace();

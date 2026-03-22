@@ -20,7 +20,7 @@ public class AssignmentAttemptDAO extends DBContext {
     PreparedStatement statement;
     ResultSet resultSet;
 
-    public List<SubmissionListItem> getSubmissionList(String assignmentId) {
+    public List<SubmissionListItem> getSubmissionList(String search, String statuses, String assignmentId) {
         List<SubmissionListItem> list = new ArrayList<>();
         try {
             // Main query to get attempts
@@ -39,11 +39,36 @@ public class AssignmentAttemptDAO extends DBContext {
                     + "at.MaxScore "
                     + "FROM AssignmentAttempts at "
                     + "JOIN Users u ON at.UserId = u.Id "
-                    + "WHERE at.AssignmentId = ? "
-                    + "ORDER BY at.SubmittedAt DESC, at.AttemptNumber DESC";
+                    + "WHERE at.AssignmentId = ? ";
+
+            if (search != null && !search.trim().isEmpty()) {
+                sql += " AND (LOWER(u.FullName) LIKE ? OR LOWER(u.Email) LIKE ?) ";
+            }
+            if (statuses != null && !statuses.trim().isEmpty()) {
+                String[] arr = statuses.split(",");
+                StringBuilder sb = new StringBuilder(" AND at.Status IN (");
+                for (int i = 0; i < arr.length; i++) {
+                    sb.append("?");
+                    if (i < arr.length - 1) sb.append(",");
+                }
+                sb.append(")");
+                sql += sb;
+            }
+            sql += " ORDER BY at.SubmittedAt DESC, at.AttemptNumber DESC";
 
             statement = connection.prepareStatement(sql);
             statement.setInt(1, Integer.parseInt(assignmentId));
+            int paramIndex = 2;
+            if (search != null && !search.trim().isEmpty()) {
+                String pattern = "%" + search.toLowerCase() + "%";
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
+            }
+            if (statuses != null && !statuses.trim().isEmpty()) {
+                for (String s : statuses.split(",")) {
+                    statement.setInt(paramIndex++, Integer.parseInt(s.trim()));
+                }
+            }
             resultSet = statement.executeQuery();
 
             // Read ALL rows from resultSet first, then call helper methods
@@ -235,6 +260,7 @@ public class AssignmentAttemptDAO extends DBContext {
 
     /**
      * Create a new attempt for a student taking an assignment
+     *
      * @param status - 1=InProgress, 2=Submitted, 5=Violated
      */
     public int createAttempt(int assignmentId, String userId, int attemptNumber, int durationMinutes, int status) {
@@ -265,7 +291,8 @@ public class AssignmentAttemptDAO extends DBContext {
     }
 
     /**
-     * Get attempt count for a user/assignment (to calculate next attempt number)
+     * Get attempt count for a user/assignment (to calculate next attempt
+     * number)
      */
     public int getAttemptCount(int assignmentId, String userId) {
         try {
