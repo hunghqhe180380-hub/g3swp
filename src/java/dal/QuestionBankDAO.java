@@ -255,7 +255,7 @@ public class QuestionBankDAO extends DBContext {
         List<QuestionBank> listQuestionBank = new ArrayList<>();
         try {
             String sql = "SELECT *\n"
-                    + "FROM [POETWebDB].[dbo].[QuestionBank]\n"
+                    + "FROM [dbo].[QuestionBank]\n"
                     + "Where [SubjectId] = ?\n"
                     + "And [CreatedById] = ?\n"
                     + "And [Status] = ?";
