@@ -14,21 +14,21 @@ public class AssignmentQuestion {
     private String prompt;
     private double points;
     private int order;
-    private int level;
+    private int chapter;
     private String createdAt;
     private List<AssignmentChoice> listAssignmentChoice;
 
     public AssignmentQuestion() {
     }
 
-    public AssignmentQuestion(int id, int assignmentId, String type, String prompt, double points, int order, int level, String createdAt, List<AssignmentChoice> listAssignmentChoice) {
+    public AssignmentQuestion(int id, int assignmentId, String type, String prompt, double points, int order, int chapter, String createdAt, List<AssignmentChoice> listAssignmentChoice) {
         this.id = id;
         this.assignmentId = assignmentId;
         this.type = type;
         this.prompt = prompt;
         this.points = points;
         this.order = order;
-        this.level = level;
+        this.chapter = chapter;
         this.createdAt = createdAt;
         this.listAssignmentChoice = listAssignmentChoice;
     }
@@ -81,12 +81,12 @@ public class AssignmentQuestion {
         this.order = order;
     }
 
-    public int getLevel() {
-        return level;
+    public int getChapter() {
+        return chapter;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setChapter(int chapter) {
+        this.chapter = chapter;
     }
 
     public String getCreatedAt() {
