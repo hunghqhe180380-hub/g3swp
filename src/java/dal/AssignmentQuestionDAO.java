@@ -56,7 +56,6 @@ public class AssignmentQuestionDAO extends DBContext {
                         resultSet.getInt("Order"),
                         resultSet.getInt("Chapter"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        resultSet.getString("SourceType"),
                         asgChoiceDAO.getListChoiceByQuestionId(resultSet.getInt("Id")));
 
                 list.add(q);
@@ -79,8 +78,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "            [Points],\n"
                     + "            [Order],\n"
                     + "            [Chapter],\n"
-                    + "            [CreatedAt],\n"
-                    + "            [SourceType])\n"
+                    + "            [CreatedAt])\n"
                     + "VALUES\n"
                     + "(\n"
                     + "    ?,  -- AssignmentId\n"
@@ -93,9 +91,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "     WHERE AssignmentId = ?),  -- auto order\n"
                     + "\n"
                     + "    ?,  -- Chapter\n"
-                    + "    GETDATE(),\n"
-                    + "    ?   -- SourceType\n"
-                    + ");";
+                    + "    GETDATE());";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, assignmentId);
             statement.setObject(2, qBank.getType());
@@ -103,7 +99,6 @@ public class AssignmentQuestionDAO extends DBContext {
             statement.setObject(4, qBank.getSettingPoint());
             statement.setObject(5, assignmentId);
             statement.setObject(6, qBank.getChapter());
-            statement.setObject(7, "QuestionBank");
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

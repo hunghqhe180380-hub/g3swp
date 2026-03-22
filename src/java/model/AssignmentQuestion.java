@@ -16,13 +16,12 @@ public class AssignmentQuestion {
     private int order;
     private int level;
     private String createdAt;
-    private String sourceType;
     private List<AssignmentChoice> listAssignmentChoice;
 
     public AssignmentQuestion() {
     }
 
-    public AssignmentQuestion(int id, int assignmentId, String type, String prompt, double points, int order, int level, String createdAt, String sourceType, List<AssignmentChoice> listAssignmentChoice) {
+    public AssignmentQuestion(int id, int assignmentId, String type, String prompt, double points, int order, int level, String createdAt, List<AssignmentChoice> listAssignmentChoice) {
         this.id = id;
         this.assignmentId = assignmentId;
         this.type = type;
@@ -31,7 +30,6 @@ public class AssignmentQuestion {
         this.order = order;
         this.level = level;
         this.createdAt = createdAt;
-        this.sourceType = sourceType;
         this.listAssignmentChoice = listAssignmentChoice;
     }
 
@@ -99,13 +97,7 @@ public class AssignmentQuestion {
         this.createdAt = createdAt;
     }
 
-    public String getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
-    }
+  
 
     public List<AssignmentChoice> getListAssignmentChoice() {
         return listAssignmentChoice;
