@@ -77,9 +77,10 @@
                 <!-- Multi-type pill filters (client-side) -->
                 <div class="filter-pills" id="filterPills">
                     <button type="button" class="fpill is-active" data-type="">All</button>
-                    <button type="button" class="fpill fpill-scq"   data-type="1"><i class="bi bi-check2-square"></i> SCQ</button>
-                    <button type="button" class="fpill fpill-mcq"   data-type="2"><i class="bi bi-list-ul"></i> MCQ</button>
-                    <button type="button" class="fpill fpill-essay"  data-type="3"><i class="bi bi-card-text"></i> Essay</button>
+                    <button type="button" class="fpill fpill-scq"   data-type="SCQ"><i class="bi bi-check2-square"></i> SCQ</button>
+                    <button type="button" class="fpill fpill-mcq"   data-type="MCQ"><i class="bi bi-list-ul"></i> MCQ</button>
+                    <button type="button" class="fpill fpill-essay"  data-type="Essay"><i class="bi bi-card-text"></i> Essay</button>
+                    <button type="button" class="fpill fpill-mixed"  data-type="Mixed"><i class="bi bi-stack"></i> Mixed</button>
                 </div>
 
                 <div style="font-size:14px;color:#6c757d;white-space:nowrap;">
@@ -123,7 +124,7 @@
                     <c:forEach items="${listAssignment}" var="a" begin="${page.start}" end="${page.end}">
 
                         <div class="card assignment-card p-3"
-                             data-type="${a.type}"
+                             data-type="${a['type']}"
                              data-title="${fn:toLowerCase(fn:escapeXml(a.title))}">
 
                             <div class="d-flex justify-content-between">
@@ -146,14 +147,17 @@
 
                                         <i class="bi bi-arrow-repeat"></i> Attempts: ${a.maxAttempts}
 
-                                        <span class="badge badge-type ms-2">                                            
-                                            <c:if test="${a.type == 'MCQ'}">
+                                        <span class="badge badge-type ms-2">
+                                            <c:if test="${a['type'] == 'SCQ'}">
+                                                SCQ
+                                            </c:if>
+                                            <c:if test="${a['type'] == 'MCQ'}">
                                                 MCQ
                                             </c:if>
-                                            <c:if test="${a.type == 'Essay'}">
+                                            <c:if test="${a['type'] == 'Essay'}">
                                                 Essay
                                             </c:if>
-                                            <c:if test="${a.type == 'Mixed'}">
+                                            <c:if test="${a['type'] == 'Mixed'}">
                                                 Mixed
                                             </c:if>
                                         </span>
