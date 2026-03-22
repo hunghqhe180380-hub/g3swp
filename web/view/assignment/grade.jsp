@@ -98,37 +98,44 @@
                     <!-- ===== RIGHT CONTENT ===== -->
                     <div class="col-lg-8">
 
-                        <form method="post" id="gradeForm">
+                        <form method="post" id="gradeForm" action="/POET/submission/grade">
 
                             <input type="hidden" name="attemptId" value="${vm.attemptId}" />
                             <input type="hidden" name="assignmentId" value="${vm.assignmentId}" />
+                            <input type="hidden" name="classId" value="${vm.classId}"/>
 
                             <!-- ===== MCQ ===== -->
                             <div class="card shadow-sm border-0 mb-3">
                                 <div class="card-header fw-semibold">Multiple Choice Questions</div>
 
                                 <div class="card-body">
-
                                     <c:forEach var="q" items="${vm.mcqs}" varStatus="i">
-
                                         <div class="mcq-block">
-
-                                            <div class="fw-semibold">
-                                                Q${i.index + 1}: ${q.questionText}
+                                            <!-- Header câu hỏi -->
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-info-subtle text-info me-2">MCQ</span>
+                                                <span class="fw-bold">Question ${i.index + 1}</span>
                                             </div>
 
-                                            <div class="mt-2">
+                                            <div class="fw-semibold mb-3">
+                                                ${q.prompt}
+                                            </div>
+
+                                            <!-- Container chia cột -->
+                                            <div class="choices-container">
                                                 <c:forEach var="c" items="${q.choices}">
+                                                    <%-- Logic class: 
+                                                         - Nếu là đáp án đúng: dùng class 'correct'
+                                                         - Nếu sinh viên chọn mà sai: dùng class 'student-wrong'
+                                                         - Bạn hãy xử lý logic gán c.cssClass này trong Controller/ViewModel
+                                                    --%>
                                                     <div class="choice ${c.cssClass}">
                                                         ${c.content}
                                                     </div>
                                                 </c:forEach>
                                             </div>
-
                                         </div>
-
                                     </c:forEach>
-
                                 </div>
                             </div>
 
@@ -140,25 +147,20 @@
 
                                     <c:forEach var="e" items="${vm.essays}" varStatus="i">
                                         <div class="essay-block mb-4">
-                                            <!-- Header: Câu số và Điểm tối đa -->
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="fw-semibold text-primary">Q${i.index + 1}</div>
                                                 <div class="text-muted small">Max ${e.maxPoints}</div>
                                             </div>
 
-                                            <!-- Nội dung câu hỏi -->
                                             <div class="fw-bold mt-1">${e.prompt}</div>
 
-                                            <!-- Câu trả lời của sinh viên -->
                                             <div class="text-muted small mt-3">Student answer</div>
                                             <div class="essay-answer mt-1 mb-3 border-start ps-3 py-2 bg-light">
                                                 ${(e.studentAnswer == null || e.studentAnswer.trim() == "") ? "<i>No answer provided.</i>" : e.studentAnswer}
                                             </div>
 
-                                            <!-- Hidden ID để gửi về server -->
                                             <input type="hidden" name="questionId" value="${e.questionId}" />
 
-                                            <!-- Phần nhập điểm và nhận xét riêng cho từng câu -->
                                             <div class="row g-3">
                                                 <div class="col-md-4">
                                                     <label class="form-label small fw-semibold text-secondary">Score</label>
@@ -290,6 +292,83 @@
         background: #fafafa;
         padding: 8px;
         border-radius: 6px;
+    }
+
+    /* Layout tổng cho MCQ */
+    .mcq-block {
+        margin-bottom: 2rem;
+        padding: 15px;
+    }
+
+    /* Container chứa các lựa chọn - chia 2 cột */
+    .choices-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Chia làm 2 cột bằng nhau */
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    /* Style chung cho mỗi lựa chọn */
+    .choice {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background-color: #fff;
+        transition: all 0.2s;
+        position: relative;
+        font-size: 0.95rem;
+    }
+
+    /* Dấu chấm tròn giả lập Radio button */
+    .choice::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    /* Lựa chọn của sinh viên nhưng SAI */
+    .choice.student-wrong {
+        border-color: #f8d7da;
+        background-color: #fff8f8;
+        color: #dc3545;
+    }
+    .choice.student-wrong::before {
+        background-color: #dc3545;
+    }
+    .choice.student-wrong::after {
+        content: "Student Choice";
+        position: absolute;
+        right: 15px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    /* Lựa chọn ĐÚNG */
+    .choice.correct {
+        border-color: #28a745;
+        background-color: #f4fff6;
+        color: #28a745;
+    }
+    .choice.correct::before {
+        background-color: #28a745;
+    }
+    .choice.correct::after {
+        content: "Correct";
+        position: absolute;
+        right: 15px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    /* Nếu sinh viên chọn ĐÚNG luôn (vừa correct vừa student-choice) */
+    .choice.correct.student-choice {
+        border-width: 2px;
     }
 </style>
 

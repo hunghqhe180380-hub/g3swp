@@ -11,7 +11,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.GradeAttemptVM;
+import model.GradeEssayItem;
 
 /**
  *
@@ -76,19 +80,56 @@ public class GradeServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        //processRequest(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int attemptId = Integer.parseInt(request.getParameter("attemptId"));
+        int assignmentId = Integer.parseInt(request.getParameter("assignmentId"));
+        int classId = Integer.parseInt(request.getParameter("classId"));
+        String overallComment = request.getParameter("teacherComment");
 
-        String[] questionIds = request.getParameterValues("questionId");
+        String[] qIds = request.getParameterValues("questionId");
         String[] scores = request.getParameterValues("score");
         String[] comments = request.getParameterValues("comment");
-        AssignmentDAO dao = new AssignmentDAO();
 
-        dao.saveEssayGrades(attemptId, questionIds, scores, comments);
+        List<GradeEssayItem> essays = new ArrayList<>();
+        double totalEssayScore = 0;
 
-        response.sendRedirect("submissions?assignmentId=" + request.getParameter("assignmentId"));
+        if (qIds != null) {
+            for (int i = 0; i < qIds.length; i++) {
+                double s = Double.parseDouble(scores[i].replace(",", "."));
+                essays.add(new GradeEssayItem(
+                        Integer.parseInt(qIds[i]),
+                        s,
+                        comments[i]
+                ));
+                totalEssayScore += s;
+            }
+        }
+
+        AssignmentDAO assignmentDAO = new AssignmentDAO();
+        double autoScore = 0;
+        double finalScore = 0;
+
+        try {
+             autoScore = assignmentDAO.getAutoScoreByAttemptId(attemptId);
+             finalScore = autoScore + totalEssayScore;
+
+            assignmentDAO.updateGrade(attemptId, overallComment, finalScore, essays);
+
+            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId+  "&assignmentId=" + assignmentId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Lỗi cơ sở dữ liệu khi lưu điểm." + e);
+        }
+         finalScore = autoScore + totalEssayScore;
+
+        // 4. Gọi DAO thực thi
+        try {
+            assignmentDAO.updateGrade(attemptId, overallComment, finalScore, essays);
+            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId+  "&assignmentId=" + assignmentId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(500, "Lỗi khi lưu điểm.");
+        }
     }
 
     /**
