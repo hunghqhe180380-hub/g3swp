@@ -28,7 +28,7 @@ public class QuestionBankDAO extends DBContext {
                     + "      ,[SubjectId]\n"
                     + "      ,[Type]\n"
                     + "      ,[Prompt]\n"
-                    + "      ,[Level]\n"
+                    + "      ,[Chapter]\n"
                     + "      ,[CreatedById]\n"
                     + "      ,[CreatedAt]\n"
                     + "      ,[Status]\n"
@@ -41,7 +41,7 @@ public class QuestionBankDAO extends DBContext {
                         resultSet.getString("SubjectId"),
                         resultSet.getInt("Type"),
                         resultSet.getString("Prompt"),
-                        resultSet.getInt("Level"),
+                        resultSet.getInt("Chapter"),
                         resultSet.getString("CreatedById"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         resultSet.getInt("Status"),
