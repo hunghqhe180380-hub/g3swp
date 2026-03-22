@@ -61,37 +61,42 @@
                                 <div class="ca-grid ca-grid--2">
                                     <div class="ca-field">
                                         <label for="assignmentTitle">Assignment Title</label>
-                                        <input id="assignmentTitle" class="ca-control" type="text" placeholder="Enter assignment title">
+                                        <input id="assignmentTitle" name="title" class="ca-control" type="text" placeholder="Enter assignment title">
+                                        <input type="text" name="classId" value="${requestScope.classId}" hidden readonly>
                                     </div>
-
+                                    <div class="ca-field">
+                                        <label for="assignmentTitle">Assignment Description</label>
+                                        <input id="assignmentTitle" name="description" class="ca-control" type="text" placeholder="Enter assignment description">
+                                    </div>
                                     <div class="ca-field">
                                         <label for="subjectReadonly">Subject</label>
-                                        <input id="subjectReadonly" class="ca-control" type="text" value="Tiếng Anh" readonly>
+                                        <input id="subjectReadonly" class="ca-control" type="text" value="${subject.name}" readonly>
+
                                     </div>
 
                                     <div class="ca-field">
                                         <label for="totalPoints">Total Points (1 - 100)</label>
-                                        <input id="totalPoints" class="ca-control" type="number" min="1" max="100" value="100">
+                                        <input id="totalPoints" class="ca-control" name="maxPoint" type="number" min="1" max="100" value="100">
                                     </div>
 
                                     <div class="ca-field">
                                         <label for="attemptCount">Number of Attempts</label>
-                                        <input id="attemptCount" class="ca-control" type="number" min="1" value="1">
+                                        <input id="attemptCount" name="maxAttempts" class="ca-control" type="number" min="1" value="1">
                                     </div>
 
                                     <div class="ca-field">
                                         <label for="openTime">Open Time</label>
-                                        <input id="openTime" class="ca-control" type="datetime-local">
+                                        <input id="openTime" name="openAt" class="ca-control" type="datetime-local">
                                     </div>
 
                                     <div class="ca-field">
                                         <label for="closeTime">Close Time</label>
-                                        <input id="closeTime" class="ca-control" type="datetime-local">
+                                        <input id="closeTime" name="closeAt" class="ca-control" type="datetime-local">
                                     </div>
 
                                     <div class="ca-field">
                                         <label for="durationMinutes">Duration (minutes)</label>
-                                        <input id="durationMinutes" class="ca-control" type="number" min="1" value="45">
+                                        <input id="durationMinutes" name="durationMinutes" class="ca-control" type="number" min="1" value="45">
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +137,7 @@
                                     <div class="ca-grid ca-grid--3">
                                         <div class="ca-field">
                                             <label for="manualType">Question Type</label>
-                                            <select id="manualType" class="ca-control">
+                                            <select id="manualType" name="typeQuestionGroupManual" class="ca-control">
                                                 <option value="all">All</option>
                                                 <option value="SCQ">SCQ</option>
                                                 <option value="MCQ">MCQ</option>
@@ -274,21 +279,30 @@
 
         <!-- MOCK QUESTION BANK for current subject -->
         <div class="d-none" id="questionSeeds">
-            <div class="ca-seed" data-id="201" data-type="SCQ" data-chapter="1" data-subject="Tiếng Anh" data-prompt="Choose the correct synonym of the word rapid."></div>
-            <div class="ca-seed" data-id="202" data-type="MCQ" data-chapter="1" data-subject="Tiếng Anh" data-prompt="Select all countable nouns in the list."></div>
-            <div class="ca-seed" data-id="203" data-type="Essay" data-chapter="1" data-subject="Tiếng Anh" data-prompt="Write a short paragraph about your best friend."></div>
-            <div class="ca-seed" data-id="204" data-type="SCQ" data-chapter="2" data-subject="Tiếng Anh" data-prompt="Choose the correct passive voice sentence."></div>
-            <div class="ca-seed" data-id="205" data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-prompt="Select all correct relative pronouns for the blanks."></div>
+            <c:forEach items="${listQuestion}" var="question">
+                <div class="ca-seed" data-id="${question.id}" 
+                     data-type="
+                     <c:choose>
+                         <c:when test='${question.type == 1}'>MCQ</c:when>
+                         <c:when test='${question.type == 2}'>SCQ</c:when>
+                         <c:when test='${question.type == 3}'>Essay</c:when>
+                     </c:choose>
+                     "
+                     data-chapter="${question.chapter}" data-subject="${subject.name}" data-prompt="${question.prompt}"></div>
+            </c:forEach>
+<!--            <div class="ca-seed" data-id="202" data-type="MCQ" data-chapter="1" data-subject="${subject.name}" data-prompt="Select all countable nouns in the list."></div>
+            <div class="ca-seed" data-id="203" data-type="Essay" data-chapter="1" data-subject="${subject.name}" data-prompt="Write a short paragraph about your best friend."></div>
+            <div class="ca-seed" data-id="204" data-type="SCQ" data-chapter="2" data-subject="${subject.name}" data-prompt="Choose the correct passive voice sentence."></div>
+            <div class="ca-seed" data-id="205" data-type="MCQ" data-chapter="2" data-subject="${subject.name}" data-prompt="Select all correct relative pronouns for the blanks."></div>
             <div class="ca-seed" data-id="206" data-type="Essay" data-chapter="2" data-subject="Tiếng Anh" data-prompt="Explain the structure of a formal email."></div>
             <div class="ca-seed" data-id="207" data-type="SCQ" data-chapter="3" data-subject="Tiếng Anh" data-prompt="Choose the best title for the reading passage."></div>
             <div class="ca-seed" data-id="208" data-type="MCQ" data-chapter="3" data-subject="Tiếng Anh" data-prompt="Select the statements that are true according to the passage."></div>
-            <div class="ca-seed" data-id="209" data-type="Essay" data-chapter="3" data-subject="Tiếng Anh" data-prompt="Summarize the reading passage in your own words."></div>
             <div class="ca-seed" data-id="210" data-type="SCQ" data-chapter="4" data-subject="Tiếng Anh" data-prompt="Choose the correctly punctuated sentence."></div>
             <div class="ca-seed" data-id="211" data-type="MCQ" data-chapter="4" data-subject="Tiếng Anh" data-prompt="Select all topic sentences suitable for the paragraph."></div>
             <div class="ca-seed" data-id="212" data-type="Essay" data-chapter="4" data-subject="Tiếng Anh" data-prompt="Write an opinion paragraph about school uniforms."></div>
             <div class="ca-seed" data-id="213" data-type="SCQ" data-chapter="5" data-subject="Tiếng Anh" data-prompt="Choose the word with the different stress pattern."></div>
             <div class="ca-seed" data-id="214" data-type="MCQ" data-chapter="5" data-subject="Tiếng Anh" data-prompt="Select all transition signals for contrast."></div>
-            <div class="ca-seed" data-id="215" data-type="Essay" data-chapter="5" data-subject="Tiếng Anh" data-prompt="Write a letter inviting your friend to a birthday party."></div>
+            <div class="ca-seed" data-id="215" data-type="Essay" data-chapter="5" data-subject="Tiếng Anh" data-prompt="Write a letter inviting your friend to a birthday party."></div>-->
         </div>
 
         <script>
@@ -396,6 +410,7 @@
                     wrapper.dataset.selectedChapters = '';
 
                     wrapper.innerHTML =
+                            '<input type="hidden" class="ca-group-chapters-hidden" name="chapterQuestionGroup">' +
                             '<div class="ca-auto-group__head">' +
                             '   <div class="ca-auto-group__title">Question Group #' + groupId + '</div>' +
                             '   <button type="button" class="ca-remove-btn">Remove</button>' +
@@ -403,20 +418,20 @@
                             '<div class="ca-grid ca-grid--4">' +
                             '   <div class="ca-field">' +
                             '       <label>Question Type</label>' +
-                            '       <select class="ca-control ca-group-type">' +
+                            '       <select name="typeQuestionGroup" class="ca-control ca-group-type">' +
                             '           <option value="">Select type</option>' +
-                            '           <option value="SCQ">SCQ</option>' +
-                            '           <option value="MCQ">MCQ</option>' +
-                            '           <option value="Essay">Essay</option>' +
+                            '           <option value="1">SCQ</option>' +
+                            '           <option value="2">MCQ</option>' +
+                            '           <option value="3">Essay</option>' +
                             '       </select>' +
                             '   </div>' +
                             '   <div class="ca-field">' +
                             '       <label>Number of Questions</label>' +
-                            '       <input class="ca-control ca-group-count" type="number" min="1" value="">' +
+                            '       <input name="numberQuestionGroup" class="ca-control ca-group-count" type="number" min="1" value="">' +
                             '   </div>' +
                             '   <div class="ca-field">' +
                             '       <label>Points per Question</label>' +
-                            '       <input class="ca-control ca-group-points" type="number" min="1" value="">' +
+                            '       <input name="pointPerQuestion" class="ca-control ca-group-points" type="number" min="1" value="">' +
                             '   </div>' +
                             '   <div class="ca-field">' +
                             '       <label>Estimated Matched</label>' +
@@ -445,6 +460,8 @@
                     const selectedChapters = [];
 
                     function updateGroup() {
+                        const hiddenInput = wrapper.querySelector('.ca-group-chapters-hidden');
+                        hiddenInput.value = selectedChapters.join(',');
                         wrapper.dataset.selectedChapters = selectedChapters.slice().sort((a, b) => a - b).join(',');
 
                         const type = typeEl.value;
@@ -500,7 +517,7 @@
                         });
                         updateGroup();
                     }
-
+                    updateGroup()
                     return wrapper;
                 }
 
@@ -711,7 +728,7 @@
                     summaryGroupCount.textContent = mode === 'auto' ? getAutoGroupsData().length : 0;
                     summarySelectedQuestions.textContent = mode === 'manual' ? getSelectedManualQuestions().length : 0;
                     summaryEstimatedQuestions.textContent = getEstimatedQuestionCount();
-                    
+
                     let percent = 0;
                     if (maxPoints > 0) {
                         percent = Math.round((current / maxPoints) * 100);
@@ -833,6 +850,9 @@
                     }
 
                     alert('Frontend validation passed. Backend create-assignment flow will be connected later.');
+                    if (valid) {
+                        document.getElementById('assignmentForm').submit();
+                    }
                 });
 
                 [

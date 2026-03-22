@@ -28,6 +28,7 @@ import model.Assignment;
 import model.AssignmentQuestion;
 import model.Classroom;
 import model.QuestionBank;
+import model.Subject;
 
 /**
  *
@@ -77,6 +78,24 @@ public class CreateAssignmentController extends HttpServlet {
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
         request.setAttribute("classId", classId);
+        
+        ClassroomDAO clsDAO = new ClassroomDAO();
+        Classroom cls = clsDAO.getClassInfoByClassId(classId);
+        
+        //get subject's name and id
+        SubjectDAO subjectDAO = new SubjectDAO();
+        Subject subject = new Subject();
+        subject.setName(subjectDAO.getSubjectNameById(cls.getSubjectId()));
+        subject.setId(cls.getSubjectId());
+        
+        //get list question from question bank of this subject by subject'id
+        QuestionBankDAO qBankDAO = new QuestionBankDAO();
+        List<QuestionBank> listQuestion = qBankDAO.getListQuestionBankByTeacherAndSubject(subject.getId(), user.getUserID(), 1);
+        
+        /////
+        request.setAttribute("listQuestion", listQuestion);
+        request.setAttribute("subject", subject);
+        
         if (user.getRole().equalsIgnoreCase("teacher")) {
             request.getRequestDispatcher("/view/assignment/create-assignment.jsp").forward(request, response);
             return;
@@ -124,13 +143,16 @@ public class CreateAssignmentController extends HttpServlet {
 
         AssignmentDAO asgDAO = new AssignmentDAO();
 
-        asgDAO.createAssignment(asg);
-
-        response.sendRedirect(request.getContextPath()
-                + "/assignment/view/list-assignment?classId=" + classId);
-        /*
-            create with auto mode => show preview first
-         */
+       int newAssignmentId = asgDAO.createAssignment(asg);
+       
+       //add question to assignment
+       request.setAttribute("newAssignmentId", newAssignmentId);
+        System.out.println("newAssignmentId1111 : " + newAssignmentId);
+       request.getRequestDispatcher("/assignment/question/add").forward(request, response);
+       
+//        /*
+//            create with auto mode => show preview first
+//         */
     }
 
     public Map<String, String> validateAssignmentInput(

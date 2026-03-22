@@ -31,7 +31,7 @@ public class QuestionBankDAO extends DBContext {
                     + "      ,[Level]\n"
                     + "      ,[CreatedById]\n"
                     + "      ,[CreatedAt]\n"
-                    + "      ,[IsPublic]\n"
+                    + "      ,[Status]\n"
                     + "  FROM [dbo].[QuestionBank]";
             statement = connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
@@ -44,7 +44,7 @@ public class QuestionBankDAO extends DBContext {
                         resultSet.getInt("Level"),
                         resultSet.getString("CreatedById"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        resultSet.getInt("IsPublic"),
+                        resultSet.getInt("Status"),
                         qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
 
                 listQuestionBank.add(q);
@@ -101,7 +101,7 @@ public class QuestionBankDAO extends DBContext {
                     + "      ,[Level]\n"
                     + "      ,[CreatedById]\n"
                     + "      ,[CreatedAt]\n"
-                    + "      ,[IsPublic]\n"
+                    + "      ,[Status]\n"
                     + "  FROM [dbo].[QuestionBank]\n"
                     + "Where Id = ?";
             statement = connection.prepareStatement(sql);
@@ -116,7 +116,7 @@ public class QuestionBankDAO extends DBContext {
                         resultSet.getInt("Level"),
                         resultSet.getString("CreatedById"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        resultSet.getInt("IsPublic"),
+                        resultSet.getInt("Status"),
                         qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
             }
         } catch (Exception e) {
@@ -191,16 +191,17 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //get random question in question bank
-    public List<QuestionBank> getRandomQuestions(String subjectId, int level, int type, int numberQuestion, double pointPerQuestion) {
+    public List<QuestionBank> getRandomQuestions(String subjectId, String createdById,int Chapter, int type, int numberQuestion, double pointPerQuestion) {
 
         List<QuestionBank> list = new ArrayList<>();
 
         String sql = "  SELECT TOP (?) *\n"
                 + "FROM QuestionBank\n"
                 + "WHERE SubjectId = ?\n"
-                + "  AND Level = ?\n"
+                + "  AND [Chapter] = ?\n"
                 + "  AND Type = ?\n"
-                + "  AND IsPublic = 1\n"
+                + "  AND Status = 1\n"
+                + "AND CreatedById = ?\n"
                 + "ORDER BY NEWID();";
 
         try {
@@ -208,8 +209,9 @@ public class QuestionBankDAO extends DBContext {
 
             statement.setObject(1, numberQuestion);
             statement.setObject(2, subjectId);
-            statement.setObject(3, level);
+            statement.setObject(3, Chapter);
             statement.setObject(4, type);
+            statement.setObject(5, createdById);
             resultSet = statement.executeQuery();
 
             QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
@@ -218,10 +220,10 @@ public class QuestionBankDAO extends DBContext {
                         resultSet.getString("SubjectId"),
                         resultSet.getInt("Type"),
                         resultSet.getString("Prompt"),
-                        resultSet.getInt("Level"),
+                        resultSet.getInt("Chapter"),
                         resultSet.getString("CreatedById"),
                         resultSet.getString("CreatedAt"),
-                        resultSet.getInt("IsPublic"),
+                        resultSet.getInt("Status"),
                         qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
 
                 q.setSettingPoint(pointPerQuestion);
@@ -248,4 +250,31 @@ public class QuestionBankDAO extends DBContext {
 //        } catch (Exception e) {
 //        }
 //    }
+    //id mcq? chapter text
+    public List<QuestionBank> getListQuestionBankByTeacherAndSubject(String subjectId, String teacherId, int status) {
+        List<QuestionBank> listQuestionBank = new ArrayList<>();
+        try {
+            String sql = "SELECT *\n"
+                    + "FROM [POETWebDB].[dbo].[QuestionBank]\n"
+                    + "Where [SubjectId] = ?\n"
+                    + "And [CreatedById] = ?\n"
+                    + "And [Status] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, subjectId);
+            statement.setObject(2, teacherId);
+            statement.setObject(3, status);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                QuestionBank qBank = new QuestionBank();
+                qBank.setId(resultSet.getInt("Id"));
+                qBank.setChapter(resultSet.getInt("Chapter"));
+                qBank.setPrompt(resultSet.getString("Prompt"));
+                qBank.setType(resultSet.getInt("Type"));
+                listQuestionBank.add(qBank);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listQuestionBank;
+    }
 }

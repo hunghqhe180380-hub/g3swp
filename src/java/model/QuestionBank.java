@@ -16,10 +16,10 @@ public class QuestionBank {
     private String subjectId;
     private int type;
     private String prompt;
-    private int level;
+    private int chapter;
     private String createdById;
     private String createdAt;
-    private int isPublic;
+    private int status;
     private List<QuestionBankChoice> listQuestionBankChoice;
     /*
     (settingPoint) --- this variable use to set point to this question when use random question
@@ -29,15 +29,15 @@ public class QuestionBank {
     public QuestionBank() {
     }
 
-    public QuestionBank(int id, String subjectId, int type, String prompt, int level, String createdById, String createdAt, int isPublic, List<QuestionBankChoice> listQuestionBankChoice) {
+    public QuestionBank(int id, String subjectId, int type, String prompt, int chapter, String createdById, String createdAt, int status, List<QuestionBankChoice> listQuestionBankChoice) {
         this.id = id;
         this.subjectId = subjectId;
         this.type = type;
         this.prompt = prompt;
-        this.level = level;
+        this.chapter = chapter;
         this.createdById = createdById;
         this.createdAt = createdAt;
-        this.isPublic = isPublic;
+        this.status = status;
         this.listQuestionBankChoice = listQuestionBankChoice;
     }
 
@@ -73,12 +73,12 @@ public class QuestionBank {
         this.prompt = prompt;
     }
 
-    public int getLevel() {
-        return level;
+    public int getChapter() {
+        return chapter;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setChapter(int chapter) {
+        this.chapter = chapter;
     }
 
     public String getCreatedById() {
@@ -97,13 +97,15 @@ public class QuestionBank {
         this.createdAt = createdAt;
     }
 
-    public int getIsPublic() {
-        return isPublic;
+    public int getStatus() {
+        return status;
     }
 
-    public void setIsPublic(int isPublic) {
-        this.isPublic = isPublic;
+    public void setStatus(int status) {
+        this.status = status;
     }
+
+   
 
     public List<QuestionBankChoice> getListQuestionBankChoice() {
         return listQuestionBankChoice;
@@ -121,4 +123,10 @@ public class QuestionBank {
         this.settingPoint = settingPoint;
     }
 
+    @Override
+    public String toString() {
+        return "subjectId: " + subjectId + " " + "type: " + type + " " + "prompt: " + prompt + " " + "chapter: " + chapter + " " + "createdById: " + createdById + " " + "status: " + status + " " + "settingPoint: " + settingPoint;
+    }
+
+    
 }

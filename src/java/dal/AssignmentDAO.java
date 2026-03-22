@@ -131,18 +131,23 @@ public class AssignmentDAO extends DBContext {
     }
 
     //create assignment
-    public void createAssignment(Assignment a) {
-
-        String sql = "INSERT INTO Assignments (Title,Description,Type,DurationMinutes,"
-                + "MaxAttempts,ClassId,OpenAt,CloseAt,CreatedAt,CreatedById)"
-                + " VALUES (?,?,?,?,?,?,?,?,GETDATE(),?)";
-
+    public int createAssignment(Assignment a) {
+        int newAssignmentId = -1;
+        String sql = "INSERT INTO Assignments \n"
+                + "(Title, Description, Type, DurationMinutes,\n"
+                + " MaxAttempts, ClassId, OpenAt, CloseAt, CreatedAt, CreatedById)\n"
+                + "\n"
+                + "OUTPUT INSERTED.Id\n"
+                + "\n"
+                + "VALUES \n"
+                + "(?, ?, ?, ?,\n"
+                + " ?, ?, ?, ?, GETDATE(), ?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
 
             st.setObject(1, a.getTitle());
             st.setObject(2, a.getDescription());
-            st.setObject(3, a.getType());
+            st.setInt(3, a.getType());
             st.setObject(4, a.getDurationMinutes());
             st.setObject(5, a.getMaxAttempts());
             st.setObject(6, a.getClassId());
@@ -165,10 +170,14 @@ public class AssignmentDAO extends DBContext {
             st.setTimestamp(8, closeAt);;
             st.setObject(9, a.getCreatedById());
 
-            st.executeUpdate();
+            resultSet = st.executeQuery();
+            if (resultSet.next()) {
+                newAssignmentId = resultSet.getInt("Id");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return newAssignmentId;
     }
 }

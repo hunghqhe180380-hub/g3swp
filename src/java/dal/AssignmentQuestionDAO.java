@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.AssignmentQuestion;
+import model.QuestionBank;
 
 public class AssignmentQuestionDAO extends DBContext {
 
@@ -35,7 +36,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "      ,[Prompt]\n"
                     + "      ,[Points]\n"
                     + "      ,[Order]\n"
-                    + "      ,[Level]\n"
+                    + "      ,[Chapter]\n"
                     + "      ,[CreatedAt]\n"
                     + "      ,[SourceType]\n"
                     + "  FROM [dbo].[AssignmentQuestions]\n"
@@ -53,7 +54,7 @@ public class AssignmentQuestionDAO extends DBContext {
                         resultSet.getString("Prompt"),
                         resultSet.getDouble("Points"),
                         resultSet.getInt("Order"),
-                        resultSet.getInt("Level"),
+                        resultSet.getInt("Chapter"),
                         resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         resultSet.getString("SourceType"),
                         asgChoiceDAO.getListChoiceByQuestionId(resultSet.getInt("Id")));
@@ -66,5 +67,46 @@ public class AssignmentQuestionDAO extends DBContext {
         }
 
         return list;
+    }
+
+    //insert question to assignment question
+    public void insertQuestion(int assignmentId, QuestionBank qBank) {
+        try {
+            String sql = "INSERT INTO [dbo].[AssignmentQuestions]\n"
+                    + "           ([AssignmentId],\n"
+                    + "            [Type],\n"
+                    + "            [Prompt],\n"
+                    + "            [Points],\n"
+                    + "            [Order],\n"
+                    + "            [Chapter],\n"
+                    + "            [CreatedAt],\n"
+                    + "            [SourceType])\n"
+                    + "VALUES\n"
+                    + "(\n"
+                    + "    ?,  -- AssignmentId\n"
+                    + "    ?,  -- Type\n"
+                    + "    ?,  -- Prompt\n"
+                    + "    ?,  -- Points\n"
+                    + "\n"
+                    + "    (SELECT ISNULL(MAX([Order]), 0) + 1\n"
+                    + "     FROM [dbo].[AssignmentQuestions]\n"
+                    + "     WHERE AssignmentId = ?),  -- auto order\n"
+                    + "\n"
+                    + "    ?,  -- Chapter\n"
+                    + "    GETDATE(),\n"
+                    + "    ?   -- SourceType\n"
+                    + ");";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, assignmentId);
+            statement.setObject(2, qBank.getType());
+            statement.setObject(3, qBank.getPrompt());
+            statement.setObject(4, qBank.getSettingPoint());
+            statement.setObject(5, assignmentId);
+            statement.setObject(6, qBank.getChapter());
+            statement.setObject(7, "QuestionBank");
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

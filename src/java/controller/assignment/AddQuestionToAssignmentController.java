@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.assignment;
 
 import dal.AssignmentDAO;
+import dal.AssignmentQuestionDAO;
 import dal.ClassroomDAO;
 import dal.QuestionBankDAO;
 import dal.SubjectDAO;
@@ -15,48 +15,54 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Assignment;
+import model.AssignmentQuestion;
 import model.Classroom;
 import model.QuestionBank;
 import model.QuestionGroup;
+import model.User;
 
 /**
  *
  * @author hung2
  */
 public class AddQuestionToAssignmentController extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddQuestionToAssignmentController</title>");  
+            out.println("<title>Servlet AddQuestionToAssignmentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddQuestionToAssignmentController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet AddQuestionToAssignmentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -64,29 +70,30 @@ public class AddQuestionToAssignmentController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         String classId = request.getParameter("classId");
         String assignmentId = request.getParameter("assignmentId");
         request.setAttribute("classId", classId);
         ClassroomDAO clsDAO = new ClassroomDAO();
         Classroom cls = clsDAO.getClassInfoByClassId(classId);
-        
+
         SubjectDAO subjDAO = new SubjectDAO();
         String subjectName = subjDAO.getSubjectNameById(cls.getSubjectId());
         String className = cls.getName();
-        
+
         //assignment
         AssignmentDAO asgDAO = new AssignmentDAO();
         Assignment asg = asgDAO.getAssignmentById(Integer.parseInt(assignmentId));
-        
+
         request.setAttribute("assignment", asg);
         request.setAttribute("className", className);
         request.setAttribute("subjectName", subjectName);
         request.getRequestDispatcher("/view/assignment/assignment-add-question.jsp").forward(request, response);
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -94,11 +101,14 @@ public class AddQuestionToAssignmentController extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
 
         String classId = request.getParameter("classId");
         String[] typeQuestionGroup = request.getParameterValues("typeQuestionGroup");
-        String[] levelQuestionGroup = request.getParameterValues("levelQuestionGroup");
+        String[] chapterQuestionGroup = request.getParameterValues("chapterQuestionGroup");
         String[] numberQuestionGroup = request.getParameterValues("numberQuestionGroup");
         String[] pointPerQuestion = request.getParameterValues("pointPerQuestion");
 
@@ -117,7 +127,7 @@ public class AddQuestionToAssignmentController extends HttpServlet {
             QuestionGroup qGroup = new QuestionGroup();
 
             qGroup.setType(Integer.parseInt(typeQuestionGroup[i]));
-            qGroup.setLevel(Integer.parseInt(levelQuestionGroup[i]));
+            qGroup.setChapter(Integer.parseInt(chapterQuestionGroup[i]));
             qGroup.setNumberQuestion(Integer.parseInt(numberQuestionGroup[i]));
             qGroup.setPointPerQuestion(Integer.parseInt(pointPerQuestion[i]));
 
@@ -130,22 +140,41 @@ public class AddQuestionToAssignmentController extends HttpServlet {
         //random question group
         Map<String, List<QuestionBank>> listRandomGroup = new HashMap<>();
         for (int i = 0; i < listQuestionGroup.size(); i++) {
-            listRandomGroup.put(listQuestionGroup.get(i).getType() + "-" + listQuestionGroup.get(i).getLevel(),
+            listRandomGroup.put(listQuestionGroup.get(i).getType() + "-" + listQuestionGroup.get(i).getChapter(),
                     qBankDAO.getRandomQuestions(subjectId,
-                            listQuestionGroup.get(i).getLevel(),
+                            user.getUserID(),
+                            listQuestionGroup.get(i).getChapter(),
                             listQuestionGroup.get(i).getType(),
                             listQuestionGroup.get(i).getNumberQuestion(),
                             listQuestionGroup.get(i).getPointPerQuestion()));
         }
-       
 
-        
+        List<QuestionBank> listQuestionBankRandomResult = new ArrayList<>();
+        for (Map.Entry<String, List<QuestionBank>> entry : listRandomGroup.entrySet()) {
 
-        
+            String key = entry.getKey();
+            List<QuestionBank> list = entry.getValue();
+
+            System.out.println("Group: " + key);
+
+            for (QuestionBank q : list) {
+                listQuestionBankRandomResult.add(q);
+            }
+        }
+
+        //insert listQuestionBankRandomResult into Assignment 
+        int newAssignmentId = (int) request.getAttribute("newAssignmentId");
+        AssignmentQuestionDAO asgQuestionDAO = new AssignmentQuestionDAO();
+        for (int i = 0; i < listQuestionBankRandomResult.size(); i++) {
+            asgQuestionDAO.insertQuestion(newAssignmentId, listQuestionBankRandomResult.get(i));
+        }
+
+        System.out.println("newAssignmentId22222 : " + newAssignmentId);
         request.setAttribute("listQuestionGroup", listQuestionGroup);
         request.setAttribute("classId", classId);
         request.setAttribute("listquestion", listRandomGroup);
-        request.getRequestDispatcher("/view/question/auto-preview-question-list.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath()
+                + "/assignment/view/list-assignment?classId=" + classId);
         return;
     }
 
@@ -181,10 +210,9 @@ public class AddQuestionToAssignmentController extends HttpServlet {
 //        //inset list question from question bank to assignmentquestion
 //        return;
 //    }
-    
-
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

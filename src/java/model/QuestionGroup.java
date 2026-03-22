@@ -10,16 +10,16 @@ package model;
  */
 public class QuestionGroup {
     private int type;
-    private int level;
+    private int chapter;
     private int numberQuestion;
     private double pointPerQuestion;
 
     public QuestionGroup() {
     }
 
-    public QuestionGroup(int type, int level, int numberQuestion, double pointPerQuestion) {
+    public QuestionGroup(int type, int chapter, int numberQuestion, double pointPerQuestion) {
         this.type = type;
-        this.level = level;
+        this.chapter = chapter;
         this.numberQuestion = numberQuestion;
         this.pointPerQuestion = pointPerQuestion;
     }
@@ -32,12 +32,12 @@ public class QuestionGroup {
         this.type = type;
     }
 
-    public int getLevel() {
-        return level;
+    public int getChapter() {
+        return chapter;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setChapter(int chapter) {
+        this.chapter = chapter;
     }
 
     public int getNumberQuestion() {
@@ -59,7 +59,7 @@ public class QuestionGroup {
     
     @Override
     public String toString() {
-        return "Type: " + type + "Level: " + level + "numberQuestion: " +numberQuestion +  "pointPerQuestion" + pointPerQuestion;
+        return "Type: " + type + "chapter: " + chapter + "numberQuestion: " +numberQuestion +  "pointPerQuestion" + pointPerQuestion;
     }
 
     

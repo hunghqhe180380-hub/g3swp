@@ -133,8 +133,7 @@
                                              data-duration="${a.duration} min"
                                              data-mcq-score="${h.mcqScore == null ? 0 : h.mcqScore}"
                                              data-mcq-max="${h.mcqMax == null ? 0 : h.mcqMax}"
-                                             data-mcq-correct="${h.mcqCorrectCount == null ? 0 : h.mcqCorrectCount}"
-                                             data-mcq-total="${h.mcqQuestionCount == null ? 0 : h.mcqQuestionCount}"
+                                             
                                              data-essay-score="${h.essayScore == null ? 0 : h.essayScore}"
                                              data-essay-max="${h.essayMax == null ? 0 : h.essayMax}"
                                              data-final-score="${h.finalScore == null ? 0 : h.finalScore}"
@@ -375,7 +374,7 @@
                                 '<td>' + escapeHtml(item.dataset.duration || '') + '</td>' +
                                 '<td>' +
                                 '   <div class="score-pill">' + escapeHtml(mcqScore) + ' / ' + escapeHtml(mcqMax) + '</div>' +
-                                '   <div class="score-sub">' + escapeHtml(item.dataset.mcqCorrect || '0') + ' / ' + escapeHtml(item.dataset.mcqTotal || '0') + ' correct</div>' +
+//                                '   <div class="score-sub">' + escapeHtml(item.dataset.mcqCorrect || '0') + ' / ' + escapeHtml(item.dataset.mcqTotal || '0') + ' correct</div>' +
                                 '</td>' +
                                 '<td><div class="score-pill">' + escapeHtml(essayScore) + ' / ' + escapeHtml(essayMax) + '</div></td>' +
                                 '<td><div class="score-pill">' + escapeHtml(finalScore) + ' / ' + escapeHtml(finalMax) + '</div></td>' +
@@ -385,7 +384,7 @@
                         historyTableBody.appendChild(row);
                     });
 
-                    historySummary.textContent = 'Attempts: ' + items.length + ' / ' + maxAttempts;
+//                    historySummary.textContent = 'Attempts: ' + items.length + ' / ' + maxAttempts;
                 }
 
                 function openDetail(card) {
