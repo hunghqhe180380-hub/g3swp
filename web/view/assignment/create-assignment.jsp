@@ -282,13 +282,7 @@
         <div class="d-none" id="questionSeeds">
             <c:forEach items="${listQuestion}" var="question">
                 <div class="ca-seed" data-id="${question.id}" 
-                     data-type="
-                     <c:choose>
-                         <c:when test='${question.type == 1}'>SCQ</c:when>
-                         <c:when test='${question.type == 2}'>MCQ</c:when>
-                         <c:when test='${question.type == 3}'>Essay</c:when>
-                     </c:choose>
-                     "
+                     data-type="<c:choose><c:when test='${question.type == 1}'>SCQ</c:when><c:when test='${question.type == 2}'>MCQ</c:when><c:when test='${question.type == 3}'>Essay</c:when></c:choose>"
                      data-chapter="${question.chapter}" data-subject="${subject.name}" data-prompt="${question.prompt}"></div>
             </c:forEach>
 <!--            <div class="ca-seed" data-id="202" data-type="MCQ" data-chapter="1" data-subject="${subject.name}" data-prompt="Select all countable nouns in the list."></div>

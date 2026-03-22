@@ -180,4 +180,19 @@ public class AssignmentDAO extends DBContext {
         }
         return newAssignmentId;
     }
+
+    //update type of question
+    public void updateTypeFollowQuestionInAssignment(int AssignmentId, int type) {
+        try {
+            String sql = "UPDATE [dbo].[Assignments]\n"
+                    + "   SET [Type] = ?\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, type);
+            statement.setObject(2, AssignmentId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

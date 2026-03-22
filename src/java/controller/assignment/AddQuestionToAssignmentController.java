@@ -108,9 +108,11 @@ public class AddQuestionToAssignmentController extends HttpServlet {
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
 
+        AssignmentDAO asgDAO = new AssignmentDAO();
         //insert listQuestionBankRandomResult into Assignment 
         int newAssignmentId = (int) request.getAttribute("newAssignmentId");
         AssignmentQuestionDAO asgQuestionDAO = new AssignmentQuestionDAO();
+        QuestionBankDAO qBankDAO = new QuestionBankDAO();
         //create with auto mode
         if (modeCreate.equalsIgnoreCase("auto")) {
 
@@ -142,8 +144,6 @@ public class AddQuestionToAssignmentController extends HttpServlet {
             }
 
             //get random question from QuestionBank by (subjectId and properties of question groups)
-            QuestionBankDAO qBankDAO = new QuestionBankDAO();
-
             //random question group
             Map<String, List<QuestionBank>> listRandomGroup = new HashMap<>();
             for (int i = 0; i < listQuestionGroup.size(); i++) {
@@ -174,19 +174,64 @@ public class AddQuestionToAssignmentController extends HttpServlet {
                 asgQuestionDAO.insertQuestion(newAssignmentId, listQuestionBankRandomResult.get(i));
             }
 
+            boolean hasSGC = false;
+            boolean hasMCQ = false;
+            boolean hasEssay = false;
+
+            for (QuestionGroup q : listQuestionGroup) {
+                if (q.getType() == 1) {
+                    hasSGC = true;
+                }
+                if (q.getType() == 2) {
+                    hasMCQ = true;
+                }
+                if (q.getType() == 3) {
+                    hasEssay = true;
+                }
+            }
+
+// đếm số loại có trong assignment
+            int countType = 0;
+            if (hasSGC) {
+                countType++;
+            }
+            if (hasMCQ) {
+                countType++;
+            }
+            if (hasEssay) {
+                countType++;
+            }
+
+            int assignmentType;
+
+            if (countType >= 2) {
+                assignmentType = 4; // mixed
+            } else if (hasSGC) {
+                assignmentType = 1;
+            } else if (hasMCQ) {
+                assignmentType = 2;
+            } else if (hasEssay) {
+                assignmentType = 3;
+            } else {
+                assignmentType = 0; // fallback (không có câu nào)
+            }
+
+// update DB
+            asgDAO.updateTypeFollowQuestionInAssignment(newAssignmentId, assignmentType);
 //            System.out.println("newAssignmentId22222 : " + newAssignmentId);
 //            request.setAttribute("listQuestionGroup", listQuestionGroup);
 //            request.setAttribute("classId", classId);
 //            request.setAttribute("listquestion", listRandomGroup);
         }
 
-        //create with manual mode
+        /*
+        *create with manual mode 
+         */
         if (modeCreate.equalsIgnoreCase("manual")) {
             String[] questionId = request.getParameterValues("questionId");
             String[] pointOfQuestion = request.getParameterValues("pointOfQuestion");
 
             List<QuestionBank> listQuestion = new ArrayList<>();
-            QuestionBankDAO qBankDAO = new QuestionBankDAO();
             for (int i = 0; i < questionId.length; i++) {
                 listQuestion.add(qBankDAO.getQuestionById(questionId[i],
                         user.getUserID(),
@@ -197,6 +242,51 @@ public class AddQuestionToAssignmentController extends HttpServlet {
             for (int i = 0; i < listQuestion.size(); i++) {
                 asgQuestionDAO.insertQuestion(newAssignmentId, listQuestion.get(i));
             }
+
+            boolean hasSGC = false;
+            boolean hasMCQ = false;
+            boolean hasEssay = false;
+
+            for (QuestionBank q : listQuestion) {
+                if (q.getType() == 1) {
+                    hasSGC = true;
+                }
+                if (q.getType() == 2) {
+                    hasMCQ = true;
+                }
+                if (q.getType() == 3) {
+                    hasEssay = true;
+                }
+            }
+
+// đếm số loại có trong assignment
+            int countType = 0;
+            if (hasSGC) {
+                countType++;
+            }
+            if (hasMCQ) {
+                countType++;
+            }
+            if (hasEssay) {
+                countType++;
+            }
+
+            int assignmentType;
+
+            if (countType >= 2) {
+                assignmentType = 4; // mixed
+            } else if (hasSGC) {
+                assignmentType = 1;
+            } else if (hasMCQ) {
+                assignmentType = 2;
+            } else if (hasEssay) {
+                assignmentType = 3;
+            } else {
+                assignmentType = 0; // fallback (không có câu nào)
+            }
+
+// update DB
+            asgDAO.updateTypeFollowQuestionInAssignment(newAssignmentId, assignmentType);
         }
 
         response.sendRedirect(request.getContextPath()

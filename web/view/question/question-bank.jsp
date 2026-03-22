@@ -209,30 +209,33 @@
 
         <!-- Mock data -->
         <div class="qb-seed-list d-none" id="questionSeeds">
-            <div class="qb-seed" data-id="101" data-prompt="Chọn đáp án đúng cho phép cộng phân số cơ bản." data-type="SCQ" data-chapter="1" data-subject="Toán học" data-created="2026-03-20 08:15" data-keywords="phân số cộng toán cơ bản"></div>
-            <div class="qb-seed" data-id="102" data-prompt="Which sentence uses the past perfect tense correctly?" data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-20 08:20" data-keywords="english grammar tense past perfect"></div>
-            <div class="qb-seed" data-id="103" data-prompt="Phân tích hình tượng người lính trong đoạn thơ đã cho." data-type="Essay" data-chapter="3" data-subject="Ngữ văn" data-created="2026-03-19 16:10" data-keywords="ngữ văn thơ phân tích nghị luận"></div>
-            <div class="qb-seed" data-id="104" data-prompt="Select all countable nouns in the following list." data-type="MCQ" data-chapter="1" data-subject="Tiếng Anh" data-created="2026-03-19 14:22" data-keywords="english nouns countable grammar"></div>
-            <div class="qb-seed" data-id="105" data-prompt="Xác định thủ đô của các quốc gia Đông Nam Á." data-type="SCQ" data-chapter="4" data-subject="Địa lý" data-created="2026-03-18 11:05" data-keywords="địa lý quốc gia thủ đô đông nam á"></div>
-            <div class="qb-seed" data-id="106" data-prompt="Trình bày vai trò của ADN trong di truyền học." data-type="Essay" data-chapter="5" data-subject="Sinh học" data-created="2026-03-18 10:45" data-keywords="sinh học adn di truyền"></div>
-            <div class="qb-seed" data-id="107" data-prompt="Choose the best title for the reading passage." data-type="SCQ" data-chapter="3" data-subject="Tiếng Anh" data-created="2026-03-17 17:35" data-keywords="english reading title passage"></div>
-            <div class="qb-seed" data-id="108" data-prompt="Chọn các đại từ quan hệ phù hợp để hoàn thành câu." data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-17 15:50" data-keywords="tiếng anh đại từ quan hệ grammar"></div>
-            <div class="qb-seed" data-id="109" data-prompt="Nêu cảm nhận của em về tinh thần đoàn kết trong học tập." data-type="Essay" data-chapter="6" data-subject="Giáo dục công dân" data-created="2026-03-17 14:30" data-keywords="gdcd đoàn kết cảm nhận học tập"></div>
-            <div class="qb-seed" data-id="110" data-prompt="Xác định nhóm từ chỉ tính chất trong các đáp án sau." data-type="SCQ" data-chapter="1" data-subject="Ngữ văn" data-created="2026-03-16 10:20" data-keywords="ngữ văn từ loại tính chất"></div>
-            <div class="qb-seed" data-id="111" data-prompt="Chọn các tín hiệu chuyển ý phù hợp cho đoạn văn đối chiếu." data-type="MCQ" data-chapter="5" data-subject="Ngữ văn" data-created="2026-03-16 09:10" data-keywords="ngữ văn đoạn văn chuyển ý đối chiếu"></div>
-            <div class="qb-seed" data-id="112" data-prompt="Viết email mời bạn tham dự tiệc sinh nhật bằng tiếng Anh." data-type="Essay" data-chapter="5" data-subject="Tiếng Anh" data-created="2026-03-15 15:00" data-keywords="english writing email invitation"></div>
-            <div class="qb-seed" data-id="113" data-prompt="Chọn câu đúng với cấu trúc bị động." data-type="SCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-15 10:12" data-keywords="passive voice grammar english"></div>
-            <div class="qb-seed" data-id="114" data-prompt="Phân biệt các loại liên kết hóa học trong các chất đã cho." data-type="MCQ" data-chapter="7" data-subject="Hóa học" data-created="2026-03-14 14:40" data-keywords="hóa học liên kết ion cộng hóa trị"></div>
-            <div class="qb-seed" data-id="115" data-prompt="Trình bày nguyên nhân và diễn biến chính của cuộc khởi nghĩa Lam Sơn." data-type="Essay" data-chapter="6" data-subject="Lịch sử" data-created="2026-03-14 09:20" data-keywords="lịch sử lam sơn khởi nghĩa"></div>
-            <div class="qb-seed" data-id="116" data-prompt="Chọn đáp án đúng cho định luật II Newton." data-type="SCQ" data-chapter="2" data-subject="Vật lý" data-created="2026-03-13 08:40" data-keywords="vật lý newton lực gia tốc"></div>
-            <div class="qb-seed" data-id="117" data-prompt="Xác định các thành phần chính của máy tính cá nhân." data-type="MCQ" data-chapter="4" data-subject="Tin học" data-created="2026-03-12 13:25" data-keywords="tin học máy tính phần cứng"></div>
-            <div class="qb-seed" data-id="118" data-prompt="Viết đoạn văn ngắn về lợi ích của việc rèn luyện thể thao." data-type="Essay" data-chapter="6" data-subject="Thể dục" data-created="2026-03-11 12:05" data-keywords="thể dục lợi ích sức khỏe"></div>
-            <div class="qb-seed" data-id="119" data-prompt="Xác định biểu đồ phù hợp để thể hiện tốc độ tăng dân số." data-type="SCQ" data-chapter="3" data-subject="Địa lý" data-created="2026-03-10 16:48" data-keywords="địa lý biểu đồ dân số"></div>
-            <div class="qb-seed" data-id="120" data-prompt="Select the economic indicators related to inflation." data-type="MCQ" data-chapter="7" data-subject="Kinh tế" data-created="2026-03-09 09:50" data-keywords="economics inflation indicators market"></div>
-            <div class="qb-seed" data-id="121" data-prompt="Giải thích quy luật phân li độc lập của Menđen." data-type="Essay" data-chapter="4" data-subject="Sinh học" data-created="2026-03-08 11:15" data-keywords="sinh học menđen phân li độc lập"></div>
-            <div class="qb-seed" data-id="122" data-prompt="Chọn phép biến hình phù hợp trong bài toán tọa độ." data-type="SCQ" data-chapter="6" data-subject="Toán học" data-created="2026-03-08 10:30" data-keywords="toán học tọa độ phép biến hình"></div>
-            <div class="qb-seed" data-id="123" data-prompt="Phân tích vai trò của pháp luật trong đời sống xã hội." data-type="Essay" data-chapter="7" data-subject="Giáo dục công dân" data-created="2026-03-07 14:25" data-keywords="gdcd pháp luật xã hội"></div>
-            <div class="qb-seed" data-id="124" data-prompt="Chọn các câu lệnh đúng trong ngôn ngữ lập trình C." data-type="MCQ" data-chapter="5" data-subject="Tin học" data-created="2026-03-07 09:10" data-keywords="tin học lập trình c câu lệnh"></div>
+            <c:forEach items="${requestScope.listQuestionBank}" var="q" varStatus="loop">
+                <div class="qb-seed" data-id="${q.id}" data-prompt="${q.prompt}" data-type="<c:choose><c:when test='${q.type == 1}'>SCQ</c:when><c:when test='${q.type == 2}'>MCQ</c:when><c:when test='${q.type == 3}'>Essay</c:when></c:choose>" data-chapter="${q.chapter}" data-subject="Toán học" data-created="${q.createdAt}"></div>
+            </c:forEach>
+
+            <!--            <div class="qb-seed" data-id="102" data-prompt="Which sentence uses the past perfect tense correctly?" data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-20 08:20" data-keywords="english grammar tense past perfect"></div>
+                        <div class="qb-seed" data-id="103" data-prompt="Phân tích hình tượng người lính trong đoạn thơ đã cho." data-type="Essay" data-chapter="3" data-subject="Ngữ văn" data-created="2026-03-19 16:10" data-keywords="ngữ văn thơ phân tích nghị luận"></div>
+                        <div class="qb-seed" data-id="104" data-prompt="Select all countable nouns in the following list." data-type="MCQ" data-chapter="1" data-subject="Tiếng Anh" data-created="2026-03-19 14:22" data-keywords="english nouns countable grammar"></div>
+                        <div class="qb-seed" data-id="105" data-prompt="Xác định thủ đô của các quốc gia Đông Nam Á." data-type="SCQ" data-chapter="4" data-subject="Địa lý" data-created="2026-03-18 11:05" data-keywords="địa lý quốc gia thủ đô đông nam á"></div>
+                        <div class="qb-seed" data-id="106" data-prompt="Trình bày vai trò của ADN trong di truyền học." data-type="Essay" data-chapter="5" data-subject="Sinh học" data-created="2026-03-18 10:45" data-keywords="sinh học adn di truyền"></div>
+                        <div class="qb-seed" data-id="107" data-prompt="Choose the best title for the reading passage." data-type="SCQ" data-chapter="3" data-subject="Tiếng Anh" data-created="2026-03-17 17:35" data-keywords="english reading title passage"></div>
+                        <div class="qb-seed" data-id="108" data-prompt="Chọn các đại từ quan hệ phù hợp để hoàn thành câu." data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-17 15:50" data-keywords="tiếng anh đại từ quan hệ grammar"></div>
+                        <div class="qb-seed" data-id="109" data-prompt="Nêu cảm nhận của em về tinh thần đoàn kết trong học tập." data-type="Essay" data-chapter="6" data-subject="Giáo dục công dân" data-created="2026-03-17 14:30" data-keywords="gdcd đoàn kết cảm nhận học tập"></div>
+                        <div class="qb-seed" data-id="110" data-prompt="Xác định nhóm từ chỉ tính chất trong các đáp án sau." data-type="SCQ" data-chapter="1" data-subject="Ngữ văn" data-created="2026-03-16 10:20" data-keywords="ngữ văn từ loại tính chất"></div>
+                        <div class="qb-seed" data-id="111" data-prompt="Chọn các tín hiệu chuyển ý phù hợp cho đoạn văn đối chiếu." data-type="MCQ" data-chapter="5" data-subject="Ngữ văn" data-created="2026-03-16 09:10" data-keywords="ngữ văn đoạn văn chuyển ý đối chiếu"></div>
+                        <div class="qb-seed" data-id="112" data-prompt="Viết email mời bạn tham dự tiệc sinh nhật bằng tiếng Anh." data-type="Essay" data-chapter="5" data-subject="Tiếng Anh" data-created="2026-03-15 15:00" data-keywords="english writing email invitation"></div>
+                        <div class="qb-seed" data-id="113" data-prompt="Chọn câu đúng với cấu trúc bị động." data-type="SCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-15 10:12" data-keywords="passive voice grammar english"></div>
+                        <div class="qb-seed" data-id="114" data-prompt="Phân biệt các loại liên kết hóa học trong các chất đã cho." data-type="MCQ" data-chapter="7" data-subject="Hóa học" data-created="2026-03-14 14:40" data-keywords="hóa học liên kết ion cộng hóa trị"></div>
+                        <div class="qb-seed" data-id="115" data-prompt="Trình bày nguyên nhân và diễn biến chính của cuộc khởi nghĩa Lam Sơn." data-type="Essay" data-chapter="6" data-subject="Lịch sử" data-created="2026-03-14 09:20" data-keywords="lịch sử lam sơn khởi nghĩa"></div>
+                        <div class="qb-seed" data-id="116" data-prompt="Chọn đáp án đúng cho định luật II Newton." data-type="SCQ" data-chapter="2" data-subject="Vật lý" data-created="2026-03-13 08:40" data-keywords="vật lý newton lực gia tốc"></div>
+                        <div class="qb-seed" data-id="117" data-prompt="Xác định các thành phần chính của máy tính cá nhân." data-type="MCQ" data-chapter="4" data-subject="Tin học" data-created="2026-03-12 13:25" data-keywords="tin học máy tính phần cứng"></div>
+                        <div class="qb-seed" data-id="118" data-prompt="Viết đoạn văn ngắn về lợi ích của việc rèn luyện thể thao." data-type="Essay" data-chapter="6" data-subject="Thể dục" data-created="2026-03-11 12:05" data-keywords="thể dục lợi ích sức khỏe"></div>
+                        <div class="qb-seed" data-id="119" data-prompt="Xác định biểu đồ phù hợp để thể hiện tốc độ tăng dân số." data-type="SCQ" data-chapter="3" data-subject="Địa lý" data-created="2026-03-10 16:48" data-keywords="địa lý biểu đồ dân số"></div>
+                        <div class="qb-seed" data-id="120" data-prompt="Select the economic indicators related to inflation." data-type="MCQ" data-chapter="7" data-subject="Kinh tế" data-created="2026-03-09 09:50" data-keywords="economics inflation indicators market"></div>
+                        <div class="qb-seed" data-id="121" data-prompt="Giải thích quy luật phân li độc lập của Menđen." data-type="Essay" data-chapter="4" data-subject="Sinh học" data-created="2026-03-08 11:15" data-keywords="sinh học menđen phân li độc lập"></div>
+                        <div class="qb-seed" data-id="122" data-prompt="Chọn phép biến hình phù hợp trong bài toán tọa độ." data-type="SCQ" data-chapter="6" data-subject="Toán học" data-created="2026-03-08 10:30" data-keywords="toán học tọa độ phép biến hình"></div>
+                        <div class="qb-seed" data-id="123" data-prompt="Phân tích vai trò của pháp luật trong đời sống xã hội." data-type="Essay" data-chapter="7" data-subject="Giáo dục công dân" data-created="2026-03-07 14:25" data-keywords="gdcd pháp luật xã hội"></div>
+                        <div class="qb-seed" data-id="124" data-prompt="Chọn các câu lệnh đúng trong ngôn ngữ lập trình C." data-type="MCQ" data-chapter="5" data-subject="Tin học" data-created="2026-03-07 09:10" data-keywords="tin học lập trình c câu lệnh"></div>-->
         </div>
 
         <script>
@@ -270,14 +273,14 @@
                 let currentPage = 1;
 
                 const allQuestions = seedEls.map(el => ({
-                    id: Number(el.dataset.id),
-                    prompt: el.dataset.prompt || '',
-                    type: el.dataset.type || '',
-                    chapter: Number(el.dataset.chapter || 0),
-                    subject: el.dataset.subject || '',
-                    created: el.dataset.created || '',
-                    keywords: el.dataset.keywords || ''
-                }));
+                        id: Number(el.dataset.id),
+                        prompt: el.dataset.prompt || '',
+                        type: el.dataset.type || '',
+                        chapter: Number(el.dataset.chapter || 0),
+                        subject: el.dataset.subject || '',
+                        created: el.dataset.created || '',
+                        keywords: el.dataset.keywords || ''
+                    }));
 
                 const chapterList = [...new Set(allQuestions.map(q => q.chapter))].sort((a, b) => a - b);
                 const subjectList = [...new Set(allQuestions.map(q => q.subject).filter(Boolean))]
@@ -345,8 +348,10 @@
                 }
 
                 function compareValues(a, b, dir) {
-                    if (a < b) return dir === 'asc' ? -1 : 1;
-                    if (a > b) return dir === 'asc' ? 1 : -1;
+                    if (a < b)
+                        return dir === 'asc' ? -1 : 1;
+                    if (a > b)
+                        return dir === 'asc' ? 1 : -1;
                     return 0;
                 }
 
@@ -402,8 +407,10 @@
                 }
 
                 function getTypeClass(type) {
-                    if (type === 'SCQ') return 'qb-badge qb-badge--scq';
-                    if (type === 'MCQ') return 'qb-badge qb-badge--mcq';
+                    if (type === '1')
+                        return 'qb-badge qb-badge--scq';
+                    if (type === '2')
+                        return 'qb-badge qb-badge--mcq';
                     return 'qb-badge qb-badge--essay';
                 }
 
