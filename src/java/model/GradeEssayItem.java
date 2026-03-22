@@ -14,6 +14,12 @@ public class GradeEssayItem {
     // ===== Constructor =====
     public GradeEssayItem() {
     }
+    
+    public GradeEssayItem(int questionId, double score, String comment) {
+        this.questionId = questionId;
+        this.score = score;
+        this.comment = comment;
+    }
 
     // ===== Getter & Setter =====
 

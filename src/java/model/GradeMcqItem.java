@@ -47,4 +47,11 @@ public class GradeMcqItem {
     public void setChoices(List<McqChoice> choices) {
         this.choices = choices;
     }
+
+    @Override
+    public String toString() {
+        return "GradeMcqItem{" + "questionId=" + questionId + ", prompt=" + prompt + ", points=" + points + ", choices=" + choices + '}';
+    }
+    
+    
 }

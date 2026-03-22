@@ -43,8 +43,7 @@ public class Classroom {
     public String getClassCode()             { return classCode; }
     public void   setClassCode(String c)     { this.classCode = c; }
 
-    public String getSubject()               { return subject; }
-    public void   setSubject(String s)       { this.subject = s; }
+  
 
     public String getTeacherId()             { return teacherId; }
     public void   setTeacherId(String t)     { this.teacherId = t; }

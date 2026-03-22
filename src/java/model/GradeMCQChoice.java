@@ -68,6 +68,11 @@ public class GradeMCQChoice {
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
+
+    @Override
+    public String toString() {
+        return "GradeMCQChoice{" + "choiceId=" + choiceId + ", content=" + content + ", isCorrect=" + isCorrect + ", isSelected=" + isSelected + ", cssClass=" + cssClass + '}';
+    }
     
     
 }
