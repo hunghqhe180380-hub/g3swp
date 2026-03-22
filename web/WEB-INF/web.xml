@@ -118,6 +118,73 @@
         <servlet-name>JoinClassController</servlet-name>
         <servlet-class>controller.student.JoinClassController</servlet-class>
     </servlet>
+<<<<<<< Updated upstream
+=======
+    <servlet>
+        <servlet-name>SearchClassroomController</servlet-name>
+        <servlet-class>controller.classroom.SearchClassroomController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GenerateClasscodeController</servlet-name>
+        <servlet-class>controller.teacher.GenerateClasscodeController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubjectListController</servlet-name>
+        <servlet-class>controller.subject.SubjectListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateSubjectController</servlet-name>
+        <servlet-class>controller.subject.CreateSubjectController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <servlet-class>controller.classroom.UnenrollStudentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubmissionListController</servlet-name>
+        <servlet-class>controller.assignment.SubmissionListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.ListAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.CreateAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.TakeAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RestoreStudentController</servlet-name>
+        <servlet-class>controller.classroom.RestoreStudentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeactiveClassController</servlet-name>
+        <servlet-class>controller.classroom.DeactiveClassController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListQuestionBankController</servlet-name>
+        <servlet-class>controller.question.ListQuestionBankController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListQuestionAssignmentController</servlet-name>
+        <servlet-class>controller.question.ListQuestionAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddQuestionToAssignmentController</servlet-name>
+        <servlet-class>controller.assignment.AddQuestionToAssignmentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GradeServlet</servlet-name>
+        <servlet-class>controller.assignment.GradeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubmissionListController</servlet-name>
+        <url-pattern>/assignment/view/submission</url-pattern>
+    </servlet-mapping>
+>>>>>>> Stashed changes
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
@@ -229,6 +296,10 @@
     <servlet-mapping>
         <servlet-name>JoinClassController</servlet-name>
         <url-pattern>/join</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GradeServlet</servlet-name>
+        <url-pattern>/submission/grade</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
