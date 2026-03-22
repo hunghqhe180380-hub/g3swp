@@ -7,12 +7,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.Classroom;
+import model.User;
 import util.PagingUtil;
 
 @WebServlet(name = "ClassListController", urlPatterns = {"/classroom/manage/class-list"})
@@ -32,16 +34,19 @@ public class ClassListController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String search = request.getParameter("search");
-
+        HttpSession ses = request.getSession();
+        User user = (User) ses.getAttribute("user");
+        if(!user.getRole().equalsIgnoreCase("Admin")){
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
         List<Classroom> classes = dao.getAllClassBySearch(search);
         sort(request, classes);
         paging(request, classes);
 
         request.setAttribute("search",  search);
         request.setAttribute("classes", classes);
-
-        request.getRequestDispatcher("/View/classroom/list-admin.jsp")
-               .forward(request, response);
+        request.getRequestDispatcher("/view/classroom/list-classroom.jsp").forward(request, response);
     }
 
     @Override
@@ -50,12 +55,18 @@ public class ClassListController extends HttpServlet {
         doGet(request, response);
     }
 
-    // Sort in-memory by clicked column; state: 0=none, 1=ASC, 2=DESC
-    private void sort(HttpServletRequest request, List<Classroom> classes) {
-        int clState = parseIntSafe(request.getParameter("txtClassName"),   0);
-        int teState = parseIntSafe(request.getParameter("txtTeacherName"), 0);
-        int tiState = parseIntSafe(request.getParameter("txtCreateAt"),    0);
-
+    private void sort(HttpServletRequest request, List<Classroom> classes)
+            throws ServletException, IOException {
+        int clState = 0;
+        int teState = 0;
+        int tiState = 0;        
+        try {
+            clState = Integer.parseInt(request.getParameter("txtClassName"));
+            teState = Integer.parseInt(request.getParameter("txtTeacherName"));
+            tiState = Integer.parseInt(request.getParameter("txtCreateAt"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (clState != 0) {
             Comparator<Classroom> cmp =
                 Comparator.comparing(Classroom::getName, String.CASE_INSENSITIVE_ORDER);
@@ -75,12 +86,18 @@ public class ClassListController extends HttpServlet {
         }
     }
 
-    // Build PagingUtil from list size + nrpp context param + current page index
-    private void paging(HttpServletRequest request, List<Classroom> classes) {
-        int nrpp  = parseIntSafe(request.getServletContext().getInitParameter("nrpp"), 10);
-        int index = Math.max(parseIntSafe(request.getParameter("index"), 0), 0);
-
-        PagingUtil page = new PagingUtil(classes.size(), nrpp, index);
+    private void paging(HttpServletRequest request, List<Classroom> classes)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.class"));
+        int size = classes.size();        
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
         page.calc();
 
         request.setAttribute("page", page);

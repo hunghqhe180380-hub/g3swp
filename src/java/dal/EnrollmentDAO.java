@@ -21,13 +21,13 @@ public class EnrollmentDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
-    public List<Enrollment> getEnrollmentByClassId(String search, String classId, String[] status) {
-        String sql = "SELECT a.*,b.* FROM [Enrollments] as a\n"
-                + "JOIN [Users] as b ON a.UserId = b.Id\n"                
-                + "WHERE a.ClassId =?";
-        if (search != null && !search.trim().isEmpty()) {
-            sql += " AND (LOWER(b.FullName) LIKE ? OR LOWER(b.UserName) LIKE ? OR LOWER(b.Email) LIKE ?)";
-        }
+    public List<Enrollment> getEnrollmentByClassId(String classId, String[] status) {
+        String sql = "SELECT a.Id AS EnrollId, a.ClassId, a.UserId, a.RoleInClass, a.JoinedAt, a.Status,\n"
+                + "b.Id AS UserDbId, b.FullName, b.UserName, b.Email, b.PhoneNumber,\n"
+                + "b.AccountCode, b.AvatarUrl, b.IsDeleted\n"
+                + "FROM [Enrollments] AS a\n"
+                + "JOIN [Users] AS b ON a.UserId = b.Id\n"
+                + "WHERE a.ClassId = ?";
         boolean hasStatus = (status != null && status.length > 0);
         if (hasStatus) {
             sql += (" AND a.Status IN (");
@@ -44,12 +44,6 @@ public class EnrollmentDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             int paramIndex = 2;
-            if (search != null && !search.trim().isEmpty()) {
-                String pattern = "%" + search.toLowerCase() + "%";
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-            }
             if (hasStatus) {
                 for (String s : status) {
                     statement.setObject(paramIndex++, s);
@@ -58,10 +52,17 @@ public class EnrollmentDAO extends DBContext {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Enrollment enroll = new Enrollment();
-                enroll.setId(resultSet.getInt("Id"));
+                enroll.setId(resultSet.getInt("EnrollId"));
                 enroll.setClassId(resultSet.getInt("ClassId"));
                 enroll.setUserId(resultSet.getString("UserId"));
-                enroll.setUser(new User(resultSet.getString("UserName"), resultSet.getString("FullName"), resultSet.getString("Email")));
+                enroll.setUser(new User(resultSet.getString("AvatarUrl"),
+                         resultSet.getString("UserDbId"), 
+                         resultSet.getString("RoleInClass"),
+                         resultSet.getString("UserName"),
+                         resultSet.getString("FullName"),
+                         resultSet.getString("Email"),
+                         resultSet.getString("PhoneNumber"),
+                         resultSet.getString("AccountCode")));
                 enroll.setRoleInClass(resultSet.getString("RoleInClass"));
                 enroll.setJoinedAt(resultSet.getTimestamp("JoinedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 enroll.setStatus(resultSet.getInt("Status"));
@@ -106,8 +107,7 @@ public class EnrollmentDAO extends DBContext {
 //        }
 //        return list;
 //    }
-
-    public void kickOutStudent(String userId, String classId) {
+    public void deleteStudentFromEnrollment(String userId, String classId) {
         String sql = "delete from [Enrollments] where userId =? and classId =?";
         try {
             statement = connection.prepareStatement(sql);
@@ -120,12 +120,7 @@ public class EnrollmentDAO extends DBContext {
         }
     }
 
-    public void changeStudentStatus(String userId, String classId, String status) {
-        if (status.equals("0")) {
-            status = "1";
-        } else {
-            status = "0";
-        }
+    public void changeStudentStatus(String userId, String classId, String status) {        
         String sql = "UPDATE [Enrollments]\n"
                 + "SET [Status] = ?\n"
                 + "WHERE userId =? and classId =?";
@@ -139,23 +134,28 @@ public class EnrollmentDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }    
+    }
 
+    // check student unenrolled from class by userId
     public boolean isUnenroll(String userId, String classId) {
-        boolean enroll = false;
-        String sql = "SELECT Status from [Enrollments] WHERE UserId =? and ClassId =?";
+        boolean unenrolled = false;
+        String sql = "SELECT [Status] FROM [Enrollments] WHERE [UserId] = ? AND [ClassId] = ?";
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userId);
             statement.setObject(2, classId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                enroll = resultSet.getBoolean("Status") ? true : false;
+                int status = resultSet.getInt("Status");
+                // convention: 1 = deactivated/unenrolled, 0 = active
+                unenrolled = (status == 1);
             }
+            resultSet.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return enroll;
+        return unenrolled;
     }
 
 }

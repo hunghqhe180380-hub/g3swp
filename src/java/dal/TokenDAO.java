@@ -126,19 +126,15 @@ public class TokenDAO extends DBContext {
     //set token is used
     public boolean setTokenIsUsed(String token, String action) {
         try {
-            String sql = "UPDATE [dbo].[Token]\n"
-                    + "   SET [IsUsed] = 1\n"
-                    + " WHERE [Token] = ?\n"
-                    + "And [Action] = ?";
+            String sql = "UPDATE [dbo].[Token] SET [IsUsed] = 1 WHERE [Token] = ? AND [Action] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, token);
             statement.setObject(2, action);
-            statement.executeUpdate();
-            return resultSet.next();
+            return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-
+    
 }

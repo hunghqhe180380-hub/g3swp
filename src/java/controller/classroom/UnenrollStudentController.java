@@ -11,12 +11,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.User;
 
 /**
  *
- * @author BINH
+ * @author hung2
  */
-public class KickStudentController extends HttpServlet {
+public class UnenrollStudentController extends HttpServlet {
 
     private EnrollmentDAO dao;
 
@@ -41,10 +42,10 @@ public class KickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet KickStudentController</title>");
+            out.println("<title>Servlet ExpelStudentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ExpelStudentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -75,10 +76,21 @@ public class KickStudentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String path = request.getServletPath();
         String classId = request.getParameter("classId");
-        String userId = request.getParameter("userId");
-        dao.kickOutStudent(userId, classId);
-        response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
+        String userId;
+
+        if (path.equals("/classroom/manage/expel")) {
+            // Teacher/Admin : get ID from the form
+            userId = request.getParameter("userId");
+            dao.changeStudentStatus(userId, classId, "1"); // 1 = Deactive
+            response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
+        } else {
+            // Student: get ID from session
+            User user = (User) request.getSession().getAttribute("user");
+            dao.changeStudentStatus(user.getUserID(), classId, "1"); // 1 = Deactive
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+        }
     }
 
     /**

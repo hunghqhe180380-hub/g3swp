@@ -17,7 +17,7 @@ import java.util.UUID;
 import model.Classroom;
 import model.Material;
 import model.User;
-import validation.MaterialValidator;
+import util.MaterialValidator;
 
 /**
  * Handles Edit material.
@@ -218,7 +218,7 @@ public class MaterialEditController extends HttpServlet {
 
     private boolean isOwner(Classroom cls, User user) {
         return user != null && user.getUserID() != null
-                && user.getUserID().equals(cls.getTeacherId());
+                && (user.getUserID().equals(cls.getTeacherId()) || user.getRole().equalsIgnoreCase("Admin"));
     }
 
     private int parseId(String s) {

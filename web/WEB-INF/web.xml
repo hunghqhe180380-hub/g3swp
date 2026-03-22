@@ -71,12 +71,16 @@
         <servlet-class>controller.classroom.DeleteClassController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>RestoreClassController</servlet-name>
+        <servlet-class>controller.classroom.RestoreClassController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>StudentListController</servlet-name>
         <servlet-class>controller.classroom.StudentListController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>KickStudentController</servlet-name>
-        <servlet-class>controller.classroom.KickStudentController</servlet-class>
+        <servlet-name>DeleteStudentController</servlet-name>
+        <servlet-class>controller.classroom.DeleteStudentController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MaterialListController</servlet-name>
@@ -99,10 +103,6 @@
         <servlet-class>controller.admin.SoftDeleteUserController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SoftKickStudentController</servlet-name>
-        <servlet-class>controller.classroom.SoftKickStudentController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>RouteByRoleController</servlet-name>
         <servlet-class>controller.auth.RouteByRoleController</servlet-class>
     </servlet>
@@ -118,8 +118,6 @@
         <servlet-name>JoinClassController</servlet-name>
         <servlet-class>controller.student.JoinClassController</servlet-class>
     </servlet>
-<<<<<<< Updated upstream
-=======
     <servlet>
         <servlet-name>SearchClassroomController</servlet-name>
         <servlet-class>controller.classroom.SearchClassroomController</servlet-class>
@@ -184,10 +182,13 @@
         <servlet-name>SubmissionListController</servlet-name>
         <url-pattern>/assignment/view/submission</url-pattern>
     </servlet-mapping>
->>>>>>> Stashed changes
     <servlet-mapping>
         <servlet-name>DeleteClassController</servlet-name>
         <url-pattern>/classroom/manage/delete-class</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestoreClassController</servlet-name>
+        <url-pattern>/classroom/manage/restore-class</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteUserController</servlet-name>
@@ -227,7 +228,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ClassListController</servlet-name>
-        <url-pattern>/classroom/manage/class-list</url-pattern>
+        <url-pattern>/classroom/view/class-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
@@ -246,8 +247,8 @@
         <url-pattern>/classroom/view/student-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>KickStudentController</servlet-name>
-        <url-pattern>/classroom/manage/kick-student</url-pattern>
+        <servlet-name>DeleteStudentController</servlet-name>
+        <url-pattern>/classroom/manage/delete-student</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ForgotPasswordController</servlet-name>
@@ -278,16 +279,12 @@
         <url-pattern>/admin/soft-delete-user</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SoftKickStudentController</servlet-name>
-        <url-pattern>/classroom/manage/soft-kick-student</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>RouteByRoleController</servlet-name>
         <url-pattern>/route</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateClassController</servlet-name>
-        <url-pattern>/create</url-pattern>
+        <url-pattern>/classroom/manage/create</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EditClassController</servlet-name>
@@ -295,7 +292,71 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>JoinClassController</servlet-name>
-        <url-pattern>/join</url-pattern>
+        <url-pattern>/classroom/join</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchClassroomController</servlet-name>
+        <url-pattern>/classroom/search</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenerateClasscodeController</servlet-name>
+        <url-pattern>/classroom/manage/generate-classcode</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectListController</servlet-name>
+        <url-pattern>/subject/view/subject-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateSubjectController</servlet-name>
+        <url-pattern>/subject/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <url-pattern>/classroom/manage/expel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UnenrollStudentController</servlet-name>
+        <url-pattern>/classroom/leave</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListAssignmentController</servlet-name>
+        <url-pattern>/assignment/view/list-assignment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateAssignmentController</servlet-name>
+        <url-pattern>/assignment/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/take</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/finish</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TakeAssignmentController</servlet-name>
+        <url-pattern>/assignment/force-submit-violated</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListQuestionBankController</servlet-name>
+        <url-pattern>/question/view/list-question-bank</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListQuestionAssignmentController</servlet-name>
+        <url-pattern>/assignment/view/question</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestoreStudentController</servlet-name>
+        <url-pattern>/classroom/manage/restore-student</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeactiveClassController</servlet-name>
+        <url-pattern>/classroom/manage/deactive-class</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddQuestionToAssignmentController</servlet-name>
+        <url-pattern>/assignment/question/add</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GradeServlet</servlet-name>
@@ -305,7 +366,43 @@
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
     <context-param>
-        <param-name>nrpp</param-name>
-        <param-value>5</param-value>
+        <param-name>paging.user</param-name>
+        <param-value>6</param-value>
     </context-param>
+    <context-param>
+        <param-name>paging.class</param-name>
+        <param-value>6</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.student</param-name>
+        <param-value>20</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.material</param-name>
+        <param-value>10</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.subject</param-name>
+        <param-value>10</param-value>
+    </context-param>
+    <context-param>
+        <param-name>paging.assignment</param-name>
+        <param-value>10</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>ConfirmEmailChangeController</servlet-name>
+        <servlet-class>controller.account.ConfirmEmailChangeController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConfirmEmailChangeController</servlet-name>
+        <url-pattern>/account/confirm-email-change</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>AddQuestionPageController</servlet-name>
+        <servlet-class>controller.question.AddQuestionPageController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddQuestionPageController</servlet-name>
+        <url-pattern>/question/view/add-question</url-pattern>
+    </servlet-mapping>
 </web-app>

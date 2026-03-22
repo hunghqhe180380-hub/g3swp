@@ -1,0 +1,378 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 18, 2026, 1:55:41 AM
+    Author     : BINH
+*/
+/* ===== Layout ===== */
+.take-wrap {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100dvh;
+}
+
+.take-wrap > section {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+/* ===== Sidebar Navigation ===== */
+.qnav {
+    background: #f8fafc;
+    border-right: 1px solid #e5e7eb;
+    padding: 16px;
+    overflow: auto;
+}
+
+.qnav h6 {
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: #0f172a;
+}
+
+.qnav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.qitem {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform .12s, box-shadow .12s, border-color .12s;
+}
+
+.qitem:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
+}
+
+.qitem.active {
+    border-color: #60a5fa;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, .08);
+}
+
+.qitem .qtitle {
+    font-size: .92rem;
+    color: #0f172a;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.qitem .qdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.qitem.answered .qdot {
+    background: #22c55e;
+}
+
+/* ===== Header ===== */
+.qmain-header {
+    padding: 18px 24px;
+    background: linear-gradient(90deg, #2563eb, #0ea5e9);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.qmain-header .title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.timer {
+    margin-left: auto;
+    background: rgba(255, 255, 255, .15);
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+/* ===== Progress Bar ===== */
+.qprogress {
+    height: 6px;
+    background: rgba(255, 255, 255, .25);
+    margin: 6px 24px 0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.qprogress > .bar {
+    height: 100%;
+    width: 0%;
+    background: #93c5fd;
+    transition: width .15s ease;
+}
+
+/* ===== Question Content ===== */
+.qcontent {
+    padding: 22px 28px;
+    flex: 1 1 auto;
+    padding-bottom: 90px !important;
+}
+
+.qtitle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.q-pts {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.opt {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color .12s, box-shadow .12s;
+    cursor: pointer;
+}
+
+.opt:hover {
+    border-color: #a5b4fc;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, .08);
+}
+
+.opt input {
+    transform: scale(1.15);
+}
+
+.qcontent > :last-child {
+    margin-bottom: 0 !important;
+}
+
+.essay-box {
+    width: 100%;
+    min-height: 220px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 14px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* ===== Anti-select ===== */
+.qpanel .qtitle-row,
+.qpanel .opt,
+.qpanel .q-pts {
+    user-select: none;
+}
+
+/* ===== Bottom Bar ===== */
+.take-bar {
+    position: fixed;
+    left: 260px;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    background: #f3f4f6;
+    color: #111827;
+    border-top: 1px solid #e5e7eb;
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+}
+
+.take-bar .left-slot {
+    justify-self: start;
+}
+
+.take-bar .right-slot {
+    justify-self: end;
+    display: flex;
+    gap: 10px;
+}
+
+/* ===== Buttons ===== */
+.btn-soft {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #111827;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-soft:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.btn-next {
+    background: #2563eb;
+    border: 0;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-next:disabled {
+    opacity: .35;
+    filter: grayscale(10%);
+    cursor: not-allowed;
+}
+
+.btn-finish {
+    background: #64748b;
+    border: 0;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+/* ===== Global ===== */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.take-wrap {
+    padding-bottom: 0 !important;
+}
+
+.take-wrap > section {
+    margin-bottom: 0 !important;
+}
+
+/* ===== Plain Modal ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(0, 0, 0, .45);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.is-open {
+    display: flex;
+}
+
+.modal-box {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+    width: 100%;
+    max-width: 460px;
+    margin: 16px;
+    overflow: hidden;
+}
+
+.modal-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.modal-hd.modal-warn {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.modal-hd.modal-danger {
+    background: #ef4444;
+    color: #fff;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    opacity: .85;
+}
+
+.modal-close:hover {
+    opacity: 1;
+}
+
+.modal-bd {
+    padding: 18px 18px 10px;
+    font-size: .95rem;
+    color: #111827;
+}
+
+.modal-ft {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 18px 16px;
+}
+
+/* Danger solid button (time-up modal) */
+.btn-danger-solid {
+    background: #ef4444;
+    border: 0;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: .95rem;
+}
+
+.btn-danger-solid:hover {
+    background: #dc2626;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 991px) {
+    .take-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .take-bar {
+        left: 0;
+    }
+}
+

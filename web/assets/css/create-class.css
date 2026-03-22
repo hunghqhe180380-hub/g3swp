@@ -1,0 +1,223 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 3, 2026, 8:44:59 AM
+    Author     : tuana
+*/
+:root{
+    --cc-bg: #f5f7fb;
+    --cc-border: #e6eefc;
+    --cc-muted: #64748b;
+    --cc-shadow: 0 10px 30px rgba(2, 6, 23, 0.10);
+}
+
+/* Page */
+.cc-page{
+    background: var(--cc-bg);
+}
+
+.cc-main{
+    padding: 34px 0 70px;
+}
+
+.cc-container{
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 22px;
+}
+
+.cc-title{
+    margin: 18px 0 18px;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.4px;
+}
+
+/* Grid */
+.cc-grid{
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+/* Card */
+.cc-card{
+    background: #fff;
+    border: 1px solid var(--cc-border);
+    border-radius: 18px;
+    box-shadow: var(--cc-shadow);
+}
+
+.cc-card--form{
+    padding: 22px;
+}
+
+.cc-card--preview{
+    padding: 16px;
+}
+
+.cc-preview-head{
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 14px;
+    margin: 4px 0 12px;
+}
+
+/* Form */
+.cc-field{
+    margin-bottom: 16px;
+}
+
+.cc-label{
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.cc-input{
+    width: 100%;
+    border: 1px solid #dbe5f5;
+    border-radius: 10px;
+    padding: 12px 12px;
+    font-size: 15px;
+    outline: none;
+    background: #fff;
+}
+
+.cc-input:focus{
+    border-color: rgba(37,99,235,0.45);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
+}
+
+.cc-help{
+    margin-top: 8px;
+    color: var(--cc-muted);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.cc-error{
+    margin-top: 8px;
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Number with icon */
+.cc-number{
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: center;
+}
+
+.cc-number__icon{
+    height: 44px;
+    width: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #dbe5f5;
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 16px;
+}
+
+.cc-input--number{
+    border-radius: 0 10px 10px 0;
+}
+
+/* Actions */
+.cc-actions{
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.cc-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.cc-btn--primary{
+    background: #2563eb;
+    color: #fff;
+}
+
+.cc-btn--primary:hover{
+    filter: brightness(0.97);
+}
+
+.cc-btn--ghost{
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #e2e8f0;
+}
+
+.cc-btn--ghost:hover{
+    background: #e9eef6;
+}
+
+/* Preview card */
+.cc-preview-card{
+    border: 1px solid var(--cc-border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.cc-preview-banner{
+    height: 150px;
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.cc-preview-body{
+    padding: 16px 16px 18px;
+}
+
+.cc-preview-name{
+    font-weight: 900;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.cc-preview-meta{
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cc-preview-students{
+    margin-top: 8px;
+}
+
+.cc-muted{
+    color: var(--cc-muted);
+}
+
+/* Responsive */
+@media (max-width: 980px){
+    .cc-grid{
+        grid-template-columns: 1fr;
+    }
+    .cc-card--preview{
+        order: 2;
+    }
+}

@@ -20,6 +20,11 @@ import java.util.logging.Logger;
  */
 public class DBContext {
     protected Connection connection;
+
+    public Connection getConnection() {
+        return connection;
+    }
+
     public DBContext() {
         //@Students: You are not allowed to edit this method  
         try {

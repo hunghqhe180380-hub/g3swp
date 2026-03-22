@@ -29,18 +29,25 @@
                     <div class="header__label">Materials</div>
                     <h4 class="header__title">
                         <c:out value="${classes.name}"/>
-                        <span class="header__code">• <c:out value="${classes.classCode}"/></span>
+                        <span class="header__code">• <c:out value="${classes.subjectName}"/></span>
                     </h4>
                 </div>
                 <div style="display:flex; gap:8px;">
                     <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
                         <a class="btn btn-white" href="${ctx}/material/manage/upload?classId=${classes.id}">
                             <i class="bi bi-plus-lg"></i> Add material
+                        </a>                        
+                    </c:if>
+                    <c:if test="${fn:toLowerCase(user.role) ne 'admin'}">
+                        <a class="btn btn-outline-white" href="${ctx}/account/dashboard">
+                            <i class="bi bi-arrow-left"></i> Back
                         </a>
                     </c:if>
-                    <a class="btn btn-outline-white" href="${ctx}/account/dashboard">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
+                    <c:if test="${fn:toLowerCase(user.role) eq 'admin'}">
+                        <a class="btn btn-outline-white" href="${ctx}/classroom/view/class-list">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -50,18 +57,30 @@
     <div class="page">
         <div class="wrap">
 
-            <!-- Toolbar: search + total -->
+            <!-- Toolbar: search + multi-type filter + total -->
             <div class="toolbar">
-                <form class="search" action="${ctx}/material/view/material-list" method="get">
+                <form class="search" action="${ctx}/material/view/material-list" method="get" id="frmSearch">
                     <span class="search__icon">
                         <i class="bi bi-search"></i>
                     </span>
                     <input class="search__input" type="search" name="search" id="searchInput"
                            value="<c:out value='${search}'/>"
-                           placeholder="Search materials by title or description...">
+                           placeholder="Search materials by title or description..." autocomplete="off">
                     <input type="hidden" name="classId" value="${classes.id}">
+                    <button class="search__submit" type="submit">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
                 </form>
-                <div class="total">Total: <strong><c:out value="${classes.sum}"/></strong></div>
+
+                <!-- Multi-type pill filters (client-side only) -->
+                <div class="filter-pills" id="filterPills">
+                    <button type="button" class="fpill is-active" data-type="">All</button>
+                    <button type="button" class="fpill fpill-file"  data-type="file"><i class="bi bi-paperclip"></i> File</button>
+                    <button type="button" class="fpill fpill-index" data-type="index"><i class="bi bi-list-task"></i> Index</button>
+                    <button type="button" class="fpill fpill-video" data-type="video"><i class="bi bi-play-btn"></i> Video/Link</button>
+                </div>
+
+                <div class="total">Total: <strong id="totalCount"><c:out value="${classes.sum}"/></strong></div>
             </div>
 
             <!-- Material list -->
@@ -73,8 +92,8 @@
                         <div class="empty">
                             <div class="empty__icon"><i class="bi bi-journal-text"></i></div>
                             <div class="empty__title">No materials yet</div>
-                            <div class="empty__sub">Drop a link, upload a file, or paste an index to get started.</div>
                             <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
+                                <div class="empty__sub">Drop a link, upload a file, or paste an index to get started.</div>
                                 <a class="btn btn-outline-primary" style="margin-top:14px;"
                                    href="${ctx}/material/manage/upload?classId=${classes.id}">
                                     <i class="bi bi-plus-lg"></i> Add material
@@ -84,8 +103,19 @@
                     </c:when>
 
                     <c:otherwise>
-                        <c:forEach items="${materials}" var="material">
-                            <div class="material-card" data-title="${fn:toLowerCase(material.title)}">
+                        <c:forEach items="${materials}" var="material" begin="${page.start}" end="${page.end}">
+                            <c:set var="matType">
+                                <c:choose>
+                                    <c:when test="${not empty material.externalUrl}">video</c:when>
+                                    <c:when test="${not empty material.indexContent}">index</c:when>
+                                    <c:when test="${not empty material.fileUrl}">file</c:when>
+                                    <c:otherwise></c:otherwise>
+                                </c:choose>
+                            </c:set>
+                            <div class="material-card"
+                                 data-title="${fn:toLowerCase(fn:escapeXml(material.title))}"
+                                 data-desc="${fn:toLowerCase(fn:escapeXml(material.description))}"
+                                 data-type="${matType}">
 
                                 <!-- Card header row -->
                                 <div class="card-row">
@@ -125,7 +155,7 @@
                                             </span>
                                         </c:if>
 
-                                        <c:if test="${fn:toLowerCase(user.role) eq 'teacher'}">
+                                        <c:if test="${fn:toLowerCase(user.role) ne 'student'}">
                                             <a class="btn btn-outline-primary"
                                                href="${ctx}/material/manage/edit?id=${material.id}">
                                                 <i class="bi bi-pencil-square"></i> Edit
@@ -226,8 +256,35 @@
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
-
             </div>
+            <!-- PAGING -->
+            <c:if test="${not empty materials}">
+                <div class="pager">                    
+                    <c:url var="basePath" value="/material/view/material-list">
+                        <c:if test="${not empty search}">
+                            <c:param name="search" value="${search}"/>
+                        </c:if>
+                        <c:param name="classId" value="${classes.id}"/>
+                    </c:url>
+
+                    <c:if test="${page.index!=0}">
+                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+                    </c:if>
+
+                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                        <a class="pg ${index==page.index ? 'is-active' : ''}"
+                           href="${basePath}&index=${index}">
+                            ${index+1}
+                        </a>
+                    </c:forEach>
+
+                    <c:if test="${page.index!=page.totalPage-1}">
+                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+                    </c:if>
+                </div>
+            </c:if>
         </div>
     </div>
 
@@ -248,15 +305,92 @@
             }
         }
 
-        // Live search filter
-        document.getElementById('searchInput').addEventListener('input', function () {
-            var term = this.value.trim().toLowerCase();
-            document.querySelectorAll('.material-card').forEach(function (card) {
-                var title = card.getAttribute('data-title') || '';
-                card.style.display = (!term || title.includes(term)) ? '' : 'none';
+        (function () {
+            var pills       = Array.from(document.querySelectorAll('#filterPills .fpill'));
+            var allCards    = Array.from(document.querySelectorAll('.material-card'));
+            var totalEl     = document.getElementById('totalCount');
+            var activeTypes  = new Set();
+
+            function applyFilter() {
+                var types = activeTypes.size > 0 && !activeTypes.has('') ? activeTypes : null;
+                var count = 0;
+
+                allCards.forEach(function (card) {
+                    var ctype = card.dataset.type || '';
+                    var show  = !types || types.has(ctype);
+                    card.style.display = show ? '' : 'none';
+                    if (show) count++;
+                });
+
+                if (totalEl) totalEl.textContent = count;
+            }
+
+            function updateActivePills() {
+                pills.forEach(function (p) {
+                    p.classList.toggle('is-active', activeTypes.has(p.dataset.type));
+                });
+            }
+
+            pills.forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    var t = pill.dataset.type;
+
+                    if (t === '') {
+                        activeTypes.clear();
+                    } else {
+                        activeTypes.delete('');
+                        if (activeTypes.has(t)) {
+                            activeTypes.delete(t);
+                        } else {
+                            activeTypes.add(t);
+                        }
+                        if (activeTypes.size === 0) activeTypes.add('');
+                    }
+
+                    updateActivePills();
+                    applyFilter();
+                });
             });
-        });
+
+            updateActivePills();
+            applyFilter();
+        })();
     </script>
 
 </body>
 </html>
+<style>
+    /* Pager */
+    .pager{
+        margin-top: 14px;
+        display:flex;
+        gap:6px;
+        flex-wrap:wrap;
+        align-items:center;
+    }
+    .pg{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:36px;
+        height:36px;
+        padding:0 10px;
+        border-radius:8px;
+        border:1px solid #e2e8f0;
+        background:#fff;
+        font-size:14px;
+        font-weight:700;
+        color:#334155;
+        text-decoration:none;
+        transition:border-color .12s,background .12s,color .12s;        
+    }
+    .pg:hover{
+        border-color:#94a3b8;
+        color:#0f172a;
+    }
+    .pg.is-active{
+        background:#2563eb;
+        border-color:#2563eb;
+        color:#fff;
+    }
+</style>

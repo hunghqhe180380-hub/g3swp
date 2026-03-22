@@ -1,0 +1,257 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 21, 2026, 7:21:47 PM
+    Author     : BINH
+*/
+body{
+    background:#f5f6fa;
+    font-family: Arial;
+}
+
+.header{
+    background: linear-gradient(90deg,#6a5af9,#2ec5ce);
+    color:white;
+    padding:15px 40px;
+}
+
+.assignment-card{
+    border-radius:10px;
+    border:1px solid #e0e0e0;
+    margin-bottom:20px;
+    position:relative;
+    overflow:hidden;
+    transition:0.2s;
+}
+
+.assignment-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+.assignment-card::before{
+    content:"";
+    height:4px;
+    width:100%;
+    background: linear-gradient(90deg,#6a5af9,#2ec5ce);
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+.assignment-meta{
+    color:#777;
+    font-size:14px;
+}
+
+.badge-type{
+    background:#eee;
+    color:#555;
+}
+
+.empty-wrapper{
+    min-height:70vh;
+
+    display:flex;
+    align-items: center;
+    justify-content:center;
+
+    padding:20px;
+}
+
+.empty-screen{
+
+    width:780px;
+    max-width:95%;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:100px 60px;   /* tăng chiều cao */
+
+    min-height:420px;     /* đảm bảo card cao */
+
+    text-align:center;
+
+    border:1px solid #e9ecef;
+
+    box-shadow:
+        0 25px 50px rgba(0,0,0,0.06);
+}
+
+.empty-icon{
+
+    width:100px;
+    height:100px;
+
+    margin:auto;
+    margin-bottom:30px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:20px;
+
+    background:white;
+
+    border:3px solid #2563eb;
+
+    color:#2563eb;
+
+    font-size:44px;
+
+    box-shadow:
+        0 8px 20px rgba(37,99,235,0.15);
+}
+
+.empty-screen h3{
+    font-weight:700;
+    margin-bottom:12px;
+}
+
+.empty-screen p{
+    font-size:16px;
+    color:#6c757d;
+    margin-bottom:30px;
+}
+
+.empty-screen .btn{
+    padding:12px 28px;
+    font-weight:500;
+    border-radius:10px;
+}
+
+/* Pager */
+.pager{
+    margin-top: 14px;
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+.pg{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:36px;
+    height:36px;
+    padding:0 10px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+    background:#fff;
+    font-size:14px;
+    font-weight:700;
+    color:#334155;
+    text-decoration:none;
+    transition:border-color .12s,background .12s,color .12s;
+}
+.pg:hover{
+    border-color:#94a3b8;
+    color:#0f172a;
+}
+.pg.is-active{
+    background:#2563eb;
+    border-color:#2563eb;
+    color:#fff;
+}
+
+/* ========== SEARCH FORM ========== */
+.rs-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 6px 10px;
+    width: 260px;
+}
+
+.rs-search__icon { color: #6c757d; }
+
+.rs-search__input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    background: transparent;
+    color: #212529;
+}
+
+.rs-search__submit {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    transition: color .12s;
+}
+
+.rs-search__submit:hover { color: #2563eb; }
+
+/* ========== FILTER PILLS (multi-select) ========== */
+.filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.fpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+    white-space: nowrap;    
+}
+.fpill:hover {
+    border-color: #9ca3af;
+    color: #111827;
+}
+.fpill.is-active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+.fpill.is-active:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+.fpill-mcq.is-active   {
+    background: #7c3aed;
+    border-color: #7c3aed;
+}
+.fpill-mcq.is-active:hover {
+    background: #6d28d9;
+    border-color: #6d28d9;
+}
+.fpill-essay.is-active {
+    background: #0f766e;
+    border-color: #0f766e;
+}
+.fpill-essay.is-active:hover {
+    background: #0d635a;
+    border-color: #0d635a;
+}
+.fpill-scq.is-active   {
+    background: #0369a1;
+    border-color: #0369a1;
+}
+.fpill-scq.is-active:hover {
+    background: #024e82;
+    border-color: #024e82;
+}
+

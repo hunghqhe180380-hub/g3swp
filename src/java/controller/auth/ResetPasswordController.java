@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import message.Message;
 import util.PasswordService;
-import validation.InputValidator;
+import util.InputValidator;
 
 /**
  *

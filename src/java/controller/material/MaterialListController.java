@@ -4,6 +4,7 @@
  */
 package controller.material;
 
+import dal.EnrollmentDAO;
 import dal.MaterialDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.*;
+import util.PagingUtil;
 
 /**
  *
@@ -26,9 +28,11 @@ import model.*;
 public class MaterialListController extends HttpServlet {
 
     private MaterialDAO dao;
+    private EnrollmentDAO enrollDAO;
 
     public void init() {
         dao = new MaterialDAO();
+        enrollDAO = new EnrollmentDAO();
     }
 
     /**
@@ -74,16 +78,27 @@ public class MaterialListController extends HttpServlet {
         Classroom cl = dao.getClassInfoByClassId(classId);
         HttpSession ses = request.getSession();
         User user = (User) ses.getAttribute("user");
+
+        // Classroom is deactive or not found (MaterialDAO filters Status=0)
+        if (cl == null || cl.getId() == 0) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
+        // If student has unenrolled from this class, do not allow accessing materials
+        if (user != null && user.getRole().equalsIgnoreCase("Student")
+                && enrollDAO.isUnenroll(user.getUserID(), classId)) {
+            response.sendRedirect(request.getContextPath() + "/account/dashboard");
+            return;
+        }
+
         List<Material> materials = dao.getMaterialByClassId(search, classId);
         sort(request, materials);
+        paging(request, materials);
         request.setAttribute("classes", cl);
         request.setAttribute("search", search);
         request.setAttribute("materials", materials);
-//        if (user.getRole().equalsIgnoreCase("admin")) {
-//            request.getRequestDispatcher("/view/material/list-admin.jsp").forward(request, response);
-//        } else {
-            request.getRequestDispatcher("/view/material/list-user.jsp").forward(request, response);
-        //}
+        request.getRequestDispatcher("/view/material/list-material.jsp").forward(request, response);
     }
 
     private void sort(HttpServletRequest request, List<Material> materials)
@@ -116,6 +131,22 @@ public class MaterialListController extends HttpServlet {
             }
             Collections.sort(materials, cmp);
         }
+    }
+
+    private void paging(HttpServletRequest request, List<Material> materials)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.material"));
+        int size = materials.size();
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     /**

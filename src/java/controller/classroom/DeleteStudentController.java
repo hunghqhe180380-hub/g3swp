@@ -8,6 +8,7 @@ import dal.EnrollmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author BINH
  */
-public class SoftKickStudentController extends HttpServlet {
+@MultipartConfig
+public class DeleteStudentController extends HttpServlet {
 
     private EnrollmentDAO dao;
 
@@ -41,16 +43,15 @@ public class SoftKickStudentController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SoftKickStudentController</title>");
+            out.println("<title>Servlet KickStudentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SoftKickStudentController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet KickStudentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
-    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -78,8 +79,7 @@ public class SoftKickStudentController extends HttpServlet {
             throws ServletException, IOException {
         String classId = request.getParameter("classId");
         String userId = request.getParameter("userId");
-        String status = request.getParameter("status");
-        dao.changeStudentStatus(userId, classId, status);
+        dao.deleteStudentFromEnrollment(userId, classId);
         response.sendRedirect(request.getContextPath() + "/classroom/view/student-list?classId=" + classId);
     }
 

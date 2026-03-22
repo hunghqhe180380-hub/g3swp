@@ -61,6 +61,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
   gap: 26px;
   align-items: start;
 }
+/* Width Modification */
+.acc-page .acc-grid.is-wide {
+  grid-template-columns: 280px 1fr;
+}
+.acc-page .acc-grid.is-wide .two-col {
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+}
+
 
 /* ===== Sidebar ===== */
 .acc-page .acc-side{ padding-top: 8px; }
@@ -106,6 +115,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 /* ===== Tabs ===== */
 .acc-page .tab-panel{ display:none; }
 .acc-page .tab-panel.is-active{ display:block; }
+.acc-page .tab-panel.email{ display:none; width: 700px; }
+.acc-page .tab-panel.password{ display:none; width: 700px; }
 
 .acc-page .acc-subtitle{
   font-size: 34px;

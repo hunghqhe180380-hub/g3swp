@@ -48,23 +48,24 @@ public class UserDAO extends DBContext {
         if (passwordService.checkPassword(rawPassword, passwordHash)) {
             try {
                 //get user's information from database SSMS
-                String sql = "select a.EmailConfirmed, a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
+                String sql = "select a.EmailConfirmed, a.IsDeleted ,a.Id as UserID, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash, a.EmailConfirmed\n"
                         + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
                         + "  on a.Id = b.UserId\n"
                         + "  join [dbo].[Roles] as c\n"
                         + "  on b.RoleId = c.Id\n "
-                        + "Where " + query + " and isDeleted = 0";
+                        + "Where " + query ;
 
                 statement = connection.prepareStatement(sql);
                 statement.setObject(1, name);
                 resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    return new User(resultSet.getString("UserID"),
+                    User user = new User(resultSet.getString("UserID"),
                             resultSet.getString("RoleName"),
                             resultSet.getString("FullName"),
                             resultSet.getInt("EmailConfirmed")
                     );
-
+                    user.setIsDeleted(resultSet.getInt("IsDeleted"));
+                    return user;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,8 +75,31 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    //get password hash by email
-    public String getPasswordHash(String userName) {
+//    //check account is baned?
+//    public boolean isBaned(String userId) {
+//        try {
+//            //get user's information from database SSMS
+//            String sql = "select a.IsDeleted\n"
+//                    + "  from [dbo].[Users] as a join  [dbo].[UserRoles] as b\n"
+//                    + "  on a.Id = b.UserId\n"
+//                    + "  join [dbo].[Roles] as c\n"
+//                    + "  on b.RoleId = c.Id\n "
+//                    + "Where UserID = ?";
+//
+//            statement = connection.prepareStatement(sql);
+//            statement.setObject(1, userId);
+//            resultSet = statement.executeQuery();
+//            if (resultSet.next()) {
+//                return resultSet.getInt("IsDeleted") == 1 ? true : false;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+
+//get password hash by email
+public String getPasswordHash(String userName) {
         String query = "";
         if (userName.contains("@")) {
             query = "Where [Email] = ? ";
@@ -572,7 +596,7 @@ public class UserDAO extends DBContext {
     //get email by user name
     public String getEmailByUserName(String userName) {
         try {
-            String sql = "";
+            String sql = "SELECT [Email] FROM [dbo].[Users] WHERE [UserName] = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, userName);
             resultSet = statement.executeQuery();
@@ -610,7 +634,6 @@ public class UserDAO extends DBContext {
                     + "Where [Email] = ?\n";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, email);
-            statement.executeUpdate();
             return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -663,6 +686,51 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
+
+    public boolean updateEmailByUserId(String userId, String newEmail) {
+        try {
+            String sql = "UPDATE [dbo].[Users]\n"
+                    + "   SET [Email] = ?, [NormalizedEmail] = ?\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newEmail);
+            statement.setObject(2, newEmail.toUpperCase());
+            statement.setObject(3, userId);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String getPasswordHashByUserId(String userId) {
+        try {
+            String sql = "SELECT [PasswordHash] FROM [dbo].[Users] WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, userId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("PasswordHash");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updatePasswordHashByUserId(String userId, String newPasswordHash) {
+        try {
+            String sql = "UPDATE [dbo].[Users] SET [PasswordHash] = ? WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newPasswordHash);
+            statement.setObject(2, userId);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
 //sql query string to get some importan user's information
 //    String sql = "select a.Id, c.Name as RoleName, a.UserName, a.FullName, a.Email, a.PhoneNumber, a.PasswordHash\n"

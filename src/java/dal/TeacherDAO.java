@@ -6,6 +6,7 @@ package dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,45 +22,53 @@ public class TeacherDAO extends DBContext {
     protected ResultSet resultSet;
 
     //create new class
-    public void createNewClass(String className,
-            String subject,
+    public String createNewClass(String className,
+            String subjectId,
             String teacherId,
             String studentLimit) {
+        String genClassCode = generateClassCode();
         try {
             String sql = "INSERT INTO [dbo].[Classrooms]\n"
                     + "           ([Name]\n"
                     + "           ,[ClassCode]\n"
-                    + "           ,[Subject]\n"
+                    + "           ,[SubjectId]\n"
                     + "           ,[TeacherId]\n"
                     + "           ,[CreatedAt]\n"
-                    + "           ,[MaxStudents])\n"
+                    + "           ,[MaxStudents]\n"
+                    + "           ,[TimeExpiryClassCode]\n"
+                    + "           ,[Status])"
                     + "     VALUES\n"
                     + "           (?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,GETDATE()\n"
-                    + "           ,?)";
+                    + "           ,?\n"
+                    + "           ,DATEADD(MINUTE, 2, GETDATE())\n"
+                    + "           ,0"
+                    + ")";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, className);
-            statement.setObject(2, generateClassCode());
-            statement.setObject(3, subject);
+            statement.setObject(2, genClassCode);
+            statement.setObject(3, subjectId);
             statement.setObject(4, teacherId);
             statement.setObject(5, studentLimit);
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return genClassCode;
     }
 
-    //check class name exist
-    public boolean isExistClassName(String teacherId, String className) {
-        String sql = "SELECT 1 FROM [dbo].[Classrooms] "
-                + "WHERE TeacherId = ? AND Name = ?";
+    //check class  exist
+    public boolean isExistClass(String teacherId, String className, String subjectId) {
+        String sql = "SELECT [Name], [SubjectId], [TeacherId] FROM [dbo].[Classrooms]\n"
+                + "where [Name] = ? and [SubjectId] = ? and [TeacherId] = ? AND [Status] = 0";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, teacherId);
-            ps.setString(2, className);
+            ps.setString(1, className);
+            ps.setString(2, subjectId);
+            ps.setString(3, teacherId);
 
             ResultSet rs = ps.executeQuery();
             return rs.next();
@@ -71,7 +80,7 @@ public class TeacherDAO extends DBContext {
     }
 
     //generate class code
-    private String generateClassCode() {
+    public String generateClassCode() {
 
         Random random = new Random();
 
@@ -86,30 +95,48 @@ public class TeacherDAO extends DBContext {
         return "" + firstLetter + secondLetter + thirdLetter + String.format("%03d", number);
     }
 
+    //get techer's class list by teacher's id
     public List<Classroom> getClassListByTeacherId(String teacherId) {
 
         List<Classroom> listClass = new ArrayList<>();
 
-        String sql = "SELECT c.Id, c.Name, c.Subject, c.MaxStudents, "
-                + "COUNT(e.UserId) AS TotalStudents "
-                + "FROM Classrooms c "
-                + "LEFT JOIN Enrollments e "
-                + "ON c.Id = e.ClassId AND e.Status = 0 "
-                + "WHERE c.TeacherId = ? "
-                + "GROUP BY c.Id, c.Name, c.Subject, c.MaxStudents";
+        String sql = "SELECT c.Id, CASE \n"
+                + "                       WHEN c.TimeExpiryClassCode < GETDATE() THEN NULL\n"
+                + "                        ELSE c.ClassCode\n"
+                + "                   END AS ClassCode, c.TimeExpiryClassCode,c.Name, s.subject_name, c.MaxStudents, c.CreatedAt, c.Status,\n"
+                + "                                  COUNT(e.UserId) AS TotalStudents \n"
+                + "                                              FROM Classrooms c\n"
+                + "                                            LEFT JOIN Enrollments e\n"
+                + "                                               ON c.Id = e.ClassId AND e.Status = 0 \n"
+                + "                						JOIN Subjects  s\n"
+                + "										ON c.SubjectId = s.Id\n"
+                + "WHERE c.TeacherId = ? AND c.Status = 0\n"
+                + "                                GROUP BY c.Id, c.Name, s.subject_name, c.MaxStudents, c.ClassCode, c.CreatedAt, c.TimeExpiryClassCode, c.Status";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, teacherId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
                 Classroom cls = new Classroom();
-
-                cls.setId(rs.getInt("Id"));
-                cls.setName(rs.getString("Name"));
-                cls.setSubject(rs.getString("Subject"));
-                cls.setMaxStudent(rs.getInt("MaxStudents"));
-                cls.setSum(rs.getInt("TotalStudents"));
+                cls.setId(resultSet.getInt("Id"));
+                cls.setName(resultSet.getString("Name"));
+                cls.setSubjectName(resultSet.getString("subject_name"));
+                cls.setMaxStudent(resultSet.getInt("MaxStudents"));
+                cls.setSum(resultSet.getInt("TotalStudents"));
+                cls.setClassCode(resultSet.getString("ClassCode"));
+                cls.setStatus(resultSet.getInt("Status"));
+                cls.setCreatedAt(resultSet.getTimestamp("CreatedAt")
+                        .toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                );
+                if (resultSet.getTimestamp("TimeExpiryClassCode") != null) {
+                    cls.setTimeExpiryClassCode(
+                            resultSet.getTimestamp("TimeExpiryClassCode")
+                                    .toLocalDateTime()
+                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                    );
+                }
                 listClass.add(cls);
             }
         } catch (Exception e) {
@@ -117,6 +144,30 @@ public class TeacherDAO extends DBContext {
         }
 
         return listClass;
+    }
+
+    //check class is full slot?
+    public boolean isClassFull(String classId) {
+        try {
+            String sql = "SELECT c.Id, c.Name, c.SubjectId, c.MaxStudents, \n"
+                    + "                COUNT(e.UserId) AS TotalStudents\n"
+                    + "                FROM Classrooms c \n"
+                    + "                LEFT JOIN Enrollments e \n"
+                    + "                ON c.Id = e.ClassId AND e.Status = 0 \n"
+                    + "                Where c.Id = ? AND c.Status = 0 \n"
+                    + "                GROUP BY c.Id, c.Name, c.SubjectId, c.MaxStudents";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int max = resultSet.getInt("MaxStudents");
+                int sum = resultSet.getInt("TotalStudents");
+                return sum >= max;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 // check exist class by (is created by this teacher)
@@ -138,5 +189,21 @@ public class TeacherDAO extends DBContext {
             e.printStackTrace();
         }
         return total;
+    }
+
+    //update classcode of this teacher by classId
+    public void setNewClassCode(String newClassCode, String classId) {
+        try {
+            String sql = "UPDATE [dbo].[Classrooms]\n"
+                    + "   SET [ClassCode] = ?,\n"
+                    + "      [TimeExpiryClassCode] = DATEADD(MINUTE, 2, GETDATE())\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, newClassCode);
+            statement.setObject(2, classId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

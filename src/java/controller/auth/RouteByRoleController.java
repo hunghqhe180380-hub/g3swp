@@ -4,6 +4,8 @@
  */
 package controller.auth;
 
+import controller.material.MaterialListController;
+import dal.MaterialDAO;
 import dal.StudentDAO;
 import dal.TeacherDAO;
 import dal.UserDAO;
@@ -39,15 +41,17 @@ public class RouteByRoleController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         User userLogin = (User) session.getAttribute("user");
-
         List<Classroom> classList = showClassList(userLogin.getUserID(), userLogin.getRole());
         session.setAttribute("classList", classList);
-        request.getRequestDispatcher("view/" + userLogin.getRole().toLowerCase() + "/dashboard.jsp").forward(request, response);
+        //get totalMaterial
+        MaterialDAO mtrCtrl = new MaterialDAO();
+        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
+        response.sendRedirect(request.getContextPath() + "/account/dashboard");
         //check route 
     }
 
-    //techer
-    private List<Classroom> showClassList(String userId, String role) {
+    //show classlist by role
+    public List<Classroom> showClassList(String userId, String role) {
         List<Classroom> listClass = new ArrayList<>();
         switch (role) {
             case "Teacher":
@@ -56,7 +60,7 @@ public class RouteByRoleController extends HttpServlet {
                 break;
             case "Student":
                 StudentDAO studentDAO = new StudentDAO();
-               listClass = studentDAO.getListClassJoined(userId);
+                listClass = studentDAO.getListClassJoined(userId);
                 System.out.println("sixxxx: " + listClass.size());
                 break;
             case "Admin":
