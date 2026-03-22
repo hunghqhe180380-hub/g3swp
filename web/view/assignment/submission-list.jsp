@@ -36,17 +36,27 @@
 
     <%-- TOOLBAR --%>
     <div class="toolbar card border-0 shadow-sm mb-3">
-        <div class="card-body d-flex align-items-center justify-content-between py-2">
-            <div class="flex-grow-1 me-3" style="max-width:640px;">
-                <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                    <input id="q" type="text" autocomplete="off" class="form-control"
-                           placeholder="Search by student name or email…">
-                </div>
+        <div class="card-body d-flex align-items-center justify-content-between py-2" style="flex-wrap:wrap;gap:10px;">
+
+            <form action="${ctx}/assignment/view/submission" method="get" class="rs-search">
+                <span class="rs-search__icon"><i class="bi bi-search"></i></span>
+                <input class="rs-search__input" type="text" name="search"
+                       value="<c:out value='${search}'/>"
+                       placeholder="Search by student name or email…">
+                <input type="hidden" name="assignmentId" value="${assignmentId}">
+                <input type="hidden" name="classId" value="${classId}">
+                <button class="rs-search__submit" type="submit"><i class="bi bi-box-arrow-up-right"></i></button>
+            </form>
+
+            <div class="filter-pills" id="filterPills">
+                <button type="button" class="fpill ${param.status == '' || empty param.status ? 'is-active' : ''}" data-status="">All</button>
+                <button type="button" class="fpill fpill-inprogress ${fn:contains(param.status, '1') ? 'is-active' : ''}" data-status="1"><i class="bi bi-hourglass-split"></i> In Progress</button>
+                <button type="button" class="fpill fpill-submitted  ${fn:contains(param.status, '2') ? 'is-active' : ''}"  data-status="2"><i class="bi bi-check-circle"></i> Submitted</button>
+                <button type="button" class="fpill fpill-graded    ${fn:contains(param.status, '3') ? 'is-active' : ''}"  data-status="3"><i class="bi bi-patch-check"></i> Graded</button>
+                <button type="button" class="fpill fpill-late      ${fn:contains(param.status, '4') ? 'is-active' : ''}"  data-status="4"><i class="bi bi-alarm"></i> Late</button>
+                <button type="button" class="fpill fpill-violated  ${fn:contains(param.status, '5') ? 'is-active' : ''}"  data-status="5"><i class="bi bi-x-octagon"></i> Violated</button>
             </div>
-            <div class="small text-muted d-none d-md-block">
-                List of all attempts. MCQ is auto-graded. Essay/Mixed may require grading.
-            </div>
+
         </div>
     </div>
 
@@ -67,7 +77,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="it" items="${items}">
+                    <c:forEach var="it" items="${items}" begin="${page.start}" end="${page.end}">
 
                         <%-- Status badge class --%>
                         <c:choose>
@@ -205,24 +215,92 @@
                 </tbody>
             </table>
         </div>
+
+
     </div>
+    <!-- PAGING -->
+    <c:if test="${not empty items}">
+        <div class="pager">                    
+            <c:url var="basePath" value="/assignment/view/submission">
+                <c:if test="${not empty search}">
+                    <c:param name="search" value="${search}"/>
+                </c:if>
+                <c:if test="${not empty status}">
+                    <c:param name="status" value="${status}"/>
+                </c:if>
+                <c:param name="assignmentId" value="${assignmentId}"/>
+                <c:param name="classId" value="${classId}"/>
+            </c:url>
+
+            <c:if test="${page.index!=0}">
+                <a class="pg" href="${basePath}&index=0">&laquo;</a>
+                <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
+            </c:if>
+
+            <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
+                <a class="pg ${index==page.index ? 'is-active' : ''}"
+                   href="${basePath}&index=${index}">
+                    ${index+1}
+                </a>
+            </c:forEach>
+
+            <c:if test="${page.index!=page.totalPage-1}">
+                <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
+                <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
+            </c:if>
+        </div>
+    </c:if>
 </div>
 
-<%-- Search script --%>
+<%-- Status filter (multi-select) script --%>
 <script>
     (function () {
-        const q = document.getElementById('q');
-        const rows = Array.from(document.querySelectorAll('#submissionsTable tbody tr'));
-        if (!q)
-            return;
+        const pills = Array.from(document.querySelectorAll('#filterPills .fpill'));
 
-        q.addEventListener('input', function () {
-            const term = (q.value || '').trim().toLowerCase();
-            rows.forEach(function (r) {
-                const name = r.getAttribute('data-name') || '';
-                const email = r.getAttribute('data-email') || '';
-                const show = !term || name.includes(term) || email.includes(term);
-                r.style.display = show ? '' : 'none';
+        function buildUrl(activeTypes) {
+            const url = new URL(window.location.href);
+            if (activeTypes.size === 0 || (activeTypes.size === 1 && activeTypes.has(''))) {
+                url.searchParams.delete('status');
+            } else {
+                url.searchParams.set('status', Array.from(activeTypes).filter(function (t) { return t !== ''; }).join(','));
+            }
+            url.searchParams.delete('index');
+            return url.toString();
+        }
+
+        function updatePills() {
+            pills.forEach(function (p) {
+                p.classList.toggle('is-active', activeTypes.has(p.dataset.status));
+            });
+        }
+
+        // Init active set from URL
+        const activeTypes = new Set();
+        const paramVal = new URL(window.location.href).searchParams.get('status') || '';
+        if (!paramVal) {
+            activeTypes.add('');
+        } else {
+            paramVal.split(',').forEach(function (s) { activeTypes.add(s.trim()); });
+        }
+        updatePills();
+
+        pills.forEach(function (pill) {
+            pill.addEventListener('click', function () {
+                const t = pill.dataset.status;
+                if (t === '') {
+                    activeTypes.clear();
+                    activeTypes.add('');
+                } else {
+                    activeTypes.delete('');
+                    if (activeTypes.has(t)) {
+                        activeTypes.delete(t);
+                    } else {
+                        activeTypes.add(t);
+                    }
+                    if (activeTypes.size === 0) activeTypes.add('');
+                }
+                updatePills();
+                window.location.href = buildUrl(activeTypes);
             });
         });
     })();

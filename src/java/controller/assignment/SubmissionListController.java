@@ -14,9 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import model.Assignment;
 import model.SubmissionListItem;
 import model.User;
+import util.PagingUtil;
 
 /**
  *
@@ -46,15 +48,19 @@ public class SubmissionListController extends HttpServlet {
 
         String assignmentId = request.getParameter("assignmentId");
         String classId = request.getParameter("classId");
+        String search = request.getParameter("search");
+        String status = request.getParameter("status");
 
         AssignmentAttemptDAO attemptDao = new AssignmentAttemptDAO();
         AssignmentDAO assignmentDao = new AssignmentDAO();
-        List<SubmissionListItem> list = attemptDao.getSubmissionList(assignmentId);
+        List<SubmissionListItem> list = attemptDao.getSubmissionList(search, status, assignmentId);
 
         // Get assignment title
         Assignment assignment = assignmentDao.getAssignmentById(Integer.parseInt(assignmentId));
         String assignmentTitle = assignment != null ? assignment.getTitle() : "Assignment #" + assignmentId;
 
+        paging(request, list);
+        
         // Get user from session to check role
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -64,11 +70,27 @@ public class SubmissionListController extends HttpServlet {
         request.setAttribute("items", list);
         request.setAttribute("assignmentId", assignmentId);
         request.setAttribute("assignmentTitle", assignmentTitle);
-        request.setAttribute("userRole", userRole);   
+        request.setAttribute("userRole", userRole);
         request.setAttribute("classId", classId);
 
         request.getRequestDispatcher("/view/assignment/submission-list.jsp")
                 .forward(request, response);
+    }
+
+    private void paging(HttpServletRequest request, List<SubmissionListItem> submissionList)
+            throws ServletException, IOException {
+        int nrpp = Integer.parseInt(request.getServletContext().getInitParameter("paging.submission"));
+        int size = submissionList.size();
+        int index = 0;
+        try {
+            index = Integer.parseInt(request.getParameter("index"));
+            index = index < 0 ? 0 : index;
+        } catch (Exception e) {
+            index = 0;
+        }
+        PagingUtil page = new PagingUtil(size, nrpp, index);
+        page.calc();
+        request.setAttribute("page", page);
     }
 
     @Override
