@@ -78,24 +78,24 @@ public class CreateAssignmentController extends HttpServlet {
         User user = (User) session.getAttribute("user");
         String classId = request.getParameter("classId");
         request.setAttribute("classId", classId);
-        
+
         ClassroomDAO clsDAO = new ClassroomDAO();
         Classroom cls = clsDAO.getClassInfoByClassId(classId);
-        
+
         //get subject's name and id
         SubjectDAO subjectDAO = new SubjectDAO();
         Subject subject = new Subject();
         subject.setName(subjectDAO.getSubjectNameById(cls.getSubjectId()));
         subject.setId(cls.getSubjectId());
-        
+
         //get list question from question bank of this subject by subject'id
         QuestionBankDAO qBankDAO = new QuestionBankDAO();
         List<QuestionBank> listQuestion = qBankDAO.getListQuestionBankByTeacherAndSubject(subject.getId(), user.getUserID(), 1);
-        
+
         /////
         request.setAttribute("listQuestion", listQuestion);
         request.setAttribute("subject", subject);
-        
+
         if (user.getRole().equalsIgnoreCase("teacher")) {
             request.getRequestDispatcher("/view/assignment/create-assignment.jsp").forward(request, response);
             return;
@@ -117,6 +117,9 @@ public class CreateAssignmentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //get mode create asssignment
+        String modeCreate = request.getParameter("modeCreate");
+
         String classId = request.getParameter("classId");
         String title = request.getParameter("title");
         String maxPoint = request.getParameter("maxPoint");
@@ -131,7 +134,7 @@ public class CreateAssignmentController extends HttpServlet {
         Assignment asg = new Assignment();
         asg.setTitle(title);
         asg.setDescription(description);
-        asg.setType(3);
+        asg.setType(4);
         asg.setDurationMinutes(Integer.parseInt(duration));
         asg.setMaxAttempts(Integer.parseInt(maxAttempts));
         asg.setOpenAt(openAtStr);
@@ -143,16 +146,15 @@ public class CreateAssignmentController extends HttpServlet {
 
         AssignmentDAO asgDAO = new AssignmentDAO();
 
-       int newAssignmentId = asgDAO.createAssignment(asg);
-       
-       //add question to assignment
-       request.setAttribute("newAssignmentId", newAssignmentId);
-        System.out.println("newAssignmentId1111 : " + newAssignmentId);
-       request.getRequestDispatcher("/assignment/question/add").forward(request, response);
-       
-//        /*
-//            create with auto mode => show preview first
-//         */
+        int newAssignmentId = asgDAO.createAssignment(asg);
+
+        //add question to assignment with each mode
+        request.setAttribute("modeCreate", modeCreate);
+        request.setAttribute("newAssignmentId", newAssignmentId);
+        request.getRequestDispatcher("/assignment/question/add").forward(request, response);
+        /*
+            create with auto mode => show preview first
+         */
     }
 
     public Map<String, String> validateAssignmentInput(

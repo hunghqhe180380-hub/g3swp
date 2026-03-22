@@ -102,77 +102,103 @@ public class AddQuestionToAssignmentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        String modeCreate = request.getParameter("modeCreate");
+        System.out.println("modeCreate: " + modeCreate);
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-
         String classId = request.getParameter("classId");
-        String[] typeQuestionGroup = request.getParameterValues("typeQuestionGroup");
-        String[] chapterQuestionGroup = request.getParameterValues("chapterQuestionGroup");
-        String[] numberQuestionGroup = request.getParameterValues("numberQuestionGroup");
-        String[] pointPerQuestion = request.getParameterValues("pointPerQuestion");
-
-        //get subjectId of this class
-        ClassroomDAO clsDAO = new ClassroomDAO();
-        Classroom cls = clsDAO.getClassInfoByClassId(classId);
-        String subjectId = cls.getSubjectId();
-
-        //create question group then put into list question group
-        List<QuestionGroup> listQuestionGroup = new ArrayList<>();
-
-        //every group question also have type - level - number of question - point per questio
-        // => length of each properties must be equal
-        for (int i = 0; i < typeQuestionGroup.length; i++) {
-
-            QuestionGroup qGroup = new QuestionGroup();
-
-            qGroup.setType(Integer.parseInt(typeQuestionGroup[i]));
-            qGroup.setChapter(Integer.parseInt(chapterQuestionGroup[i]));
-            qGroup.setNumberQuestion(Integer.parseInt(numberQuestionGroup[i]));
-            qGroup.setPointPerQuestion(Integer.parseInt(pointPerQuestion[i]));
-
-            listQuestionGroup.add(qGroup);
-        }
-
-        //get random question from QuestionBank by (subjectId and properties of question groups)
-        QuestionBankDAO qBankDAO = new QuestionBankDAO();
-
-        //random question group
-        Map<String, List<QuestionBank>> listRandomGroup = new HashMap<>();
-        for (int i = 0; i < listQuestionGroup.size(); i++) {
-            listRandomGroup.put(listQuestionGroup.get(i).getType() + "-" + listQuestionGroup.get(i).getChapter(),
-                    qBankDAO.getRandomQuestions(subjectId,
-                            user.getUserID(),
-                            listQuestionGroup.get(i).getChapter(),
-                            listQuestionGroup.get(i).getType(),
-                            listQuestionGroup.get(i).getNumberQuestion(),
-                            listQuestionGroup.get(i).getPointPerQuestion()));
-        }
-
-        List<QuestionBank> listQuestionBankRandomResult = new ArrayList<>();
-        for (Map.Entry<String, List<QuestionBank>> entry : listRandomGroup.entrySet()) {
-
-            String key = entry.getKey();
-            List<QuestionBank> list = entry.getValue();
-
-            System.out.println("Group: " + key);
-
-            for (QuestionBank q : list) {
-                listQuestionBankRandomResult.add(q);
-            }
-        }
 
         //insert listQuestionBankRandomResult into Assignment 
         int newAssignmentId = (int) request.getAttribute("newAssignmentId");
         AssignmentQuestionDAO asgQuestionDAO = new AssignmentQuestionDAO();
-        for (int i = 0; i < listQuestionBankRandomResult.size(); i++) {
-            asgQuestionDAO.insertQuestion(newAssignmentId, listQuestionBankRandomResult.get(i));
+        //create with auto mode
+        if (modeCreate.equalsIgnoreCase("auto")) {
+
+            String[] typeQuestionGroup = request.getParameterValues("typeQuestionGroup");
+            String[] chapterQuestionGroup = request.getParameterValues("chapterQuestionGroup");
+            String[] numberQuestionGroup = request.getParameterValues("numberQuestionGroup");
+            String[] pointPerQuestion = request.getParameterValues("pointPerQuestion");
+
+            //get subjectId of this class
+            ClassroomDAO clsDAO = new ClassroomDAO();
+            Classroom cls = clsDAO.getClassInfoByClassId(classId);
+            String subjectId = cls.getSubjectId();
+
+            //create question group then put into list question group
+            List<QuestionGroup> listQuestionGroup = new ArrayList<>();
+
+            //every group question also have type - level - number of question - point per questio
+            // => length of each properties must be equal
+            for (int i = 0; i < typeQuestionGroup.length; i++) {
+
+                QuestionGroup qGroup = new QuestionGroup();
+
+                qGroup.setType(Integer.parseInt(typeQuestionGroup[i]));
+                qGroup.setChapter(Integer.parseInt(chapterQuestionGroup[i]));
+                qGroup.setNumberQuestion(Integer.parseInt(numberQuestionGroup[i]));
+                qGroup.setPointPerQuestion(Integer.parseInt(pointPerQuestion[i]));
+
+                listQuestionGroup.add(qGroup);
+            }
+
+            //get random question from QuestionBank by (subjectId and properties of question groups)
+            QuestionBankDAO qBankDAO = new QuestionBankDAO();
+
+            //random question group
+            Map<String, List<QuestionBank>> listRandomGroup = new HashMap<>();
+            for (int i = 0; i < listQuestionGroup.size(); i++) {
+                listRandomGroup.put(listQuestionGroup.get(i).getType() + "-" + listQuestionGroup.get(i).getChapter(),
+                        qBankDAO.getRandomQuestions(subjectId,
+                                user.getUserID(),
+                                listQuestionGroup.get(i).getChapter(),
+                                listQuestionGroup.get(i).getType(),
+                                listQuestionGroup.get(i).getNumberQuestion(),
+                                listQuestionGroup.get(i).getPointPerQuestion()));
+            }
+
+            List<QuestionBank> listQuestionBankRandomResult = new ArrayList<>();
+            for (Map.Entry<String, List<QuestionBank>> entry : listRandomGroup.entrySet()) {
+
+                String key = entry.getKey();
+                List<QuestionBank> list = entry.getValue();
+
+                System.out.println("Group: " + key);
+
+                for (QuestionBank q : list) {
+                    listQuestionBankRandomResult.add(q);
+                }
+            }
+
+            //insert listQuestionBankRandomResult into Assignment 
+            for (int i = 0; i < listQuestionBankRandomResult.size(); i++) {
+                asgQuestionDAO.insertQuestion(newAssignmentId, listQuestionBankRandomResult.get(i));
+            }
+
+//            System.out.println("newAssignmentId22222 : " + newAssignmentId);
+//            request.setAttribute("listQuestionGroup", listQuestionGroup);
+//            request.setAttribute("classId", classId);
+//            request.setAttribute("listquestion", listRandomGroup);
         }
 
-        System.out.println("newAssignmentId22222 : " + newAssignmentId);
-        request.setAttribute("listQuestionGroup", listQuestionGroup);
-        request.setAttribute("classId", classId);
-        request.setAttribute("listquestion", listRandomGroup);
+        //create with manual mode
+        if (modeCreate.equalsIgnoreCase("manual")) {
+            String[] questionId = request.getParameterValues("questionId");
+            String[] pointOfQuestion = request.getParameterValues("pointOfQuestion");
+
+            List<QuestionBank> listQuestion = new ArrayList<>();
+            QuestionBankDAO qBankDAO = new QuestionBankDAO();
+            for (int i = 0; i < questionId.length; i++) {
+                listQuestion.add(qBankDAO.getQuestionById(questionId[i],
+                        user.getUserID(),
+                        Double.parseDouble(pointOfQuestion[i])));
+            }
+
+            //add question from question bank into asssignment question
+            for (int i = 0; i < listQuestion.size(); i++) {
+                asgQuestionDAO.insertQuestion(newAssignmentId, listQuestion.get(i));
+            }
+        }
+
         response.sendRedirect(request.getContextPath()
                 + "/assignment/view/list-assignment?classId=" + classId);
         return;
