@@ -42,10 +42,10 @@
                 <span class="rs-search__icon"><i class="bi bi-search"></i></span>
                 <input class="rs-search__input" type="text" name="search"
                        value="<c:out value='${search}'/>"
-                       placeholder="Search by student name or email…">
+                       placeholder="Search by name or email…">
                 <input type="hidden" name="assignmentId" value="${assignmentId}">
                 <input type="hidden" name="classId" value="${classId}">
-                <button class="rs-search__submit" type="submit"><i class="bi bi-box-arrow-up-right"></i></button>
+                <button class="rs-search__submit" type="submit"><i class="bi bi-arrow-right"></i></button>
             </form>
 
             <div class="filter-pills" id="filterPills">

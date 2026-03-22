@@ -247,7 +247,7 @@
 
       <div class="nav-actions dash-actions">
         <!-- Teacher upgrade -->
-        <c:if test="${requestScope.hideTeacherCTA ne true}">
+        <c:if test="${sessionScope.user.role eq 'Student'}">
           <button class="btn btn-outline teacher-btn" type="button" id="openTeacherModal">
             Are you a teacher?
           </button>
@@ -282,7 +282,7 @@
 </header>
 
 <!-- Teacher modal -->
-<c:if test="${requestScope.hideTeacherCTA ne true}">
+<c:if test="${sessionScope.user.role eq 'Student'}">
   <div class="dash-modal" id="teacherModal" aria-hidden="true">
     <div class="dash-modal__backdrop" data-close="1"></div>
     <div class="dash-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle">
