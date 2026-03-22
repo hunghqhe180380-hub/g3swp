@@ -289,7 +289,7 @@
                                                 <c:choose>
                                                     <c:when test="${s.status == 1}">
                                                         <button type="button"
-                                                                class="rs-btn rs-btn-restore-outline"
+                                                                class="rs-btn rs-btn-restore-outline rs-action-btn"
                                                                 data-action="restore"
                                                                 data-userid="${s.userId}"
                                                                 data-fullname="${fullName}">
@@ -298,7 +298,7 @@
                                                     </c:when>
                                                     <c:otherwise>
                                                         <button type="button"
-                                                                class="rs-btn rs-btn-danger-outline"
+                                                                class="rs-btn rs-btn-danger-outline rs-action-btn"
                                                                 data-action="kick"
                                                                 data-userid="${s.userId}"
                                                                 data-fullname="${fullName}">
@@ -308,6 +308,7 @@
                                                 </c:choose>
                                             </td>
                                         </c:if>
+                                            
                                         <c:if test="${isAdmin}">
                                             <td style="text-align: center; vertical-align: middle;">
                                                 <form action="${ctx}/classroom/manage/delete-student" method="post"
