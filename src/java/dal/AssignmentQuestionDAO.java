@@ -21,7 +21,6 @@ public class AssignmentQuestionDAO extends DBContext {
     PreparedStatement statement;
     ResultSet resultSet;
 
-
     public List<AssignmentQuestion> getQuestionsByAssignmentId(String assignmentId) {
 
         List<AssignmentQuestion> list = new ArrayList<>();
@@ -35,7 +34,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "      ,[Points]\n"
                     + "      ,[Order]\n"
                     + "      ,[Chapter]\n"
-                    + "      ,[CreatedAt]\n"                    
+                    + "      ,[CreatedAt]\n"
                     + "  FROM [dbo].[AssignmentQuestions]\n"
                     + "WHERE AssignmentId = ? ORDER BY [Order]";
 
@@ -52,7 +51,7 @@ public class AssignmentQuestionDAO extends DBContext {
                         resultSet.getDouble("Points"),
                         resultSet.getInt("Order"),
                         resultSet.getInt("Chapter"),
-                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),                        
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         asgChoiceDAO.getListChoiceByQuestionId(resultSet.getInt("Id")));
                 list.add(q);
             }
@@ -68,26 +67,29 @@ public class AssignmentQuestionDAO extends DBContext {
     public void insertQuestion(int assignmentId, QuestionBank qBank) {
         try {
             String sql = "INSERT INTO [dbo].[AssignmentQuestions]\n"
-                    + "           ([AssignmentId],\n"
-                    + "            [Type],\n"
-                    + "            [Prompt],\n"
-                    + "            [Points],\n"
-                    + "            [Order],\n"
-                    + "            [Chapter],\n"
-                    + "            [CreatedAt],\n"                    
+                    + "(\n"
+                    + "    [AssignmentId],\n"
+                    + "    [Type],\n"
+                    + "    [Prompt],\n"
+                    + "    [Points],\n"
+                    + "    [Order],\n"
+                    + "    [Chapter],\n"
+                    + "    [CreatedAt]\n"
+                    + ")\n"
                     + "VALUES\n"
                     + "(\n"
-                    + "    ?,  -- AssignmentId\n"
-                    + "    ?,  -- Type\n"
-                    + "    ?,  -- Prompt\n"
-                    + "    ?,  -- Points\n"
-                    + "\n"
-                    + "    (SELECT ISNULL(MAX([Order]), 0) + 1\n"
-                    + "     FROM [dbo].[AssignmentQuestions]\n"
-                    + "     WHERE AssignmentId = ?),  -- auto order\n"
-                    + "\n"
-                    + "    ?,  -- Chapter\n"
-                    + "    GETDATE());";
+                    + "    ?,\n"
+                    + "    ?,\n"
+                    + "    ?,\n"
+                    + "    ?,\n"
+                    + "    (\n"
+                    + "        SELECT ISNULL(MAX([Order]), 0) + 1\n"
+                    + "        FROM [dbo].[AssignmentQuestions]\n"
+                    + "        WHERE AssignmentId = ?\n"
+                    + "    ),\n"
+                    + "    ?,\n"
+                    + "    GETDATE()\n"
+                    + ");";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, assignmentId);
             statement.setObject(2, qBank.getType());

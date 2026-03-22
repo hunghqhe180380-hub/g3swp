@@ -283,8 +283,8 @@
                 <div class="ca-seed" data-id="${question.id}" 
                      data-type="
                      <c:choose>
-                         <c:when test='${question.type == 1}'>MCQ</c:when>
-                         <c:when test='${question.type == 2}'>SCQ</c:when>
+                         <c:when test='${question.type == 1}'>SCQ</c:when>
+                         <c:when test='${question.type == 2}'>MCQ</c:when>
                          <c:when test='${question.type == 3}'>Essay</c:when>
                      </c:choose>
                      "
