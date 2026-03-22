@@ -5,17 +5,16 @@ import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import model.SubmissionListItem;
-import model.Assignment;
 import model.GradeAttemptVM;
 import model.GradeEssayItem;
-import model.GradeEssayItemVM;
-import model.GradeMCQChoice;
-import model.GradeMCQQuestion;
 import model.GradeMcqItem;
 import model.McqChoice;
+import java.util.List;
+import model.SubmissionListItem;
+import model.Assignment;
+import model.AssignmentAttempt;
+import model.ReviewQuestionDTO;
 
 /**
  * * * @author FPT
@@ -139,18 +138,23 @@ public class AssignmentDAO extends DBContext {
     }
 
     //create assignment
-    public void createAssignment(Assignment a) {
-
-        String sql = "INSERT INTO Assignments (Title,Description,Type,DurationMinutes,"
-                + "MaxAttempts,ClassId,OpenAt,CloseAt,CreatedAt,CreatedById)"
-                + " VALUES (?,?,?,?,?,?,?,?,GETDATE(),?)";
-
+    public int createAssignment(Assignment a) {
+        int newAssignmentId = -1;
+        String sql = "INSERT INTO Assignments \n"
+                + "(Title, Description, Type, DurationMinutes,\n"
+                + " MaxAttempts, ClassId, OpenAt, CloseAt, CreatedAt, CreatedById)\n"
+                + "\n"
+                + "OUTPUT INSERTED.Id\n"
+                + "\n"
+                + "VALUES \n"
+                + "(?, ?, ?, ?,\n"
+                + " ?, ?, ?, ?, GETDATE(), ?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
 
             st.setObject(1, a.getTitle());
             st.setObject(2, a.getDescription());
-            st.setObject(3, a.getType());
+            st.setInt(3, a.getType());
             st.setObject(4, a.getDurationMinutes());
             st.setObject(5, a.getMaxAttempts());
             st.setObject(6, a.getClassId());
@@ -178,6 +182,7 @@ public class AssignmentDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return 1;
     }
 
     public GradeAttemptVM getAttemptDetail(int attemptId) {
@@ -309,8 +314,71 @@ public class AssignmentDAO extends DBContext {
     }
 
     public static void main(String[] args) {
-        AssignmentDAO d = new AssignmentDAO();
-        System.out.println(d.getAttemptDetail(1044));
+        AssignmentDAO dao = new AssignmentDAO();
+
+        // THAY ĐỔI ID NÀY THEO DỮ LIỆU THẬT TRONG DATABASE CỦA BẠN
+        int testAttemptId = 1050;
+
+        try {
+            System.out.println("========== TEST REVIEW ATTEMPT ==========");
+            System.out.println("Đang truy vấn Attempt ID: " + testAttemptId);
+
+            // 1. Test hàm getAttemptById
+            AssignmentAttempt attempt = dao.getAttemptById(testAttemptId);
+            if (attempt != null) {
+                System.out.println("[INFO] Thông tin Attempt:");
+                System.out.println(" - Student ID: " + attempt.getUserId());
+                System.out.println(" - Final Score: " + attempt.getFinalScore());
+                System.out.println(" - Status: " + (attempt.getStatus() == 3 ? "Graded" : "Pending"));
+                System.out.println(" - Submitted At: " + attempt.getSubmittedAt());
+            } else {
+                System.out.println("[ERROR] Không tìm thấy Attempt với ID: " + testAttemptId);
+                return;
+            }
+
+            System.out.println("-----------------------------------------");
+
+            // 2. Test hàm getReviewData
+            System.out.println("[INFO] Đang lấy chi tiết câu hỏi Review...");
+            List<ReviewQuestionDTO> questions = dao.getReviewData(testAttemptId);
+
+            if (questions == null || questions.isEmpty()) {
+                System.out.println("[WARN] Không có dữ liệu câu trả lời nào cho Attempt này.");
+            } else {
+                for (int i = 0; i < questions.size(); i++) {
+                    ReviewQuestionDTO q = questions.get(i);
+                    System.out.printf("\nCâu %d [%s] (%s pts): %s\n",
+                            (i + 1), q.type, q.points, q.prompt);
+
+                    if ("MCQ".equalsIgnoreCase(q.type)) {
+                        // In danh sách lựa chọn MCQ
+                        for (ReviewChoiceDTO c : q.choices) {
+                            String prefix = "[ ]";
+                            if (c.isChosen && c.isCorrect) {
+                                prefix = "[V] CORRECT & CHOSEN";
+                            } else if (c.isCorrect) {
+                                prefix = "[!] CORRECT ANSWER";
+                            } else if (c.isChosen) {
+                                prefix = "[X] STUDENT WRONG CHOICE";
+                            }
+
+                            System.out.println("   " + prefix + " " + c.text);
+                        }
+                    } else {
+                        // In nội dung tự luận
+                        System.out.println("   -> Student Answer: " + (q.essayText != null ? q.essayText : "N/A"));
+                        System.out.println("   -> Teacher Score: " + q.essayScore);
+                        System.out.println("   -> Teacher Comment: " + (q.teacherComment != null ? q.teacherComment : "No comment"));
+                    }
+                }
+            }
+
+            System.out.println("\n========== TEST HOÀN TẤT ==========");
+
+        } catch (Exception e) {
+            System.err.println("!!! LỖI KHI TEST DAO !!!");
+            e.printStackTrace();
+        }
     }
 
     public void updateEssayScore(int attemptId, int questionId, double score, String comment) {
@@ -508,4 +576,154 @@ public class AssignmentDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public void updateGrade(int attemptId, String overallComment, double finalScore, List<GradeEssayItem> essays) throws SQLException {
+        String sqlUpdateAnswer = "UPDATE AssignmentAnswers SET PointsAwarded = ?, TeacherComment = ? WHERE AttemptId = ? AND QuestionId = ?";
+        String sqlUpdateAttempt = "UPDATE AssignmentAttempts SET TeacherComment = ?, FinalScore = ?, Status = 3 WHERE Id = ?";
+
+        try {
+            // 1. Cập nhật các câu tự luận (Batch Update)
+            if (essays != null && !essays.isEmpty()) {
+                statement = connection.prepareStatement(sqlUpdateAnswer);
+                for (GradeEssayItem essay : essays) {
+                    statement.setDouble(1, essay.getScore());
+                    statement.setString(2, essay.getComment());
+                    statement.setInt(3, attemptId);
+                    statement.setInt(4, essay.getQuestionId());
+                    statement.addBatch();
+                }
+                statement.executeBatch();
+            }
+
+            // 2. Cập nhật bảng tổng kết bài làm
+            statement = connection.prepareStatement(sqlUpdateAttempt);
+            statement.setString(1, overallComment);
+            statement.setDouble(2, finalScore);
+            statement.setInt(3, attemptId);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Ném lỗi để Servlet bắt được và hiển thị
+        }
+    }
+
+    public double getAutoScoreByAttemptId(int attemptId) throws SQLException {
+        String sql = "SELECT AutoScore FROM AssignmentAttempts WHERE Id = ?";
+        double autoScore = 0;
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, attemptId);
+            resultSet = statement.executeQuery(); // Giả sử bạn có biến resultSet trong class
+
+            if (resultSet.next()) {
+                autoScore = resultSet.getDouble("AutoScore");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return autoScore;
+    }
+
+    public AssignmentAttempt getAttemptById(int attemptId) throws SQLException {
+        String sql = "SELECT a.Id, a.AssignmentId, a.UserId, a.FinalScore, a.SubmittedAt, a.Status, "
+                + "assign.Title as AssignmentTitle "
+                + "FROM AssignmentAttempts a "
+                + "JOIN Assignments assign ON a.AssignmentId = assign.Id "
+                + "WHERE a.Id = ?";
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, attemptId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                AssignmentAttempt a = new AssignmentAttempt();
+                a.setId(resultSet.getInt("Id"));
+                a.setAssignmentId(resultSet.getInt("AssignmentId"));
+                a.setUserId(resultSet.getString("UserId"));
+                a.setFinalScore(resultSet.getDouble("FinalScore"));
+                a.setSubmittedAt(resultSet.getString("SubmittedAt"));
+                a.setStatus(resultSet.getInt("Status"));
+                // Bạn có thể set thêm Title nếu model có thuộc tính này
+                return a;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
+    }
+
+    public List<ReviewQuestionDTO> getReviewData(int attemptId) throws SQLException {
+        List<ReviewQuestionDTO> questions = new ArrayList<>();
+
+        // Query chuẩn dựa trên schema ảnh bạn gửi
+        String sql = "SELECT aq.Id, aq.Prompt, aq.Type, aq.Points, "
+                + "ans.TextAnswer as StudentEssay, ans.PointsAwarded, ans.TeacherComment, "
+                + "ans.SelectedChoiceId "
+                + "FROM AssignmentAnswers ans "
+                + "JOIN AssignmentQuestions aq ON ans.QuestionId = aq.Id " // Khớp Id theo schema
+                + "WHERE ans.AttemptId = ? "
+                + "ORDER BY aq.[Order] ASC"; // Dùng cột [Order] từ ảnh
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, attemptId);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                ReviewQuestionDTO q = new ReviewQuestionDTO();
+                // LƯU Ý: Nếu bảng AssignmentQuestions không giữ QuestionBankId gốc, 
+                // bạn cần đảm bảo hàm getChoices dùng đúng ID để map.
+                q.questionId = resultSet.getInt("Id");
+                q.prompt = resultSet.getString("Prompt");
+
+                // Xử lý Type: Trong ảnh Type là int. 
+                // Giả sử: 1 = MCQ, 2 = Essay.
+                int typeInt = resultSet.getInt("Type");
+                q.type = (typeInt == 2) ? "MCQ" : "Essay";
+
+                q.points = resultSet.getDouble("Points");
+                q.essayText = resultSet.getString("StudentEssay");
+                q.essayScore = (Double) resultSet.getObject("PointsAwarded");
+                q.teacherComment = resultSet.getString("TeacherComment");
+                int selectedChoiceId = resultSet.getInt("SelectedChoiceId");
+
+                if ("MCQ".equals(q.type)) {
+                    // Truyền q.questionId (là Id của AssignmentQuestions)
+                    q.choices = getChoicesForReview(q.questionId, selectedChoiceId);
+                }
+                questions.add(q);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return questions;
+    }
+
+    private List<ReviewChoiceDTO> getChoicesForReview(int questionBankId, int selectedChoiceId) throws SQLException {
+        List<ReviewChoiceDTO> choices = new ArrayList<>();
+        // Theo ảnh: Bảng QuestionBankChoices, Cột Text, Cột QuestionBankId
+        String sql = "SELECT Id, [Text], IsCorrect FROM QuestionBankChoices WHERE QuestionBankId = ? ORDER BY [Order]";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, questionBankId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ReviewChoiceDTO c = new ReviewChoiceDTO();
+                    c.choiceId = rs.getInt("Id");
+                    c.text = rs.getString("Text"); // Đổi từ Content -> Text
+                    c.isCorrect = rs.getBoolean("IsCorrect");
+                    c.isChosen = (c.choiceId == selectedChoiceId);
+                    choices.add(c);
+                }
+            }
+        }
+        return choices;
+    }
+
 }

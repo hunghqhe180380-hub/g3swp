@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package dal;
 
 import java.sql.PreparedStatement;
@@ -10,75 +14,8 @@ import model.Classroom;
 
 public class ClassroomDAO extends DBContext {
 
-    private static final DateTimeFormatter FMT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-    // ── Base SELECT shared by all read queries ─────────────────────────────
-    private static final String BASE_SELECT =
-        "SELECT a.Id, a.Name, a.ClassCode, a.Subject, a.TeacherId, " +
-        "       a.CreatedAt, a.MaxStudents, " +
-        "       b.FullName AS TeacherName, " +
-        "       (SELECT COUNT(*) FROM [Enrollments] e WHERE e.ClassId = a.Id) AS TotalStudent " +
-        "FROM [Classrooms] a " +
-        "JOIN [Users] b ON a.TeacherId = b.Id ";
-
-    // ─────────────────────────────────────────────────────────────────────
-    //  COUNT  (for pagination metadata)
-    // ─────────────────────────────────────────────────────────────────────
-
-    public int countAllClasses(String search) {
-        StringBuilder sql = new StringBuilder(
-            "SELECT COUNT(*) FROM [Classrooms] a " +
-            "JOIN [Users] b ON a.TeacherId = b.Id WHERE 1=1"
-        );
-        boolean hasSearch = isNotBlank(search);
-        if (hasSearch) sql.append(searchClause());
-
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            if (hasSearch) bindSearch(ps, 1, search);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return 0;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    //  PAGED LIST  (SQL-level OFFSET / FETCH)
-    // ─────────────────────────────────────────────────────────────────────
-
-    public List<Classroom> getClassesPaged(String search,
-                                           String sortCol, String sortDir,
-                                           int offset, int pageSize) {
-        String orderBy = switch (sortCol == null ? "" : sortCol.toLowerCase()) {
-            case "name"    -> "a.Name";
-            case "teacher" -> "b.FullName";
-            default        -> "a.CreatedAt";
-        };
-        String dir = "asc".equalsIgnoreCase(sortDir) ? "ASC" : "DESC";
-
-        boolean hasSearch = isNotBlank(search);
-        StringBuilder sql = new StringBuilder(BASE_SELECT).append("WHERE 1=1");
-        if (hasSearch) sql.append(searchClause());
-        sql.append(" ORDER BY ").append(orderBy).append(" ").append(dir);
-        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-
-        List<Classroom> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            int idx = 1;
-            if (hasSearch) idx = bindSearch(ps, idx, search);
-            ps.setInt(idx++, offset);
-            ps.setInt(idx,   pageSize);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return list;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    //  ALL + SEARCH  (in-memory sort + PagingUtil approach)
-    // ─────────────────────────────────────────────────────────────────────
+    protected PreparedStatement statement;
+    protected ResultSet resultSet;
 
     public List<Classroom> getAllClassBySearch(String search) {
         boolean hasSearch = isNotBlank(search);
@@ -87,10 +24,15 @@ public class ClassroomDAO extends DBContext {
         sql.append(" ORDER BY a.CreatedAt DESC");
 
         List<Classroom> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            if (hasSearch) bindSearch(ps, 1, search);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
+        try {
+            statement = connection.prepareStatement(sql);
+            int paramIndex = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                String pattern = "%" + search.toLowerCase() + "%";
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
+                statement.setObject(paramIndex++, pattern);
             }
         } catch (SQLException e) { e.printStackTrace(); }
         return list;

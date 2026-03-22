@@ -234,7 +234,7 @@
                                         <span class="d-none d-xl-inline">Grade</span>
                                     </a>
                                 </c:if>
-                                <a href="#"
+                                <a href="${ctx}/assignment/review?attemptId=${it.attemptId}"
                                    class="btn btn-sm btn-outline-secondary">
                                     View
                                 </a>
