@@ -87,9 +87,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "     WHERE AssignmentId = ?),  -- auto order\n"
                     + "\n"
                     + "    ?,  -- Chapter\n"
-                    + "    GETDATE(),\n"
-                    + "    ?   -- SourceType\n"
-                    + ");";
+                    + "    GETDATE());";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, assignmentId);
             statement.setObject(2, qBank.getType());
@@ -97,7 +95,6 @@ public class AssignmentQuestionDAO extends DBContext {
             statement.setObject(4, qBank.getSettingPoint());
             statement.setObject(5, assignmentId);
             statement.setObject(6, qBank.getChapter());
-            statement.setObject(7, "QuestionBank");
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
