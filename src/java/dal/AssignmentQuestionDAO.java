@@ -10,7 +10,6 @@ package dal;
  */
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,6 @@ public class AssignmentQuestionDAO extends DBContext {
     PreparedStatement statement;
     ResultSet resultSet;
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public List<AssignmentQuestion> getQuestionsByAssignmentId(String assignmentId) {
 
@@ -37,8 +35,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "      ,[Points]\n"
                     + "      ,[Order]\n"
                     + "      ,[Chapter]\n"
-                    + "      ,[CreatedAt]\n"
-                    + "      ,[SourceType]\n"
+                    + "      ,[CreatedAt]\n"                    
                     + "  FROM [dbo].[AssignmentQuestions]\n"
                     + "WHERE AssignmentId = ? ORDER BY [Order]";
 
@@ -55,9 +52,8 @@ public class AssignmentQuestionDAO extends DBContext {
                         resultSet.getDouble("Points"),
                         resultSet.getInt("Order"),
                         resultSet.getInt("Chapter"),
-                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),                        
                         asgChoiceDAO.getListChoiceByQuestionId(resultSet.getInt("Id")));
-
                 list.add(q);
             }
 
@@ -78,7 +74,7 @@ public class AssignmentQuestionDAO extends DBContext {
                     + "            [Points],\n"
                     + "            [Order],\n"
                     + "            [Chapter],\n"
-                    + "            [CreatedAt])\n"
+                    + "            [CreatedAt],\n"                    
                     + "VALUES\n"
                     + "(\n"
                     + "    ?,  -- AssignmentId\n"
