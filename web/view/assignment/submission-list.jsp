@@ -8,6 +8,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="isTeacher" value="${fn:toUpperCase(sessionScope.user.role) == 'TEACHER'}" />
+<c:set var="isAdmin" value="${fn:toUpperCase(sessionScope.user.role) == 'ADMIN'}" />
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
@@ -36,25 +39,47 @@
 
     <%-- TOOLBAR --%>
     <div class="toolbar card border-0 shadow-sm mb-3">
-        <div class="card-body d-flex align-items-center justify-content-between py-2" style="flex-wrap:wrap;gap:10px;">
+        <div class="card-body d-flex align-items-center justify-content-between py-2">
+            <div class="flex-grow-1 me-3" style="max-width:640px;">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                    <input id="q" type="text" autocomplete="off" class="form-control"
+                           placeholder="Search by student name or email…">
+                </div>
+            </div>
+            <div class="small text-muted d-none d-md-block">
+                List of all attempts. MCQ is auto-graded. Essay/Mixed may require grading.
+            </div>
+        </div>
+    </div>
 
-            <form action="${ctx}/assignment/view/submission" method="get" class="rs-search">
-                <span class="rs-search__icon"><i class="bi bi-search"></i></span>
-                <input class="rs-search__input" type="text" name="search"
-                       value="<c:out value='${search}'/>"
-                       placeholder="Search by name or email…">
-                <input type="hidden" name="assignmentId" value="${assignmentId}">
-                <input type="hidden" name="classId" value="${classId}">
-                <button class="rs-search__submit" type="submit"><i class="bi bi-arrow-right"></i></button>
-            </form>
+    <div class="card border-0 shadow-sm mb-3 p-3">
 
-            <div class="filter-pills" id="filterPills">
-                <button type="button" class="fpill ${param.status == '' || empty param.status ? 'is-active' : ''}" data-status="">All</button>
-                <button type="button" class="fpill fpill-inprogress ${fn:contains(param.status, '1') ? 'is-active' : ''}" data-status="1"><i class="bi bi-hourglass-split"></i> In Progress</button>
-                <button type="button" class="fpill fpill-submitted  ${fn:contains(param.status, '2') ? 'is-active' : ''}"  data-status="2"><i class="bi bi-check-circle"></i> Submitted</button>
-                <button type="button" class="fpill fpill-graded    ${fn:contains(param.status, '3') ? 'is-active' : ''}"  data-status="3"><i class="bi bi-patch-check"></i> Graded</button>
-                <button type="button" class="fpill fpill-late      ${fn:contains(param.status, '4') ? 'is-active' : ''}"  data-status="4"><i class="bi bi-alarm"></i> Late</button>
-                <button type="button" class="fpill fpill-violated  ${fn:contains(param.status, '5') ? 'is-active' : ''}"  data-status="5"><i class="bi bi-x-octagon"></i> Violated</button>
+        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+
+            <!-- QUICK STATS -->
+            <div id="stats" class="small">
+                Total: <b id="stTotal">0</b> |
+                Graded: <b id="stGraded">0</b> |
+                Not graded: <b id="stNot">0</b> |
+                Violated: <b id="stViolated">0</b>
+            </div>
+
+            <!-- FILTER -->
+            <div class="d-flex gap-4">
+                <select id="filterStatus" class="form-select form-select-sm">
+                    <option value="All">All</option>
+                    <option value="Graded">Graded</option>
+                    <option value="NotGraded">Not graded</option>
+                    <option value="Violated">Violated</option>
+                </select>
+
+                <!-- SORT -->
+                <select id="sortBy" class="form-select form-select-sm">
+                    <option value="submitted">Submitted time</option>
+                    <option value="score">Score</option>
+                    <option value="name">Name</option>
+                </select>
             </div>
 
         </div>
@@ -70,15 +95,14 @@
                         <th style="width: 110px;">Attempt</th>
                         <th style="width: 140px;" class="text-nowrap">Started</th>
                         <th style="width: 140px;" class="text-nowrap">Submitted</th>
-                        <th style="width: 160px;" class="text-end">SCQ</th>
-                        <th style="width: 160px;" class="text-end">MCQ</th>
-                        <th style="width: 160px;" class="text-end">Essay</th>
+                        <th style="width: 200px;" class="text-end">MCQ</th>
+                        <th style="width: 200px;" class="text-end">Essay</th>
                         <th style="width: 200px;" class="text-end">Final</th>
                         <th style="width: 96px;"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="it" items="${items}" begin="${page.start}" end="${page.end}">
+                    <c:forEach var="it" items="${items}">
 
                         <%-- Status badge class --%>
                         <c:choose>
@@ -102,8 +126,13 @@
                             </c:otherwise>
                         </c:choose>
 
-                        <tr data-name="${fn:toLowerCase(it.studentName)}"
-                            data-email="${fn:toLowerCase(it.studentEmail)}">
+                        <tr 
+                            data-name="${fn:toLowerCase(it.studentName)}"
+                            data-email="${fn:toLowerCase(it.studentEmail)}"
+                            data-status="${it.status}"
+                            data-score="${it.finalScore != null ? it.finalScore : 0}"
+                            data-submitted="${it.submittedAtStr}"
+                            >
 
                             <%-- Student --%>
                             <td>
@@ -125,21 +154,6 @@
                             <%-- Dates --%>
                             <td class="text-nowrap">${it.startedAtStr}</td>
                             <td class="text-nowrap">${it.submittedAtStr}</td>
-
-                            <%-- SCQ --%>
-                            <td class="text-end">
-                                <div class="score-cell">
-                                    <div class="score-line">
-                                        <span class="score-badge score-scq">${it.scqScoreFmt}</span>
-                                        <span class="score-denom">/ ${it.scqMaxFmt}</span>
-                                    </div>
-                                    <div class="progress progress-thin">
-                                        <div class="progress-bar bg-scq" role="progressbar"
-                                             style="width:${it.scqPercent}%"></div>
-                                    </div>
-                                    <div class="mini-hint">auto</div>
-                                </div>
-                            </td>
 
                             <%-- MCQ --%>
                             <td class="text-end">
@@ -214,7 +228,7 @@
                             <%-- Actions --%>
                             <td class="text-end">
                                 <c:if test="${it.requiresManual && userRole != 'Student'}">
-                                    <a href="#"
+                                    <a href="${ctx}/submission/grade?attemptId=${it.attemptId}"
                                        class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
                                         <i class="bi bi-pencil-square"></i>
                                         <span class="d-none d-xl-inline">Grade</span>
@@ -231,94 +245,176 @@
                 </tbody>
             </table>
         </div>
-
-
     </div>
-    <!-- PAGING -->
-    <c:if test="${not empty items}">
-        <div class="pager">                    
-            <c:url var="basePath" value="/assignment/view/submission">
-                <c:if test="${not empty search}">
-                    <c:param name="search" value="${search}"/>
-                </c:if>
-                <c:if test="${not empty status}">
-                    <c:param name="status" value="${status}"/>
-                </c:if>
-                <c:param name="assignmentId" value="${assignmentId}"/>
-                <c:param name="classId" value="${classId}"/>
-            </c:url>
-
-            <c:if test="${page.index!=0}">
-                <a class="pg" href="${basePath}&index=0">&laquo;</a>
-                <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
-            </c:if>
-
-            <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
-                <a class="pg ${index==page.index ? 'is-active' : ''}"
-                   href="${basePath}&index=${index}">
-                    ${index+1}
-                </a>
-            </c:forEach>
-
-            <c:if test="${page.index!=page.totalPage-1}">
-                <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
-                <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
-            </c:if>
-        </div>
-    </c:if>
 </div>
 
-<%-- Status filter (multi-select) script --%>
+<%-- Search script --%>
 <script>
     (function () {
-        const pills = Array.from(document.querySelectorAll('#filterPills .fpill'));
+        const q = document.getElementById('q');
+        const rows = Array.from(document.querySelectorAll('#submissionsTable tbody tr'));
+        if (!q)
+            return;
 
-        function buildUrl(activeTypes) {
-            const url = new URL(window.location.href);
-            if (activeTypes.size === 0 || (activeTypes.size === 1 && activeTypes.has(''))) {
-                url.searchParams.delete('status');
-            } else {
-                url.searchParams.set('status', Array.from(activeTypes).filter(function (t) { return t !== ''; }).join(','));
-            }
-            url.searchParams.delete('index');
-            return url.toString();
-        }
-
-        function updatePills() {
-            pills.forEach(function (p) {
-                p.classList.toggle('is-active', activeTypes.has(p.dataset.status));
-            });
-        }
-
-        // Init active set from URL
-        const activeTypes = new Set();
-        const paramVal = new URL(window.location.href).searchParams.get('status') || '';
-        if (!paramVal) {
-            activeTypes.add('');
-        } else {
-            paramVal.split(',').forEach(function (s) { activeTypes.add(s.trim()); });
-        }
-        updatePills();
-
-        pills.forEach(function (pill) {
-            pill.addEventListener('click', function () {
-                const t = pill.dataset.status;
-                if (t === '') {
-                    activeTypes.clear();
-                    activeTypes.add('');
-                } else {
-                    activeTypes.delete('');
-                    if (activeTypes.has(t)) {
-                        activeTypes.delete(t);
-                    } else {
-                        activeTypes.add(t);
-                    }
-                    if (activeTypes.size === 0) activeTypes.add('');
-                }
-                updatePills();
-                window.location.href = buildUrl(activeTypes);
+        q.addEventListener('input', function () {
+            const term = (q.value || '').trim().toLowerCase();
+            rows.forEach(function (r) {
+                const name = r.getAttribute('data-name') || '';
+                const email = r.getAttribute('data-email') || '';
+                const show = !term || name.includes(term) || email.includes(term);
+                r.style.display = show ? '' : 'none';
             });
         });
+    })();
+</script>
+
+<script>
+    (function () {
+
+        const q = document.getElementById('q');
+        const filter = document.getElementById('filterStatus');
+        const sort = document.getElementById('sortBy');
+
+        const table = document.getElementById('submissionsTable');
+        const tbody = table.querySelector('tbody');
+
+        let rows = Array.from(tbody.querySelectorAll('tr'));
+
+        let currentPage = 1;
+        const pageSize = 15;
+
+        function getFilteredRows() {
+
+            const term = (q.value || '').toLowerCase();
+            const f = filter.value;
+
+            return rows.filter(r => {
+
+                const name = r.dataset.name || '';
+                const email = r.dataset.email || '';
+                const status = r.dataset.status || '';
+
+                const matchSearch = !term || name.includes(term) || email.includes(term);
+
+                let matchFilter = true;
+
+                if (f === "Graded")
+                    matchFilter = status === "Graded";
+                if (f === "Violated")
+                    matchFilter = status === "Violated";
+                if (f === "NotGraded")
+                    matchFilter = status !== "Graded";
+
+                return matchSearch && matchFilter;
+            });
+        }
+
+        function sortRows(list) {
+
+            const type = sort.value;
+
+            list.sort((a, b) => {
+
+                if (type === "name") {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                }
+
+                if (type === "score") {
+                    return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
+                }
+
+                if (type === "submitted") {
+                    return parseInt(b.dataset.submitted) - parseInt(a.dataset.submitted);
+                }
+
+                return 0;
+            });
+
+            return list;
+        }
+
+        function render() {
+
+            let filtered = getFilteredRows();
+            filtered = sortRows(filtered);
+
+            updateStats(filtered);
+
+            const totalPage = Math.ceil(filtered.length / pageSize);
+            if (currentPage > totalPage)
+                currentPage = 1;
+
+            const start = (currentPage - 1) * pageSize;
+            const pageRows = filtered.slice(start, start + pageSize);
+
+            tbody.innerHTML = "";
+            pageRows.forEach(r => tbody.appendChild(r));
+
+            renderPaging(totalPage);
+        }
+
+        function updateStats(list) {
+
+            let graded = 0, not = 0, violated = 0;
+
+            list.forEach(r => {
+                const s = r.dataset.status;
+                if (s === "Graded")
+                    graded++;
+                else if (s === "Violated")
+                    violated++;
+                else
+                    not++;
+            });
+
+            document.getElementById('stTotal').innerText = list.length;
+            document.getElementById('stGraded').innerText = graded;
+            document.getElementById('stNot').innerText = not;
+            document.getElementById('stViolated').innerText = violated;
+        }
+
+        function renderPaging(totalPage) {
+
+            let paging = document.getElementById('paging');
+
+            if (!paging) {
+                paging = document.createElement('div');
+                paging.id = "paging";
+                paging.className = "d-flex justify-content-center mt-3 gap-2";
+                table.parentElement.appendChild(paging);
+            }
+
+            paging.innerHTML = "";
+
+            for (let i = 1; i <= totalPage; i++) {
+                const btn = document.createElement('button');
+                btn.className = "btn btn-sm " + (i === currentPage ? "btn-primary" : "btn-outline-secondary");
+                btn.innerText = i;
+
+                btn.onclick = () => {
+                    currentPage = i;
+                    render();
+                };
+
+                paging.appendChild(btn);
+            }
+        }
+
+        // EVENTS
+        q.addEventListener('input', () => {
+            currentPage = 1;
+            render();
+        });
+
+        filter.addEventListener('change', () => {
+            currentPage = 1;
+            render();
+        });
+
+        sort.addEventListener('change', render);
+
+        render();
+
     })();
 </script>
 
