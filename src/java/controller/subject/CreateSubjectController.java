@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,98 +22,68 @@ import java.util.Map;
  */
 public class CreateSubjectController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet CreateSubjectController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet CreateSubjectController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/subject/view/subject-list?modal=create-subject");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if (action.equalsIgnoreCase("reset")) {
-            request.removeAttribute("listMSG");
-            request.removeAttribute("subjectName");
-        } else {
-            String subjectName = request.getParameter("subjectName");
-            Map<String, String> listMSG = validSubjectName(subjectName);
 
-            if (listMSG.size() == 0) {
-                listMSG.put("msgSubjectSucces", message.Message.MSG502);
-                SubjectDAO subjectDAO = new SubjectDAO();
-                subjectDAO.createSubject(subjectName);
-            }
-            request.setAttribute("listMSG", listMSG);
-            request.setAttribute("subjectName", subjectName.trim());
+        String action = request.getParameter("action");
+        String baseUrl = request.getContextPath() + "/subject/view/subject-list";
+
+        if (action != null && action.equalsIgnoreCase("reset")) {
+            response.sendRedirect(baseUrl + "?modal=create-subject");
+            return;
         }
-        request.getRequestDispatcher("/view/admin/create-subject.jsp").forward(request, response);
+
+        String subjectName = request.getParameter("subjectName");
+        if (subjectName == null) {
+            subjectName = "";
+        }
+
+        Map<String, String> listMSG = validSubjectName(subjectName);
+
+        if (listMSG.isEmpty()) {
+            SubjectDAO subjectDAO = new SubjectDAO();
+            subjectDAO.createSubject(subjectName.trim());
+
+            String success = URLEncoder.encode(message.Message.MSG502, StandardCharsets.UTF_8);
+            response.sendRedirect(baseUrl + "?createSuccess=" + success);
+            return;
+        }
+
+        String error = URLEncoder.encode(listMSG.get("msgSubject"), StandardCharsets.UTF_8);
+        String subjectNameEncoded = URLEncoder.encode(subjectName.trim(), StandardCharsets.UTF_8);
+
+        response.sendRedirect(
+                baseUrl
+                + "?modal=create-subject"
+                + "&createError=" + error
+                + "&subjectName=" + subjectNameEncoded
+        );
     }
 
     public Map<String, String> validSubjectName(String subjectName) {
         Map<String, String> errors = new HashMap<>();
-        if (subjectName.trim().isEmpty()) {
+
+        if (subjectName == null || subjectName.trim().isEmpty()) {
             errors.put("msgSubject", message.Message.MSG500);
             return errors;
         }
 
-        if (subjectName.length() > 30) {
+        if (subjectName.trim().length() > 30) {
             errors.put("msgSubject", message.Message.MSG501);
         }
+
         return errors;
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Create Subject Controller";
+    }
 }

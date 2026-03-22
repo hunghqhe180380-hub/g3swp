@@ -341,6 +341,30 @@ a{ text-decoration:none; color: inherit; }
     margin: 10px 0;
 }
 
+.btn-act--green{
+    color:#15803d;
+    border-color:rgba(34,197,94,0.35);
+    background:rgba(34,197,94,0.08);
+}
+
+.btn-act--green:hover{
+    background:rgba(34,197,94,0.14);
+    border-color:rgba(34,197,94,0.45);
+}
+
+.btn-act--amber{
+    color:#b45309;
+    border-color:rgba(245,158,11,0.35);
+    background:rgba(245,158,11,0.10);
+}
+
+.btn-act--amber:hover{
+    background:rgba(245,158,11,0.16);
+    border-color:rgba(245,158,11,0.46);
+}
+
+
+
 /* Responsive */
 @media (max-width: 900px){
     .admin-title__big{ font-size: 28px; }
