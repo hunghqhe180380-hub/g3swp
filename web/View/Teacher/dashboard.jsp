@@ -25,7 +25,7 @@
     <body class="dash-page">
 
         <jsp:include page="/view/common/header.jsp" />
-        <a href="${ctx}/question/view/list-question-bank">Question Bankkk</a>
+        
         <main class="dash-main">
             <div class="dash-container">
 

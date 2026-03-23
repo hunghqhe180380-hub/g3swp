@@ -32,10 +32,10 @@
 
                 <a class="btn-logout" href="${ctx}/logout">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M10 7V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-2"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M15 12H3m0 0 3-3m-3 3 3 3"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 7V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-2"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M15 12H3m0 0 3-3m-3 3 3 3"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Log out
                 </a>
@@ -49,8 +49,8 @@
                     <section class="admin-card">
                         <div class="admin-card__icon">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" stroke="currentColor" stroke-width="2"/>
-                                <path d="M4 21c1.6-4 14.4-4 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M4 21c1.6-4 14.4-4 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
 
@@ -66,10 +66,10 @@
                     <section class="admin-card">
                         <div class="admin-card__icon">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
-                                      stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                                <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
+                                  stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
 
@@ -80,14 +80,14 @@
                             <a class="btn-open" href="${ctx}/classroom/view/class-list">Open</a>
                         </div>
                     </section>
-                     <!-- Card Create New Subject -->
+                    <!-- Card Create New Subject -->
                     <section class="admin-card">
                         <div class="admin-card__icon">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
-                                      stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                                <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
+                                  stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
 
@@ -96,6 +96,24 @@
                             <p>New Subject, New Income =))</p>
 
                             <a class="btn-open" href="${ctx}/subject/view/subject-list">Open</a>
+                        </div>
+                    </section>
+                    <!-- Card View Question Request -->
+                    <section class="admin-card">
+                        <div class="admin-card__icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M9 3h6a2 2 0 0 1 2 2v16H7V5a2 2 0 0 1 2-2Z"
+                                  stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="admin-card__body">
+                            <h3>Question Request</h3>
+                            <p>Accept More Question, More Income=))</p>
+
+                            <a class="btn-open" href="${ctx}/question/manage/accept-question">Open</a>
                         </div>
                     </section>
                 </div>
