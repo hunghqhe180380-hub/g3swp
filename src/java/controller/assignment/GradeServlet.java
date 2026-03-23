@@ -110,22 +110,22 @@ public class GradeServlet extends HttpServlet {
         double finalScore = 0;
 
         try {
-             autoScore = assignmentDAO.getAutoScoreByAttemptId(attemptId);
-             finalScore = autoScore + totalEssayScore;
+            autoScore = assignmentDAO.getAutoScoreByAttemptId(attemptId);
+            finalScore = autoScore + totalEssayScore;
 
             assignmentDAO.updateGrade(attemptId, overallComment, finalScore, essays);
 
-            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId+  "&assignmentId=" + assignmentId);
+            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId + "&assignmentId=" + assignmentId);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi cơ sở dữ liệu khi lưu điểm." + e);
         }
-         finalScore = autoScore + totalEssayScore;
+        finalScore = autoScore + totalEssayScore;
 
         // 4. Gọi DAO thực thi
         try {
             assignmentDAO.updateGrade(attemptId, overallComment, finalScore, essays);
-            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId+  "&assignmentId=" + assignmentId);
+            response.sendRedirect("/POET/assignment/view/submission?classId=" + classId + "&assignmentId=" + assignmentId);
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi khi lưu điểm.");
