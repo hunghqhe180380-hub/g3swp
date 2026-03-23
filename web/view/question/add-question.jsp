@@ -1769,6 +1769,8 @@ CORRECT: B</pre>
         overflow:auto;
         border:1px solid #e5edf6;
         border-radius:16px;
+        max-height: 560px;
+        background: #fff;
     }
 
     .aq-status-table{
@@ -1823,6 +1825,26 @@ CORRECT: B</pre>
     .aq-status-pill--rejected{
         background:#ffe4e6;
         color:#be123c;
+    }
+/*fix*/
+    .aq-status-table-wrap::-webkit-scrollbar{
+        width: 10px;
+        height: 10px;
+    }
+
+    .aq-status-table-wrap::-webkit-scrollbar-track{
+        background:#f1f5f9;
+        border-radius:999px;
+    }
+
+    .aq-status-table-wrap::-webkit-scrollbar-thumb{
+        background:#cbd5e1;
+        border-radius:999px;
+        border:2px solid #f1f5f9;
+    }
+
+    .aq-status-table-wrap::-webkit-scrollbar-thumb:hover{
+        background:#94a3b8;
     }
 
     @media (max-width: 1180px){

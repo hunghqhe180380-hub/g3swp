@@ -93,7 +93,7 @@
 
                         <div class="admin-card__body">
                             <h3>Mange Subject</h3>
-                            <p>New Subject, New Income =))</p>
+                            <p>Add, Delete Subject</p>
 
                             <a class="btn-open" href="${ctx}/subject/view/subject-list">Open</a>
                         </div>
@@ -111,7 +111,7 @@
 
                         <div class="admin-card__body">
                             <h3>Question Request</h3>
-                            <p>Accept More Question, More Income=))</p>
+                            <p>Review and approving Questions</p>
 
                             <a class="btn-open" href="${ctx}/question/manage/accept-question">Open</a>
                         </div>
