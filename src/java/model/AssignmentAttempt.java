@@ -20,6 +20,15 @@ public class AssignmentAttempt {
     private double autoScore;
     private double finalScore;
     private double maxScore;
+    private String assignmentTitle;
+
+    public String getAssignmentTitle() {
+        return assignmentTitle;
+    }
+
+    public void setAssignmentTitle(String assignmentTitle) {
+        this.assignmentTitle = assignmentTitle;
+    }
 
     public AssignmentAttempt() {
     }
@@ -116,6 +125,5 @@ public class AssignmentAttempt {
     public void setMaxScore(double maxScore) {
         this.maxScore = maxScore;
     }
-    
-    
+
 }
