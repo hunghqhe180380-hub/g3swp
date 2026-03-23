@@ -244,7 +244,7 @@ public class AssignmentDAO extends DBContext {
                     String type = resultSet.getString("Type");
 
                     // Xử lý MCQ
-                    if ("2".equalsIgnoreCase(type)) {
+                    if ("1".equalsIgnoreCase(type)) {
                         GradeMcqItem q = mcqMap.get(qId);
                         if (q == null) {
                             q = new GradeMcqItem();
@@ -281,7 +281,7 @@ public class AssignmentDAO extends DBContext {
                     }
 
                     // Xử lý Essay
-                    if ("1".equalsIgnoreCase(type)) {
+                    if ("2".equalsIgnoreCase(type)) {
                         if (essays.stream().noneMatch(e -> e.getQuestionId() == qId)) {
                             GradeEssayItem e = new GradeEssayItem();
                             e.setQuestionId(qId);
@@ -317,7 +317,7 @@ public class AssignmentDAO extends DBContext {
         AssignmentDAO dao = new AssignmentDAO();
 
         // THAY ĐỔI ID NÀY THEO DỮ LIỆU THẬT TRONG DATABASE CỦA BẠN
-        int testAttemptId = 1050;
+        int testAttemptId = 1054;
 
         try {
             System.out.println("========== TEST REVIEW ATTEMPT ==========");
@@ -489,7 +489,7 @@ public class AssignmentDAO extends DBContext {
             FROM AssignmentQuestions q
             LEFT JOIN AssignmentAnswers a
                  ON q.Id = a.QuestionId AND a.AttemptId = ?
-            WHERE q.Type = 'Essay'
+            WHERE q.Type = '1'
         """;
 
             statement = connection.prepareStatement(sql);
@@ -562,7 +562,7 @@ public class AssignmentDAO extends DBContext {
                 FROM AssignmentAnswers
                 WHERE AttemptId = ?
             ),
-            Status = 'Graded'
+            Status = '3'
             WHERE Id = ?
         """;
 
@@ -658,51 +658,74 @@ public class AssignmentDAO extends DBContext {
     }
 
     public List<ReviewQuestionDTO> getReviewData(int attemptId) throws SQLException {
-        List<ReviewQuestionDTO> questions = new ArrayList<>();
+        // Dùng LinkedHashMap để giữ đúng thứ tự câu hỏi và tránh trùng lặp khi JOIN với Choices
+        Map<Integer, ReviewQuestionDTO> questionMap = new LinkedHashMap<>();
 
-        // Query chuẩn dựa trên schema ảnh bạn gửi
-        String sql = "SELECT aq.Id, aq.Prompt, aq.Type, aq.Points, "
-                + "ans.TextAnswer as StudentEssay, ans.PointsAwarded, ans.TeacherComment, "
-                + "ans.SelectedChoiceId "
-                + "FROM AssignmentAnswers ans "
-                + "JOIN AssignmentQuestions aq ON ans.QuestionId = aq.Id " // Khớp Id theo schema
-                + "WHERE ans.AttemptId = ? "
-                + "ORDER BY aq.[Order] ASC"; // Dùng cột [Order] từ ảnh
+        String sql = """
+        SELECT 
+            aq.Id AS AQId, aq.Prompt, aq.Type, aq.Points, 
+            ans.TextAnswer, ans.PointsAwarded, ans.TeacherComment, ans.SelectedChoiceId,
+            ac.Id AS ChoiceId, ac.Text AS ChoiceText, ac.IsCorrect
+        FROM AssignmentQuestions aq
+        LEFT JOIN AssignmentAnswers ans ON aq.Id = ans.QuestionId AND ans.AttemptId = ?
+        LEFT JOIN AssignmentChoices ac ON aq.Id = ac.QuestionId
+        WHERE aq.AssignmentId = (SELECT AssignmentId FROM AssignmentAttempts WHERE Id = ?)
+        ORDER BY aq.[Order], ac.[Order]
+    """;
 
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, attemptId);
-            resultSet = statement.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, attemptId);
+            ps.setInt(2, attemptId);
 
-            while (resultSet.next()) {
-                ReviewQuestionDTO q = new ReviewQuestionDTO();
-                // LƯU Ý: Nếu bảng AssignmentQuestions không giữ QuestionBankId gốc, 
-                // bạn cần đảm bảo hàm getChoices dùng đúng ID để map.
-                q.questionId = resultSet.getInt("Id");
-                q.prompt = resultSet.getString("Prompt");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int aqId = rs.getInt("AQId");
+                    ReviewQuestionDTO q = questionMap.get(aqId);
 
-                // Xử lý Type: Trong ảnh Type là int. 
-                // Giả sử: 1 = MCQ, 2 = Essay.
-                int typeInt = resultSet.getInt("Type");
-                q.type = (typeInt == 2) ? "MCQ" : "Essay";
+                    if (q == null) {
+                        q = new ReviewQuestionDTO();
+                        q.questionId = aqId;
+                        q.prompt = rs.getString("Prompt");
 
-                q.points = resultSet.getDouble("Points");
-                q.essayText = resultSet.getString("StudentEssay");
-                q.essayScore = (Double) resultSet.getObject("PointsAwarded");
-                q.teacherComment = resultSet.getString("TeacherComment");
-                int selectedChoiceId = resultSet.getInt("SelectedChoiceId");
+                        // Thống nhất Logic: 1 là MCQ, 2 là Essay (theo hàm Grade của bạn)
+                        int typeInt = rs.getInt("Type");
+                        q.type = (typeInt == 1) ? "MCQ" : "Essay";
 
-                if ("MCQ".equals(q.type)) {
-                    // Truyền q.questionId (là Id của AssignmentQuestions)
-                    q.choices = getChoicesForReview(q.questionId, selectedChoiceId);
+                        q.points = rs.getDouble("Points");
+                        q.essayText = rs.getString("TextAnswer");
+
+                        Object p = rs.getObject("PointsAwarded");
+                        q.essayScore = (p != null) ? (Double) p : 0.0;
+                        q.teacherComment = rs.getString("TeacherComment");
+                        q.choices = new ArrayList<>();
+
+                        questionMap.put(aqId, q);
+                    }
+
+                    // Nếu là MCQ, xử lý nạp Choice
+                    if ("MCQ".equals(q.type)) {
+                        int choiceId = rs.getInt("ChoiceId");
+                        if (choiceId > 0) {
+                            ReviewChoiceDTO c = new ReviewChoiceDTO();
+                            c.choiceId = choiceId;
+                            c.text = rs.getString("ChoiceText");
+                            c.isCorrect = rs.getBoolean("IsCorrect");
+
+                            // Kiểm tra xem sinh viên có chọn choice này không
+                            int selectedId = rs.getInt("SelectedChoiceId");
+                            c.isChosen = (choiceId == selectedId);
+
+                            q.choices.add(c);
+                        }
+                    }
                 }
-                questions.add(q);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
-        return questions;
+
+        return new ArrayList<>(questionMap.values());
     }
 
     private List<ReviewChoiceDTO> getChoicesForReview(int questionBankId, int selectedChoiceId) throws SQLException {
