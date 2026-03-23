@@ -200,7 +200,7 @@ public class AssignmentDAO extends DBContext {
             at.SubmittedAt, at.Status, at.AutoScore, at.FinalScore, at.AssignmentId,
             q.Id AS QuestionId, q.Prompt, q.Type, q.Points,
             c.Id AS ChoiceId, c.Text AS ChoiceText, c.IsCorrect,
-            ans.SelectedChoiceId, ans.TextAnswer, ans.TeacherComment, ans.PointsAwarded
+            ans.SelectedChoiceId, ans.TextAnswer, ans.TeacherComment
         FROM AssignmentAttempts at
         JOIN AssignmentQuestions q ON q.AssignmentId = at.AssignmentId
         LEFT JOIN AssignmentChoices c ON c.QuestionId = q.Id
