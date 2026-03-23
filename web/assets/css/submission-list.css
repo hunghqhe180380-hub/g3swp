@@ -92,6 +92,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     margin-top: .1rem;
 }
 
+.score-scq {
+    background: #ecfdf5;
+    color: #047857;
+}
+
 .score-mcq {
     background: #e0f2fe;
     color: #0369a1;
@@ -117,6 +122,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     height: 6px;
     background: #f3f4f6;
     margin-top: .25rem;
+}
+
+.bg-scq {
+    background: linear-gradient(90deg, #34d399, #6ee7b7);
 }
 
 .bg-mcq {

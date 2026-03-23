@@ -70,8 +70,9 @@
                         <th style="width: 110px;">Attempt</th>
                         <th style="width: 140px;" class="text-nowrap">Started</th>
                         <th style="width: 140px;" class="text-nowrap">Submitted</th>
-                        <th style="width: 200px;" class="text-end">MCQ</th>
-                        <th style="width: 200px;" class="text-end">Essay</th>
+                        <th style="width: 160px;" class="text-end">SCQ</th>
+                        <th style="width: 160px;" class="text-end">MCQ</th>
+                        <th style="width: 160px;" class="text-end">Essay</th>
                         <th style="width: 200px;" class="text-end">Final</th>
                         <th style="width: 96px;"></th>
                     </tr>
@@ -124,6 +125,21 @@
                             <%-- Dates --%>
                             <td class="text-nowrap">${it.startedAtStr}</td>
                             <td class="text-nowrap">${it.submittedAtStr}</td>
+
+                            <%-- SCQ --%>
+                            <td class="text-end">
+                                <div class="score-cell">
+                                    <div class="score-line">
+                                        <span class="score-badge score-scq">${it.scqScoreFmt}</span>
+                                        <span class="score-denom">/ ${it.scqMaxFmt}</span>
+                                    </div>
+                                    <div class="progress progress-thin">
+                                        <div class="progress-bar bg-scq" role="progressbar"
+                                             style="width:${it.scqPercent}%"></div>
+                                    </div>
+                                    <div class="mini-hint">auto</div>
+                                </div>
+                            </td>
 
                             <%-- MCQ --%>
                             <td class="text-end">

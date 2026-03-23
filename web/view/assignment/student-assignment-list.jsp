@@ -131,9 +131,10 @@
                                              data-started="${empty h.startedAt ? '' : h.startedAt}"
                                              data-submitted="${empty h.submittedAt ? '' : h.submittedAt}"
                                              data-duration="${a.duration} min"
+                                             data-scq-score="${h.scqScore == null ? 0 : h.scqScore}"
+                                             data-scq-max="${h.scqMax == null ? 0 : h.scqMax}"
                                              data-mcq-score="${h.mcqScore == null ? 0 : h.mcqScore}"
                                              data-mcq-max="${h.mcqMax == null ? 0 : h.mcqMax}"
-                                             
                                              data-essay-score="${h.essayScore == null ? 0 : h.essayScore}"
                                              data-essay-max="${h.essayMax == null ? 0 : h.essayMax}"
                                              data-final-score="${h.finalScore == null ? 0 : h.finalScore}"
@@ -238,6 +239,7 @@
                                     <th>Started</th>
                                     <th>Submitted</th>
                                     <th>Duration</th>
+                                    <th>SCQ</th>
                                     <th>MCQ</th>
                                     <th>Essay</th>
                                     <th>Final</th>
@@ -250,8 +252,8 @@
                     </div>
 
                     <div class="history-footnote">
-                        Phần MCQ sẽ có điểm ngay khi nộp. Essay sẽ hiển thị <b>Pending</b> cho đến khi giáo viên chấm.
-                        Final = MCQ + Essay.
+                        Phần SCQ/MCQ sẽ có điểm ngay khi nộp. Essay sẽ hiển thị <b>Pending</b> cho đến khi giáo viên chấm.
+                        Final = SCQ + MCQ + Essay.
                     </div>
                 </div>
 
@@ -359,6 +361,8 @@
 
                     items.forEach(item => {
                         const st = formatStatus(item.dataset.status);
+                        const scqScore = item.dataset.scqScore || '0';
+                        const scqMax = item.dataset.scqMax || '0';
                         const mcqScore = item.dataset.mcqScore || '0';
                         const mcqMax = item.dataset.mcqMax || '0';
                         const essayScore = item.dataset.essayScore || '0';
@@ -373,8 +377,10 @@
                                 '<td>' + escapeHtml(item.dataset.submitted || '') + '</td>' +
                                 '<td>' + escapeHtml(item.dataset.duration || '') + '</td>' +
                                 '<td>' +
+                                '   <div class="score-pill">' + escapeHtml(scqScore) + ' / ' + escapeHtml(scqMax) + '</div>' +
+                                '</td>' +
+                                '<td>' +
                                 '   <div class="score-pill">' + escapeHtml(mcqScore) + ' / ' + escapeHtml(mcqMax) + '</div>' +
-//                                '   <div class="score-sub">' + escapeHtml(item.dataset.mcqCorrect || '0') + ' / ' + escapeHtml(item.dataset.mcqTotal || '0') + ' correct</div>' +
                                 '</td>' +
                                 '<td><div class="score-pill">' + escapeHtml(essayScore) + ' / ' + escapeHtml(essayMax) + '</div></td>' +
                                 '<td><div class="score-pill">' + escapeHtml(finalScore) + ' / ' + escapeHtml(finalMax) + '</div></td>' +
