@@ -5,10 +5,12 @@
 package controller.auth;
 
 import controller.material.MaterialListController;
+import dal.AssignmentDAO;
 import dal.MaterialDAO;
 import dal.StudentDAO;
 import dal.TeacherDAO;
 import dal.UserDAO;
+import model.Assignment;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -47,6 +49,9 @@ public class RouteByRoleController extends HttpServlet {
         MaterialDAO mtrCtrl = new MaterialDAO();
         session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
         response.sendRedirect(request.getContextPath() + "/account/dashboard");
+//        //get total Assignment by classId
+//        AssignmentDAO asgDAO = new AssignmentDAO();
+//        List<Assignment> listAssignment = asgDAO.getListAssignmentByClassId("", )
         //check route 
     }
 

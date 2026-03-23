@@ -78,28 +78,28 @@ public class AddQuestionPageController extends HttpServlet {
         QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        //get propmt of question
         String[] prompts = request.getParameterValues("prompt[]");
+        if (questionType.equalsIgnoreCase("1") || questionType.equalsIgnoreCase("2")) {
+            //get propmt of question
+            for (int i = 0; i < prompts.length; i++) {
+                QuestionBank qBank = new QuestionBank();
+                int qIndex = i + 1;
 
-        for (int i = 0; i < prompts.length; i++) {
-            QuestionBank qBank = new QuestionBank();
-            int qIndex = i + 1;
+                String prompt = prompts[i];
 
-            String prompt = prompts[i];
-
-            String[] choice = request.getParameterValues("option_" + qIndex + "[]");
-            String[] corrects = request.getParameterValues("correct_" + qIndex);
+                String[] choice = request.getParameterValues("option_" + qIndex + "[]");
+                String[] corrects = request.getParameterValues("correct_" + qIndex);
 //create question in question bank            
-            qBank.setSubjectId(subjectId);
-            qBank.setType(Integer.parseInt(questionType));
-            qBank.setChapter(Integer.parseInt(chapter));
-            qBank.setPrompt(prompt);
-            int newQuestionBank = qBankDAO.insertQuestion(qBank, user.getUserID());
+                qBank.setSubjectId(subjectId);
+                qBank.setType(Integer.parseInt(questionType));
+                qBank.setChapter(Integer.parseInt(chapter));
+                qBank.setPrompt(prompt);
+                int newQuestionBank = qBankDAO.insertQuestion(qBank, user.getUserID());
 
-            /*
+                /*
                 *create list question bank choice
-             */
-            for (int j = 0; j < choice.length; j++) {
+                 */
+                for (int j = 0; j < choice.length; j++) {
 //  Data gửi lên có dạng như này:
 //               prompt[] = ["Q1", "Q2"]
 //            option_1[] = ["A", "B", "C"]
@@ -107,27 +107,40 @@ public class AddQuestionPageController extends HttpServlet {
 //
 //            option_2[] = ["X", "Y", "Z"]
 //            correct_2 = ["0", "2"]   (MCQ)
-                QuestionBankChoice qBankChoice = new QuestionBankChoice();
-                qBankChoice.setQuestionBankId(newQuestionBank);
-                //set text
-                qBankChoice.setText(choice[j]);
-                qBankChoice.setOrder(j);
-                boolean isCorrect = false;
+                    QuestionBankChoice qBankChoice = new QuestionBankChoice();
+                    qBankChoice.setQuestionBankId(newQuestionBank);
+                    //set text
+                    qBankChoice.setText(choice[j]);
+                    qBankChoice.setOrder(j);
+                    boolean isCorrect = false;
 
-                if (corrects != null) {
-                    for (String c : corrects) {
-                        if (Integer.parseInt(c) == j) {
-                            isCorrect = true;
-                            break;
+                    if (corrects != null) {
+                        for (String c : corrects) {
+                            if (Integer.parseInt(c) == j) {
+                                isCorrect = true;
+                                break;
+                            }
                         }
                     }
+                    //set is correct
+                    qBankChoice.setIsCorrect(isCorrect);
+                    //add choice into questionbankchoice
+                    qBankChoiceDAO.insertQuestion(qBankChoice);
+                    //System.out.println("Option " + j + ": " + choice[j] + " | Correct: " + isCorrect);
                 }
-                //set is correct
-                 qBankChoice.setIsCorrect(isCorrect);
-                //add choice into questionbankchoice
-                qBankChoiceDAO.insertQuestion(qBankChoice);
-                //System.out.println("Option " + j + ": " + choice[j] + " | Correct: " + isCorrect);
             }
+        } else {
+            //add essay question
+            String essay = "";
+            for (int i = 0; i < prompts.length; i++) {
+                essay += prompts[i];
+            }
+            QuestionBank qBank = new QuestionBank();
+            qBank.setSubjectId(subjectId);
+            qBank.setType(3);
+            qBank.setPrompt(essay);
+            qBankDAO.insertQuestion(qBank, user.getUserID());
+
         }
         doGet(request, response);
     }

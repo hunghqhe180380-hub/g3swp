@@ -121,7 +121,7 @@ public class SubjectDAO extends DBContext {
                     + "      ,[MaxStudents]\n"
                     + "      ,[TimeExpiryClassCode]\n"
                     + "      ,[Status]\n"
-                    + "  FROM [POETWebDB].[dbo].[Classrooms]\n"
+                    + "  FROM [dbo].[Classrooms]\n"
                     + "  Where TeacherId = ?";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, teacherId);

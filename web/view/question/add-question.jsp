@@ -365,9 +365,14 @@ CORRECT: B</pre>
             <c:forEach items="${requestScope.listQuestion}" var="q" varStatus="loop">
 
                 <c:set var="answer" value="" />
+                <c:set var="hasCorrect" value="false" />
 
-                <c:forEach items="${q.listQuestionBankChoice}" var="choice" varStatus="bbc">
+                <!-- build answer bằng 1 vòng duy nhất -->
+                <c:forEach items="${q.listQuestionBankChoice}" var="choice">
+
                     <c:if test="${choice.isCorrect}">
+                        <c:set var="hasCorrect" value="true" />
+
                         <c:choose>
                             <c:when test="${empty answer}">
                                 <c:set var="answer" value="${choice.text}" />
@@ -377,18 +382,19 @@ CORRECT: B</pre>
                             </c:otherwise>
                         </c:choose>
                     </c:if>
-                    <!-- render ở vòng cuối -->
-                    <c:if test="${bbc.last}">
-                        <div class="aq-status-seed"
-                             data-question="${fn:escapeXml(q.prompt)}"
-                             data-answer="${fn:escapeXml(answer)}"
-                             data-type="${q.type == 1 ? 'SCQ' : q.type == 2 ? 'MCQ' : 'Essay'}"
-                             data-subject="${fn:escapeXml(q.subjectName)}" 
-                             data-chapter="${q.chapter}" 
-                             data-status="${q.status == 0 ? 'Rejected' : 'Pending'}">
-                        </div>
-                    </c:if>
+
                 </c:forEach>
+
+                <!-- xử lý render an toàn cả khi list null / rỗng -->
+                <div class="aq-status-seed"
+                     data-question="${fn:escapeXml(q.prompt)}"
+                     data-answer="${hasCorrect ? fn:escapeXml(answer) : 'This teacher not upload choice'}"
+                     data-type="${q.type == 1 ? 'SCQ' : q.type == 2 ? 'MCQ' : 'Essay'}"
+                     data-subject="${fn:escapeXml(q.subjectName)}"
+                     data-chapter="${q.chapter}"
+                     data-status="${q.status == 0 ? 'Rejected' : 'Pending'}">
+                </div>
+
             </c:forEach>
             <!--            <div class="aq-status-seed" data-question="Select all countable nouns in the list." data-answer="book, apple, student" data-type="MCQ" data-subject="Tiếng Anh" data-chapter="1" data-status="Pending"></div>
                         <div class="aq-status-seed" data-question="Write a short paragraph about your hometown." data-answer="Free text answer" data-type="Essay" data-subject="Tiếng Anh" data-chapter="3" data-status="Pending"></div>
@@ -1826,7 +1832,7 @@ CORRECT: B</pre>
         background:#ffe4e6;
         color:#be123c;
     }
-/*fix*/
+    /*fix*/
     .aq-status-table-wrap::-webkit-scrollbar{
         width: 10px;
         height: 10px;
