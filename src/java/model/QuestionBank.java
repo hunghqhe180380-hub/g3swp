@@ -19,6 +19,7 @@ public class QuestionBank {
     private int chapter;
     private String createdById;
     private String createdAt;
+    private String subjectName;
     private int status;
     private List<QuestionBankChoice> listQuestionBankChoice;
     /*
@@ -39,6 +40,14 @@ public class QuestionBank {
         this.createdAt = createdAt;
         this.status = status;
         this.listQuestionBankChoice = listQuestionBankChoice;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public int getId() {

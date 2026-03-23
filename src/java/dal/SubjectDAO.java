@@ -106,4 +106,35 @@ public class SubjectDAO extends DBContext {
         }
         return null;
     }
+
+    //get list subject of this teacher
+    //get list subject (id, name, total classes, total teachers)
+    public List<Subject> getListSubjectOfTeacher(String teacherId) {
+        List<Subject> listSubject = new ArrayList<>();
+        try {
+            String sql = "SELECT TOP (1000) [Id]\n"
+                    + "      ,[Name]\n"
+                    + "      ,[ClassCode]\n"
+                    + "      ,[SubjectId]\n"
+                    + "      ,[TeacherId]\n"
+                    + "      ,[CreatedAt]\n"
+                    + "      ,[MaxStudents]\n"
+                    + "      ,[TimeExpiryClassCode]\n"
+                    + "      ,[Status]\n"
+                    + "  FROM [POETWebDB].[dbo].[Classrooms]\n"
+                    + "  Where TeacherId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, teacherId);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Subject s = new Subject();
+                s.setId(resultSet.getString("SubjectId"));
+                listSubject.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listSubject;
+    }
 }

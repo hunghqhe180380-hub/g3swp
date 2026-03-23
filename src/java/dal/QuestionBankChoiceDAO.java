@@ -37,7 +37,7 @@ public class QuestionBankChoiceDAO extends DBContext {
 
         try {
 
-           statement = connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql);
             statement.setInt(1, questionId);
 
             resultSet = statement.executeQuery();
@@ -63,54 +63,6 @@ public class QuestionBankChoiceDAO extends DBContext {
         return list;
     }
 
-//    //create choice
-//    public void insertChoice(QuestionBankChoice c) {
-//
-//        String sql = """
-//        INSERT INTO QuestionBankChoices
-//        (QuestionBankId, Text, IsCorrect, [Order])
-//        VALUES (?, ?, ?, ?)
-//        """;
-//
-//        try {
-//
-//            PreparedStatement ps = connection.prepareStatement(sql);
-//
-//            ps.setInt(1, c.getQuestionBankId());
-//            ps.setString(2, c.getText());
-//            ps.setBoolean(3, c.isCorrect());
-//            ps.setInt(4, c.getOrder());
-//
-//            ps.executeUpdate();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-    //update choice
-//    public void updateChoice(QuestionBankChoice c) {
-//
-//        String sql = """
-//        UPDATE QuestionBankChoices
-//        SET Text = ?, IsCorrect = ?, [Order] = ?
-//        WHERE Id = ?
-//        """;
-//
-//        try {
-//
-//            PreparedStatement ps = connection.prepareStatement(sql);
-//
-//            ps.setString(1, c.getText());
-//            ps.setBoolean(2, c.isCorrect());
-//            ps.setInt(3, c.getOrder());
-//            ps.setInt(4, c.getId());
-//
-//            ps.executeUpdate();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
     //delete choice by question'id
     public void deleteChoicesByQuestionId(int questionId) {
 
@@ -123,6 +75,29 @@ public class QuestionBankChoiceDAO extends DBContext {
 
             ps.executeUpdate();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertQuestion(QuestionBankChoice qBankChoice) {
+        try {
+            String sql = "INSERT INTO [dbo].[QuestionBankChoices]\n"
+                    + "           ([QuestionBankId]\n"
+                    + "           ,[Text]\n"
+                    + "           ,[IsCorrect]\n"
+                    + "           ,[Order])\n"
+                    + "     VALUES\n"
+                    + "           (?\n"
+                    + "           ,?\n"
+                    + "           ,?\n"
+                    + "           ,?)";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, qBankChoice.getQuestionBankId());
+            statement.setObject(2, qBankChoice.getText());
+            statement.setObject(3, qBankChoice.isIsCorrect());
+            statement.setObject(4, qBankChoice.getOrder());
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

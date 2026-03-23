@@ -128,29 +128,46 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //insert question into questionbank
-    public void insertQuestion(QuestionBank q) {
+    public int insertQuestion(QuestionBank q, String teacherId) {
 
         String sql = """
-        INSERT INTO QuestionBank
-        (SubjectId, Type, Prompt, Level, DefaultPoints, CreatedById, CreatedAt)
-        VALUES (?, ?, ?, ?, ?, ?, GETDATE())
+        INSERT INTO [dbo].[QuestionBank]
+                   ([SubjectId]
+                   ,[Type]
+                   ,[Prompt]
+                   ,[Chapter]
+                   ,[CreatedById]
+                   ,[CreatedAt]
+                   ,[Status])
+                     OUTPUT INSERTED.Id
+             VALUES
+                   (?
+                   ,?
+                   ,?
+                   ,?
+                   ,?
+                   ,GETDATE()
+                   ,?)
         """;
 
         try {
-////            PreparedStatement ps = connection.prepareStatement(sql);
-////
-////            ps.setString(1, q.getSubjectId());
-////            ps.setInt(2, q.getType());
-////            ps.setString(3, q.getPrompt());
-////            ps.setInt(4, q.getLevel());
-////            ps.setDouble(5, q.getDefaultPoints());
-////            ps.setString(6, q.getCreatedById());
-//
-//            ps.executeUpdate();
+            statement = connection.prepareStatement(sql);
 
+            statement.setString(1, q.getSubjectId());
+            statement.setInt(2, q.getType());
+            statement.setString(3, q.getPrompt());
+            statement.setInt(4, q.getChapter());
+            statement.setObject(5, teacherId);
+            statement.setInt(6, 2);
+
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                return resultSet.getInt("Id");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
     //update question
@@ -193,7 +210,7 @@ public class QuestionBankDAO extends DBContext {
     }
 
     //get random question in question bank
-    public List<QuestionBank> getRandomQuestions(String subjectId, String createdById,int Chapter, int type, int numberQuestion, double pointPerQuestion) {
+    public List<QuestionBank> getRandomQuestions(String subjectId, String createdById, int Chapter, int type, int numberQuestion, double pointPerQuestion) {
 
         List<QuestionBank> list = new ArrayList<>();
 
@@ -252,7 +269,10 @@ public class QuestionBankDAO extends DBContext {
 //        } catch (Exception e) {
 //        }
 //    }
-    //id mcq? chapter text
+    /*
+    *get list question bank by teacher'is and subject'is
+    *use when create assignment
+     */
     public List<QuestionBank> getListQuestionBankByTeacherAndSubject(String subjectId, String teacherId, int status) {
         List<QuestionBank> listQuestionBank = new ArrayList<>();
         try {
@@ -273,6 +293,53 @@ public class QuestionBankDAO extends DBContext {
                 qBank.setPrompt(resultSet.getString("Prompt"));
                 qBank.setType(resultSet.getInt("Type"));
                 listQuestionBank.add(qBank);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listQuestionBank;
+    }
+
+    /*
+    *get list question bank by teacher id
+    *display question bank of this teacher
+     */
+    public List<QuestionBank> getListQuestionBankByTeacherId(String teacherId, String status) {
+        List<QuestionBank> listQuestionBank = new ArrayList<>();
+        String statusPending = "";
+        if (status.equalsIgnoreCase("pending")) {
+            statusPending = "AND Status IN (0, 2)";
+        }
+        if (status.equalsIgnoreCase("all")) {
+            statusPending = "AND Status = 1";
+        }
+        try {
+            String sql = "SELECT [Id]\n"
+                    + "      ,[SubjectId]\n"
+                    + "      ,[Type]\n"
+                    + "      ,[Prompt]\n"
+                    + "      ,[Chapter]\n"
+                    + "      ,[CreatedById]\n"
+                    + "      ,[CreatedAt]\n"
+                    + "      ,[Status]\n"
+                    + "  FROM [dbo].[QuestionBank]\n"
+                    + "Where CreatedById = ? " + statusPending;
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, teacherId);
+            resultSet = statement.executeQuery();
+            QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
+            while (resultSet.next()) {
+                QuestionBank q = new QuestionBank(resultSet.getInt("Id"),
+                        resultSet.getString("SubjectId"),
+                        resultSet.getInt("Type"),
+                        resultSet.getString("Prompt"),
+                        resultSet.getInt("Chapter"),
+                        resultSet.getString("CreatedById"),
+                        resultSet.getTimestamp("CreatedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        resultSet.getInt("Status"),
+                        qBankChoiceDAO.getChoicesByQuestionId(resultSet.getInt("Id")));
+
+                listQuestionBank.add(q);
             }
         } catch (Exception e) {
             e.printStackTrace();
