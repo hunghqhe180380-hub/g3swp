@@ -152,6 +152,8 @@ public class TakeAssignmentController extends HttpServlet {
 
         AssignmentAnswerDAO answerDao = new AssignmentAnswerDAO();
         boolean hasEssay = false;
+        double scqScore = 0;
+        double scqMax = 0;
         double mcqScore = 0;
         double mcqMax = 0;
         double essayMax = 0;
@@ -162,7 +164,7 @@ public class TakeAssignmentController extends HttpServlet {
 
             if ("1".equals(qType)) {
                 // SCQ - single correct answer
-                mcqMax += q.getPoints();
+                scqMax += q.getPoints();
                 String selectedChoiceIdStr = request.getParameter("q-" + qId);
                 boolean isCorrect = false;
 
@@ -174,7 +176,7 @@ public class TakeAssignmentController extends HttpServlet {
                         for (model.AssignmentChoice c : choices) {
                             if (c.getId() == selectedChoiceId && c.isIsCorrect()) {
                                 isCorrect = true;
-                                mcqScore += q.getPoints();
+                                scqScore += q.getPoints();
                                 break;
                             }
                         }
@@ -227,10 +229,11 @@ public class TakeAssignmentController extends HttpServlet {
         }
 
         // 3. Update attempt with scores
-        double totalMax = mcqMax + essayMax;
-        Double finalScore = hasEssay ? null : mcqScore;
+        double totalMax = scqMax + mcqMax + essayMax;
+        Double autoScore = scqScore + mcqScore;
+        Double finalScore = hasEssay ? null : autoScore;
 
-        attemptDao.updateAttemptScores(attemptId, mcqScore, totalMax, hasEssay, finalScore);
+        attemptDao.updateAttemptScores(attemptId, autoScore, totalMax, hasEssay, finalScore);
 
         // Redirect back
         response.sendRedirect(request.getContextPath() + "/assignment/view/list-assignment?classId=" + classId);

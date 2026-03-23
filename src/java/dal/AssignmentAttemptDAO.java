@@ -101,10 +101,11 @@ public class AssignmentAttemptDAO extends DBContext {
 
             int assignmentIdInt = Integer.parseInt(assignmentId);
 
-            // Get MCQ Max and Essay Max once (same for all attempts of same assignment)
-            double[] maxScores = getMCQAndEssayMax(assignmentIdInt);
-            final double mcqMax = maxScores[0];
-            final double essayMax = maxScores[1];
+            // Get SCQ Max, MCQ Max and Essay Max once (same for all attempts of same assignment)
+            double[] maxScores = getSCQMCQEssayMax(assignmentIdInt);
+            final double scqMax = maxScores[0];
+            final double mcqMax = maxScores[1];
+            final double essayMax = maxScores[2];
 
             for (Object[] row : rows) {
                 int attemptId = (int) row[0];
@@ -153,21 +154,20 @@ public class AssignmentAttemptDAO extends DBContext {
                 Double finalScore = (Double) row[10];
                 Double maxScore = (Double) row[11];
 
-                // MCQ Score - use AutoScore from database
-                // If AutoScore is available, use it; otherwise calculate from AssignmentAnswers
-                double mcqScore;
-                if (autoScore != null) {
-                    mcqScore = autoScore;
-                } else {
-                    // Fallback: calculate from AssignmentAnswers
-                    mcqScore = calculateMCQScore(attemptId, assignmentIdInt);
-                }
+                // SCQ Score (Type 1) - calculate from AssignmentAnswers
+                double scqScore = calculateSCQScore(attemptId);
+                item.setScqScore(scqScore);
+                item.setScqMax(scqMax);
+                item.setScqPercent(scqMax > 0 ? (int) Math.round(scqScore / scqMax * 100) : 0);
+
+                // MCQ Score (Type 2) - calculate from AssignmentAnswers
+                double mcqScore = calculateMCQScore(attemptId);
                 item.setMcqScore(mcqScore);
                 item.setMcqMax(mcqMax);
                 item.setMcqPercent(mcqMax > 0 ? (int) Math.round(mcqScore / mcqMax * 100) : 0);
 
-                // Essay Score - calculate from AssignmentAnswers (IsCorrect = 1 AND Type = 2)
-                double essayScore = calculateEssayScore(attemptId, assignmentIdInt);
+                // Essay Score (Type 3) - calculate from AssignmentAnswers
+                double essayScore = calculateEssayScore(attemptId);
                 item.setEssayScore(essayScore > 0 ? essayScore : null);
                 item.setEssayMax(essayMax);
                 item.setEssayPercent(essayMax > 0 ? (int) Math.round(essayScore / essayMax * 100) : 0);
@@ -176,7 +176,7 @@ public class AssignmentAttemptDAO extends DBContext {
                 if (maxScore != null && maxScore > 0) {
                     item.setFinalMax(maxScore);
                 } else {
-                    item.setFinalMax(mcqMax + essayMax);
+                    item.setFinalMax(scqMax + mcqMax + essayMax);
                 }
                 item.setFinalScore(finalScore);
                 if (item.getFinalMax() > 0 && finalScore != null) {
@@ -193,20 +193,23 @@ public class AssignmentAttemptDAO extends DBContext {
         return list;
     }
 
-    // Get MCQ Max and Essay Max for an assignment (one query)
-    private double[] getMCQAndEssayMax(int assignmentId) {
-        double[] result = {0, 0}; // [mcqMax, essayMax]
+    // Get SCQ Max, MCQ Max and Essay Max for an assignment (one query)
+    // Type: 1=SCQ, 2=MCQ, 3=Essay
+    private double[] getSCQMCQEssayMax(int assignmentId) {
+        double[] result = {0, 0, 0}; // [scqMax, mcqMax, essayMax]
         try {
             String sql = "SELECT "
-                    + "ISNULL(SUM(CASE WHEN Type = 1 THEN Points ELSE 0 END), 0) AS MCQMax, "
-                    + "ISNULL(SUM(CASE WHEN Type = 2 THEN Points ELSE 0 END), 0) AS EssayMax "
+                    + "ISNULL(SUM(CASE WHEN Type = 1 THEN Points ELSE 0 END), 0) AS SCQMax, "
+                    + "ISNULL(SUM(CASE WHEN Type = 2 THEN Points ELSE 0 END), 0) AS MCQMax, "
+                    + "ISNULL(SUM(CASE WHEN Type = 3 THEN Points ELSE 0 END), 0) AS EssayMax "
                     + "FROM AssignmentQuestions WHERE AssignmentId = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, assignmentId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                result[0] = rs.getDouble("MCQMax");
-                result[1] = rs.getDouble("EssayMax");
+                result[0] = rs.getDouble("SCQMax");
+                result[1] = rs.getDouble("MCQMax");
+                result[2] = rs.getDouble("EssayMax");
             }
             rs.close();
             ps.close();
@@ -216,13 +219,34 @@ public class AssignmentAttemptDAO extends DBContext {
         return result;
     }
 
-    // Fallback: calculate MCQ score from AssignmentAnswers
-    private double calculateMCQScore(int attemptId, int assignmentId) {
+    // Calculate SCQ score (Type = 1) from AssignmentAnswers
+    private double calculateSCQScore(int attemptId) {
+        try {
+            String sql = "SELECT ISNULL(SUM(q.Points), 0) AS SCQScore "
+                    + "FROM AssignmentAnswers aa "
+                    + "JOIN AssignmentQuestions q ON aa.QuestionId = q.Id "
+                    + "WHERE aa.AttemptId = ? AND q.Type = 1 AND aa.IsCorrect = 1";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, attemptId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("SCQScore");
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Calculate MCQ score (Type = 2) from AssignmentAnswers
+    private double calculateMCQScore(int attemptId) {
         try {
             String sql = "SELECT ISNULL(SUM(q.Points), 0) AS MCQScore "
                     + "FROM AssignmentAnswers aa "
                     + "JOIN AssignmentQuestions q ON aa.QuestionId = q.Id "
-                    + "WHERE aa.AttemptId = ? AND q.Type = 1 AND aa.IsCorrect = 1";
+                    + "WHERE aa.AttemptId = ? AND q.Type = 2 AND aa.IsCorrect = 1";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, attemptId);
             ResultSet rs = ps.executeQuery();
@@ -237,13 +261,13 @@ public class AssignmentAttemptDAO extends DBContext {
         return 0;
     }
 
-    // Calculate Essay score from AssignmentAnswers
-    private double calculateEssayScore(int attemptId, int assignmentId) {
+    // Calculate Essay score (Type = 3) from AssignmentAnswers
+    private double calculateEssayScore(int attemptId) {
         try {
             String sql = "SELECT ISNULL(SUM(q.Points), 0) AS EssayScore "
                     + "FROM AssignmentAnswers aa "
                     + "JOIN AssignmentQuestions q ON aa.QuestionId = q.Id "
-                    + "WHERE aa.AttemptId = ? AND q.Type = 2 AND aa.IsCorrect = 1";
+                    + "WHERE aa.AttemptId = ? AND q.Type = 3 AND aa.IsCorrect = 1";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, attemptId);
             ResultSet rs = ps.executeQuery();

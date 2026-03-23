@@ -19,7 +19,12 @@ public class SubmissionListItem {
 
     private String status;
 
-    /* MCQ */
+    /* SCQ (Single Choice Question) - Type 1 */
+    private double scqScore;
+    private double scqMax;
+    private int scqPercent;
+
+    /* MCQ (Multiple Choice Question) - Type 2 */
     private double mcqScore;
     private double mcqMax;
     private int mcqPercent;
@@ -103,6 +108,32 @@ public class SubmissionListItem {
         this.status = status;
     }
 
+    // === SCQ (Type 1) ===
+    public double getScqScore() {
+        return scqScore;
+    }
+
+    public void setScqScore(double scqScore) {
+        this.scqScore = scqScore;
+    }
+
+    public double getScqMax() {
+        return scqMax;
+    }
+
+    public void setScqMax(double scqMax) {
+        this.scqMax = scqMax;
+    }
+
+    public int getScqPercent() {
+        return scqPercent;
+    }
+
+    public void setScqPercent(int scqPercent) {
+        this.scqPercent = scqPercent;
+    }
+
+    // === MCQ (Type 2) ===
     public double getMcqScore() {
         return mcqScore;
     }
@@ -193,6 +224,16 @@ public class SubmissionListItem {
         return submittedAt != null ? submittedAt.format(DATE_FORMAT) : "—";
     }
 
+    // SCQ (Type 1)
+    public String getScqScoreFmt() {
+        return String.format("%.1f", scqScore);
+    }
+
+    public String getScqMaxFmt() {
+        return String.format("%.1f", scqMax);
+    }
+
+    // MCQ (Type 2)
     public String getMcqScoreFmt() {
         return String.format("%.1f", mcqScore);
     }
@@ -201,6 +242,7 @@ public class SubmissionListItem {
         return String.format("%.1f", mcqMax);
     }
 
+    // Essay (Type 3)
     public String getEssayScoreFmt() {
         return essayScore != null ? String.format("%.1f", essayScore) : "—";
     }
@@ -213,6 +255,7 @@ public class SubmissionListItem {
         return essayScore != null;
     }
 
+    // Final
     public String getFinalScoreFmt() {
         return finalScore != null ? String.format("%.1f", finalScore) : "—";
     }

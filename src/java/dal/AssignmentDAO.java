@@ -87,7 +87,10 @@ public class AssignmentDAO extends DBContext {
                     s.setSubmittedAt(resultSet.getTimestamp("SubmittedAt").toLocalDateTime());
                 }
                 s.setStatus(resultSet.getString("Status"));
-                s.setMcqScore(resultSet.getDouble("AutoScore"));
+                // AutoScore = SCQ + MCQ combined (Type 1 + Type 2)
+                // Assign to SCQ since we cannot separate them from AutoScore alone
+                s.setScqScore(resultSet.getDouble("AutoScore"));
+                s.setMcqScore(0);
                 s.setFinalScore(resultSet.getDouble("FinalScore"));
                 s.setRequiresManual(resultSet.getBoolean("RequiresManualGrading"));
                 list.add(s);
