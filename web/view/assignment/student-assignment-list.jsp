@@ -130,6 +130,7 @@
                                 <div class="assignment-history-data d-none">
                                     <c:forEach items="${a.history}" var="h">
                                         <div class="history-item"
+                                             data-attempt-id="${h.attemptId}"
                                              data-attempt="Attempt ${h.attemptNumber}"
                                              data-started="${empty h.startedAt ? '' : h.startedAt}"
                                              data-submitted="${empty h.submittedAt ? '' : h.submittedAt}"
@@ -335,16 +336,26 @@
                     if (raw === 'violated') {
                         return {text: 'Violated', className: 'status-pill status-pill--violated'};
                     }
-                    return {text: 'Pending', className: 'status-pill status-pill--pending'};
+                    if (raw === 'submitted' || raw === 'late') {
+                        return {text: 'Awaiting grade', className: 'status-pill status-pill--pending'};
+                    }
+                    if (raw === 'inprogress') {
+                        return {text: 'In Progress', className: 'status-pill status-pill--inprogress'};
+                    }
+                    return {text: status || 'Unknown', className: 'status-pill status-pill--pending'};
                 }
 
-                function escapeHtml(value) {
-                    return String(value || '')
-                            .replace(/&/g, '&amp;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;')
-                            .replace(/"/g, '&quot;')
-                            .replace(/'/g, '&#39;');
+                function fmtFinalScore(finalScore, finalMax, status) {
+                    const score = parseFloat(finalScore) || 0;
+                    const max   = parseFloat(finalMax)   || 0;
+                    const st    = (status || '').toLowerCase();
+
+                    // Graded → show green score
+                    if (st === 'graded') {
+                        return '<div class="score-pill score-pill--final-ok">' + score + ' / ' + max + '</div>';
+                    }
+                    // Has FinalScore in DB but status not yet Graded → show as pending
+                    return '<div class="score-pill score-pill--pending">— / ' + max + '</div>';
                 }
 
                 function renderHistoryRows(card, maxAttempts) {
@@ -364,6 +375,7 @@
                         return bb - aa;
                     });
 
+                    let gradedCount = 0;
                     items.forEach(item => {
                         const st = formatStatus(item.dataset.status);
                         const scqScore = item.dataset.scqScore || '0';
@@ -374,6 +386,13 @@
                         const essayMax = item.dataset.essayMax || '0';
                         const finalScore = item.dataset.finalScore || '0';
                         const finalMax = item.dataset.finalMax || '0';
+                        const rawStatus = (item.dataset.status || '').toLowerCase();
+
+                        if (rawStatus === 'graded') gradedCount++;
+
+                        // For non-graded attempts: show actual auto-score for SCQ/MCQ,
+                        // but show "—" for Final since not officially graded yet
+                        const finalCell = fmtFinalScore(finalScore, finalMax, item.dataset.status);
 
                         const row = document.createElement('tr');
                         row.innerHTML =
@@ -387,15 +406,31 @@
                                 '<td>' +
                                 '   <div class="score-pill">' + escapeHtml(mcqScore) + ' / ' + escapeHtml(mcqMax) + '</div>' +
                                 '</td>' +
-                                '<td><div class="score-pill">' + escapeHtml(essayScore) + ' / ' + escapeHtml(essayMax) + '</div></td>' +
-                                '<td><div class="score-pill">' + escapeHtml(finalScore) + ' / ' + escapeHtml(finalMax) + '</div></td>' +
+                                '<td><div class="score-pill">' +
+                                (rawStatus === 'graded'
+                                    ? escapeHtml(essayScore) + ' / ' + escapeHtml(essayMax)
+                                    : '— / ' + escapeHtml(essayMax)) +
+                                '</div></td>' +
+                                '<td>' + finalCell + '</td>' +
                                 '<td><span class="' + st.className + '">' + st.text + '</span></td>' +
-                                '<td><button type="button" class="btn-ui btn-ui--muted" disabled>View</button></td>';
+                                '<td>' + (rawStatus === 'graded'
+                                    ? '<a href="/POET/assignment/review?attemptId=' + encodeURIComponent(item.dataset.attemptId || '') + '" class="btn-ui btn-ui--primary" style="font-size:0.8rem;padding:4px 12px;">View</a>'
+                                    : '<button type="button" class="btn-ui btn-ui--muted" disabled>View</button>') + '</td>';
 
                         historyTableBody.appendChild(row);
                     });
 
-//                    historySummary.textContent = 'Attempts: ' + items.length + ' / ' + maxAttempts;
+                    historySummary.innerHTML = 'Attempts: <b>' + items.length + '</b> / <b>' + maxAttempts + '</b>'
+                        + (gradedCount > 0 ? ' &nbsp;·&nbsp; Graded: <b style="color:#16a34a">' + gradedCount + '</b>' : '');
+                }
+
+                function escapeHtml(value) {
+                    return String(value || '')
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;');
                 }
 
                 function openDetail(card) {

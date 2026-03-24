@@ -11,17 +11,16 @@ public class DBContext {
 
     public DBContext() {
         try {
-            // Gán thẳng giá trị từ file properties cũ của bạn vào đây
-            String user = "admin";
-            String pass = "1234567890";
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=POETDB;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;";
-            
+            String user = "sa";
+            String pass = "123";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=ABC;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;";
+
             // Nạp Driver SQL Server
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            
+
             // Thiết lập kết nối
             connection = DriverManager.getConnection(url, user, pass);
-            
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, "Không tìm thấy Driver SQL Server!", ex);
         } catch (SQLException ex) {

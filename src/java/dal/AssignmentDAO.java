@@ -94,7 +94,10 @@ public class AssignmentDAO extends DBContext {
                     s.setSubmittedAt(resultSet.getTimestamp("SubmittedAt").toLocalDateTime());
                 }
                 s.setStatus(resultSet.getString("Status"));
-                s.setMcqScore(resultSet.getDouble("AutoScore"));
+                // AutoScore = SCQ + MCQ combined (Type 1 + Type 2)
+                // Assign to SCQ since we cannot separate them from AutoScore alone
+                s.setScqScore(resultSet.getDouble("AutoScore"));
+                s.setMcqScore(0);
                 s.setFinalScore(resultSet.getDouble("FinalScore"));
                 s.setRequiresManual(resultSet.getBoolean("RequiresManualGrading"));
                 list.add(s);
@@ -174,21 +177,29 @@ public class AssignmentDAO extends DBContext {
             }
 
             st.setTimestamp(7, openAt);
-            st.setTimestamp(8, closeAt);;
+            st.setTimestamp(8, closeAt);
             st.setObject(9, a.getCreatedById());
 
-            st.executeUpdate();
+            // Use executeQuery to capture the OUTPUT INSERTED.Id value
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                newAssignmentId = rs.getInt(1);
+            }
+            rs.close();
+            st.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 1;
+        return newAssignmentId;
     }
+
 
     public GradeAttemptVM getAttemptDetail(int attemptId) {
         GradeAttemptVM vm = new GradeAttemptVM();
 
         // Sử dụng LinkedHashMap để giữ đúng thứ tự câu hỏi từ DB
+        Map<Integer, GradeMcqItem> scqMap = new LinkedHashMap<>();
         Map<Integer, GradeMcqItem> mcqMap = new LinkedHashMap<>();
         List<GradeEssayItem> essays = new ArrayList<>();
 
@@ -200,7 +211,7 @@ public class AssignmentDAO extends DBContext {
             at.SubmittedAt, at.Status, at.AutoScore, at.FinalScore, at.AssignmentId,
             q.Id AS QuestionId, q.Prompt, q.Type, q.Points,
             c.Id AS ChoiceId, c.Text AS ChoiceText, c.IsCorrect,
-            ans.SelectedChoiceId, ans.TextAnswer, ans.TeacherComment
+            ans.SelectedChoiceId, ans.TextAnswer, ans.TeacherComment, ans.PointsAwarded
         FROM AssignmentAttempts at
         JOIN AssignmentQuestions q ON q.AssignmentId = at.AssignmentId
         LEFT JOIN AssignmentChoices c ON c.QuestionId = q.Id
@@ -243,8 +254,38 @@ public class AssignmentDAO extends DBContext {
                     }
                     String type = resultSet.getString("Type");
 
-                    // Xử lý MCQ
+                    // Xử lý SCQ (type=1): chỉ 1 đáp án đúng
                     if ("1".equalsIgnoreCase(type)) {
+                        GradeMcqItem q = scqMap.get(qId);
+                        if (q == null) {
+                            q = new GradeMcqItem();
+                            q.setQuestionId(qId);
+                            q.setPrompt(resultSet.getString("Prompt"));
+                            q.setPoints(resultSet.getDouble("Points"));
+                            q.setChoices(new ArrayList<>());
+                            scqMap.put(qId, q);
+                        }
+                        int choiceId = resultSet.getInt("ChoiceId");
+                        if (choiceId > 0) {
+                            McqChoice c = new McqChoice();
+                            c.setChoiceId(choiceId);
+                            c.setContent(resultSet.getString("ChoiceText"));
+                            c.setIsCorrect(resultSet.getBoolean("IsCorrect"));
+                            int selectedId = resultSet.getInt("SelectedChoiceId");
+                            c.setIsSelected(selectedId == choiceId);
+                            if (c.isIsSelected() && c.isIsCorrect()) {
+                                c.setCssClass("choice-correct");
+                            } else if (c.isIsSelected() && !c.isIsCorrect()) {
+                                c.setCssClass("choice-wrong");
+                            } else if (!c.isIsSelected() && c.isIsCorrect()) {
+                                c.setCssClass("choice-correct-unselected");
+                            }
+                            q.getChoices().add(c);
+                        }
+                    }
+
+                    // Xử lý MCQ (type=2): nhiều đáp án đúng
+                    if ("2".equalsIgnoreCase(type)) {
                         GradeMcqItem q = mcqMap.get(qId);
                         if (q == null) {
                             q = new GradeMcqItem();
@@ -280,8 +321,8 @@ public class AssignmentDAO extends DBContext {
                         }
                     }
 
-                    // Xử lý Essay
-                    if ("2".equalsIgnoreCase(type)) {
+                    // Xử lý Essay (type=3)
+                    if ("3".equalsIgnoreCase(type)) {
                         if (essays.stream().noneMatch(e -> e.getQuestionId() == qId)) {
                             GradeEssayItem e = new GradeEssayItem();
                             e.setQuestionId(qId);
@@ -297,15 +338,17 @@ public class AssignmentDAO extends DBContext {
                 }
             }
 
+            vm.setScqs(new ArrayList<>(scqMap.values()));
             vm.setMcqs(new ArrayList<>(mcqMap.values()));
             vm.setEssays(essays);
 
-            // Tính điểm Max để tránh lỗi chia cho 0 ở JSP
+            double sMax = vm.getScqs().stream().mapToDouble(GradeMcqItem::getPoints).sum();
             double mMax = vm.getMcqs().stream().mapToDouble(GradeMcqItem::getPoints).sum();
             double eMax = essays.stream().mapToDouble(GradeEssayItem::getMaxPoints).sum();
+            vm.setScqMax(sMax);
             vm.setMcqMax(mMax);
             vm.setEssayMax(eMax);
-            vm.setFinalMax(mMax + eMax);
+            vm.setFinalMax(sMax + mMax + eMax);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -548,6 +591,21 @@ public class AssignmentDAO extends DBContext {
             // 👉 update final score
             updateFinalScore(attemptId);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //update type of question
+    public void updateTypeFollowQuestionInAssignment(int AssignmentId, int type) {
+        try {
+            String sql = "UPDATE [dbo].[Assignments]\n"
+                    + "   SET [Type] = ?\n"
+                    + " WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, type);
+            statement.setObject(2, AssignmentId);
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
