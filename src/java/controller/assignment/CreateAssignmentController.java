@@ -151,7 +151,7 @@ public class CreateAssignmentController extends HttpServlet {
         //add question to assignment with each mode
         request.setAttribute("modeCreate", modeCreate);
         request.setAttribute("newAssignmentId", newAssignmentId);
-        request.getRequestDispatcher("/assignment/question/add").forward(request, response);
+        request.getRequestDispatcher("/assignment/manage/add-question").forward(request, response);
         /*
             create with auto mode => show preview first
          */

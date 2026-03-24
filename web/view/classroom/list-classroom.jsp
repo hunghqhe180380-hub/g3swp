@@ -132,7 +132,7 @@
                                                     <a class="btn-mini"
                                                         href="${ctx}/material/view/material-list?classId=${cl.id}&index=${page.index}">Materials</a>
                                                     <a class="btn-mini"
-                                                        href="${ctx}/admin/assignment-list?classId=${cl.id}">Assignments</a>
+                                                        href="${ctx}/assignment/view/list-assignment?classId=${cl.id}">Assignments</a>
                                                     <a class="btn-mini"
                                                         href="${ctx}/classroom/view/student-list?classId=${cl.id}">Students</a>
                                                     <form action="${ctx}/classroom/manage/delete-class" method="post"
@@ -212,7 +212,7 @@
                             }
                         });
                         const el = document.getElementById("txt" + col);
-                        const next = (parseInt(el.value) || 0 + 1) % 3;
+                        const next = ((parseInt(el.value) || 0) + 1) % 3;
                         el.value = next;
                         updateIcon(col, next);
                         document.getElementById("pageIndex").value = 0;

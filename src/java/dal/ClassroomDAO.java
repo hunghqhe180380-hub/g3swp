@@ -128,7 +128,7 @@ public class ClassroomDAO extends DBContext {
 
     /** Returns true if there is at least one active enrollment in the class */
     public boolean hasStudentInClass(String classId) {
-        String sql = "SELECT COUNT(*) FROM Enrollments WHERE ClassId=? AND Status='Active'";
+        String sql = "SELECT COUNT(*) FROM Enrollments WHERE ClassId=? AND Status=0";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(classId));
             try (ResultSet rs = ps.executeQuery()) {

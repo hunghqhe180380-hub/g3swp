@@ -155,7 +155,7 @@
 
             <div id="autoMode">
                 <!-- Form create auto mode -->
-                <form action="${ctx}/assignment/question/add" method="POST">
+                <form action="${ctx}/assignment/manage/add-question" method="POST">
                     <!-- QUESTION GROUP -->
 
                     <div id="groupContainer">

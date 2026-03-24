@@ -202,7 +202,7 @@
                         Please add questions to start using this assignment.
                     </p>
 
-                    <a href="${pageContext.request.contextPath}/assignment/question/add?classId=${requestScope.classId}&assignmentId=${requestScope.assignmentId}"
+                    <a href="${pageContext.request.contextPath}/assignment/manage/add-question?classId=${requestScope.classId}&assignmentId=${requestScope.assignmentId}"
                        class="btn btn-primary px-4">
 
                         <i class="bi bi-plus-circle me-2"></i>

@@ -384,7 +384,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddQuestionToAssignmentController</servlet-name>
-        <url-pattern>/assignment/question/add</url-pattern>
+        <url-pattern>/assignment/manage/add-question</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GradeServlet</servlet-name>
