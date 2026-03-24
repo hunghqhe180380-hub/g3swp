@@ -77,7 +77,8 @@ public class ClassListController extends HttpServlet {
 
     // Build PagingUtil from list size + nrpp context param + current page index
     private void paging(HttpServletRequest request, List<Classroom> classes) {
-        int nrpp  = parseIntSafe(request.getServletContext().getInitParameter("nrpp"), 10);
+        // Use the 'paging.class' context param defined in web.xml; fall back to 10
+        int nrpp  = parseIntSafe(request.getServletContext().getInitParameter("paging.class"), 10);
         int index = Math.max(parseIntSafe(request.getParameter("index"), 0), 0);
 
         PagingUtil page = new PagingUtil(classes.size(), nrpp, index);

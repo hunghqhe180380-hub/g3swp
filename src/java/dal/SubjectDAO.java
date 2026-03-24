@@ -137,4 +137,31 @@ public class SubjectDAO extends DBContext {
 
         return listSubject;
     }
+
+    /** Toggle subject active status (0=inactive, 1=active) */
+    public void updateSubjectStatus(String subjectId, int newStatus) {
+        try {
+            String sql = "UPDATE [dbo].[Subjects] SET [is_active] = ? WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, newStatus);
+            statement.setString(2, subjectId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Delete a subject by ID */
+    public void deleteSubject(String subjectId) {
+        try {
+            String sql = "DELETE FROM [dbo].[Subjects] WHERE [Id] = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, subjectId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
