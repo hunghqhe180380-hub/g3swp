@@ -7,7 +7,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.*;
 
 /**
@@ -202,6 +204,23 @@ public class MaterialDAO extends DBContext {
             e.printStackTrace();
         }
         return cl;
+    }
+
+    /** Returns a Map of classId → material count for the given list of classrooms. */
+    public Map<Integer, Integer> getTotalMaterial(List<Classroom> classList) {
+        Map<Integer, Integer> result = new HashMap<>();
+        if (classList == null || classList.isEmpty()) return result;
+        String sql = "SELECT ClassId, COUNT(*) AS Total FROM [Materials] WHERE ClassId=? GROUP BY ClassId";
+        for (Classroom cls : classList) {
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setInt(1, cls.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) result.put(cls.getId(), rs.getInt("Total"));
+                    else           result.put(cls.getId(), 0);
+                }
+            } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return result;
     }
 
     // ── private mapper ───────────────────────────────────────────────────────

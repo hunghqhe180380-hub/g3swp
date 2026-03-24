@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
 import java.sql.PreparedStatement;
@@ -14,6 +10,17 @@ import model.Classroom;
 
 public class ClassroomDAO extends DBContext {
 
+    private static final DateTimeFormatter FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    private static final String BASE_SELECT =
+        "SELECT a.Id, a.Name, a.ClassCode, a.Subject, a.TeacherId, " +
+        "       b.FullName AS TeacherName, a.CreatedAt, a.MaxStudents, " +
+        "       a.Status, a.TimeExpiryClassCode, " +
+        "       (SELECT COUNT(*) FROM Enrollments e WHERE e.ClassId = a.Id) AS TotalStudent " +
+        "FROM Classrooms a " +
+        "LEFT JOIN Users b ON a.TeacherId = b.UserId ";
+
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
@@ -25,14 +32,13 @@ public class ClassroomDAO extends DBContext {
 
         List<Classroom> list = new ArrayList<>();
         try {
-            statement = connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql.toString());
             int paramIndex = 1;
-            if (search != null && !search.trim().isEmpty()) {
-                String pattern = "%" + search.toLowerCase() + "%";
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
-                statement.setObject(paramIndex++, pattern);
+            if (hasSearch) {
+                bindSearch(statement, paramIndex, search);
+            }
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
             }
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
@@ -108,6 +114,63 @@ public class ClassroomDAO extends DBContext {
         return null;
     }
 
+    /** Set classroom status: 0=active, 1=deactivated */
+    public void setClassroomStatus(String classId, int status) {
+        String sql = "UPDATE [Classrooms] SET Status=? WHERE Id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, status);
+            ps.setInt(2, Integer.parseInt(classId));
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    /** Returns true if there is at least one active enrollment in the class */
+    public boolean hasStudentInClass(String classId) {
+        String sql = "SELECT COUNT(*) FROM Enrollments WHERE ClassId=? AND Status='Active'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(classId));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return false;
+    }
+
+    /** Returns true if the student is enrolled in the class */
+    public boolean isStudentInClass(String userId, String classId) {
+        String sql = "SELECT COUNT(*) FROM Enrollments WHERE UserId=? AND ClassId=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setInt(2, Integer.parseInt(classId));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return false;
+    }
+
+    /** Returns true if the teacher created the class */
+    public boolean isClassCreatedByTeacher(String userId, String classId) {
+        String sql = "SELECT COUNT(*) FROM Classrooms WHERE TeacherId=? AND Id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setInt(2, Integer.parseInt(classId));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return false;
+    }
+
+    /** Clear expired class codes */
+    public void clearExpiredClassCode() {
+        String sql = "UPDATE Classrooms SET ClassCode=NULL, TimeExpiryClassCode=NULL " +
+                     "WHERE TimeExpiryClassCode IS NOT NULL AND TimeExpiryClassCode < GETDATE()";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     //  PRIVATE HELPERS
     // ─────────────────────────────────────────────────────────────────────
@@ -124,6 +187,12 @@ public class ClassroomDAO extends DBContext {
             c.setCreatedAt(rs.getTimestamp("CreatedAt").toLocalDateTime().format(FMT));
         c.setMaxStudent(rs.getInt("MaxStudents"));
         c.setSum(rs.getInt("TotalStudent"));
+        try { c.setStatus(rs.getInt("Status")); } catch (SQLException ignored) {}
+        try {
+            if (rs.getTimestamp("TimeExpiryClassCode") != null)
+                c.setTimeExpiryClassCode(rs.getTimestamp("TimeExpiryClassCode")
+                        .toLocalDateTime().format(FMT));
+        } catch (SQLException ignored) {}
         return c;
     }
 
@@ -132,7 +201,6 @@ public class ClassroomDAO extends DBContext {
                " OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
     }
 
-    /** Bind 4 LIKE params; returns next available param index. */
     private static int bindSearch(PreparedStatement ps, int start, String search)
             throws SQLException {
         String p = "%" + search.trim().toLowerCase() + "%";
