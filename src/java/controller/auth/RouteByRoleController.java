@@ -47,7 +47,14 @@ public class RouteByRoleController extends HttpServlet {
         session.setAttribute("classList", classList);
         //get totalMaterial
         MaterialDAO mtrCtrl = new MaterialDAO();
-        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
+        java.util.Map<Integer, Integer> matMap = mtrCtrl.getTotalMaterial(classList);
+        int totalMatCount = 0;
+        if (matMap != null) {
+            for (Integer count : matMap.values()) {
+                totalMatCount += count;
+            }
+        }
+        session.setAttribute("totalMaterial", totalMatCount);
         response.sendRedirect(request.getContextPath() + "/account/dashboard");
 //        //get total Assignment by classId
 //        AssignmentDAO asgDAO = new AssignmentDAO();

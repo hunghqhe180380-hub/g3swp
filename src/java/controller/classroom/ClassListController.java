@@ -40,7 +40,7 @@ public class ClassListController extends HttpServlet {
         request.setAttribute("search",  search);
         request.setAttribute("classes", classes);
 
-        request.getRequestDispatcher("/View/classroom/list-admin.jsp")
+        request.getRequestDispatcher("/view/classroom/list-classroom.jsp")
                .forward(request, response);
     }
 

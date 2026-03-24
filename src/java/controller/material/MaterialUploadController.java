@@ -62,7 +62,7 @@ public class MaterialUploadController extends HttpServlet {
         request.setAttribute("classId",   classId);
         request.setAttribute("className", cls.getName());
         request.setAttribute("material",  new Material()); // empty model for form
-        request.getRequestDispatcher("/View/material/upload.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/material/upload.jsp").forward(request, response);
     }
 
     // ── POST: process upload ──────────────────────────────────────────────────
@@ -107,7 +107,7 @@ public class MaterialUploadController extends HttpServlet {
             request.setAttribute("classId",   classId);
             request.setAttribute("className", cls.getName());
             request.setAttribute("errors",    v.getAllErrors());
-            request.getRequestDispatcher("/View/material/upload.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/material/upload.jsp").forward(request, response);
             return;
         }
 

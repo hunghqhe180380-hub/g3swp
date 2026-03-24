@@ -46,8 +46,19 @@ public class DashboardController extends HttpServlet {
         List<Classroom> classList = route.showClassList(userLogin.getUserID(), userLogin.getRole());
          //get totalMaterial
         MaterialDAO mtrCtrl = new MaterialDAO();
-        session.setAttribute("totalMaterial", mtrCtrl.getTotalMaterial(classList));
+        java.util.Map<Integer, Integer> matMap = mtrCtrl.getTotalMaterial(classList);
+        int totalMatCount = 0;
+        if (matMap != null) {
+            for (Integer count : matMap.values()) {
+                totalMatCount += count;
+            }
+        }
+        session.setAttribute("totalMaterial", totalMatCount);
         session.setAttribute("classList", classList);
+        
+        // Prevent "Error" UI elements by providing default values pending full Assignment/Schedule features
+        request.setAttribute("assignmentsDue", 0);
+        request.setAttribute("activeThisWeek", classList.size());
         //check user login ? continue : back to login
         if (userLogin == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");

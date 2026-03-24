@@ -549,7 +549,7 @@ CORRECT: B</pre>
 
                     row.innerHTML =
                             '<div class="aq-option-row__left">' +
-                            '   <input class="aq-option-correct" type="' + (questionType === 'SCQ' ? 'radio' : 'checkbox') + '">' +
+                            '   <input class="aq-option-correct" type="' + (questionType === '1' ? 'radio' : 'checkbox') + '">' +
                             '</div>' +
                             '<div class="aq-option-row__main">' +
                             '   <input type="text" class="aq-control aq-option-input" placeholder="Option ' + String.fromCharCode(65 + optionIndex) + '">' +
@@ -558,7 +558,6 @@ CORRECT: B</pre>
                             '   <i class="bi bi-x-lg"></i>' +
                             '</button>';
 
-                    // 👉 SET NAME ĐỘNG
                     const correctInput = row.querySelector('.aq-option-correct');
                     const optionInput = row.querySelector('.aq-option-input');
 
@@ -566,7 +565,6 @@ CORRECT: B</pre>
                     correctInput.value = optionIndex;
 
                     optionInput.name = 'option_' + questionIndex + '[]';
-
 
                     row.querySelector('.aq-option-remove').addEventListener('click', function () {
                         row.remove();
@@ -580,7 +578,7 @@ CORRECT: B</pre>
                     });
 
                     row.querySelector('.aq-option-correct').addEventListener('change', function () {
-                        if (questionType === 'SCQ') {
+                        if (questionType === '1') {
                             row.closest('.aq-options-list').querySelectorAll('.aq-option-correct').forEach(cb => {
                                 if (cb !== this)
                                     cb.checked = false;
@@ -625,17 +623,16 @@ CORRECT: B</pre>
                     body.appendChild(block);
 
                     const optionsList = block.querySelector('.aq-options-list');
-                    //Tối đa 6 lựa chọn thôi
-                    for (let i = 0; i < 6; i++) {
-                        const qIndex = item.dataset.questionId;
+                    const qIndex = item.dataset.questionId;
 
+                    for (let i = 0; i < 4; i++) {
                         optionsList.appendChild(
                                 createOptionRow(qIndex, type, i)
                                 );
                     }
 
                     block.querySelector('.aq-add-option-btn').addEventListener('click', function () {
-                        optionsList.appendChild(createOptionRow(type, optionsList.children.length));
+                        optionsList.appendChild(createOptionRow(qIndex, type, optionsList.children.length));
                         refreshSummary();
                         refreshSteps();
                     });

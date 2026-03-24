@@ -1,547 +1,516 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.net.URLDecoder"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<c:set var="snState" value="${param.txtSubjectName != null ? param.txtSubjectName : '0'}"/>
+<c:set var="base" value="${ctx}/question/manage/accept-question"/>
 
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Question Bank - POET</title>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Requests – POET Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        <link rel="stylesheet" href="${ctx}/assets/css/admin-users.css">
-    </head>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            color: #1e293b;
+            min-height: 100vh;
+        }
 
-    <body>
+        /* ── TOPBAR ── */
+        .topbar {
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+        }
+        .topbar__eyebrow { font-size: 12px; color: rgba(255,255,255,0.75); font-weight: 500; margin-bottom: 3px; letter-spacing: .5px; }
+        .topbar__title   { font-size: 26px; font-weight: 800; color: #fff; }
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 20px; border-radius: 12px;
+            border: 1.5px solid rgba(255,255,255,0.35);
+            color: #fff; font-weight: 700; font-size: 14px;
+            background: rgba(255,255,255,0.10); backdrop-filter: blur(8px);
+            text-decoration: none; transition: .15s ease;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.20); }
 
-        <header class="admin-topbar">
-            <div class="admin-topbar__inner">
-                <div class="admin-title">
-                    <div class="admin-title__small">Administration</div>
-                    <div class="admin-title__big">Question Bank</div>
-                </div>
+        /* ── LAYOUT ── */
+        .page { max-width: 1280px; margin: 0 auto; padding: 28px 24px 60px; }
 
-                <a class="btn-top btn-top--ghost" href="${ctx}/account/dashboard">
-                    ← Back
-                </a>
-            </div>
-        </header>
+        /* ── STATS CARDS ── */
+        .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: #fff; border-radius: 16px; padding: 18px 20px;
+            display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.07);
+            border: 1.5px solid #e8edf3; transition: .15s ease;
+        }
+        .stat-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.10); transform: translateY(-1px); }
+        .stat-card__icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .stat-card__icon--total    { background: #ede9fe; color: #6d28d9; }
+        .stat-card__icon--pending  { background: #fef3c7; color: #d97706; }
+        .stat-card__icon--approved { background: #dcfce7; color: #16a34a; }
+        .stat-card__icon--rejected { background: #fee2e2; color: #dc2626; }
+        .stat-card__label { font-size: 12px; color: #64748b; font-weight: 500; }
+        .stat-card__value { font-size: 26px; font-weight: 800; color: #1e293b; line-height: 1.1; }
 
-        <main class="page">
-            <div class="wrap">
+        /* ── CONTROLS ── */
+        .controls {
+            background: #fff; border-radius: 16px; padding: 16px 20px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.07); border: 1.5px solid #e8edf3;
+            margin-bottom: 18px;
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        }
+        .search-wrap {
+            display: flex; align-items: center; gap: 8px;
+            background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; padding: 8px 12px; flex: 1; min-width: 200px;
+        }
+        .search-wrap i { color: #94a3b8; font-size: 15px; }
+        .search-wrap input {
+            border: none; background: transparent; outline: none;
+            font-size: 14px; color: #1e293b; width: 100%; font-family: inherit;
+        }
+        .filter-select {
+            padding: 9px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0;
+            font-size: 13px; font-family: inherit; background: #f8fafc; color: #334155;
+            cursor: pointer; outline: none;
+        }
+        .filter-select:focus { border-color: #6366f1; }
+        .btn-search {
+            padding: 9px 20px; border-radius: 10px; border: none;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;
+            transition: .15s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-search:hover { opacity: .9; }
+        .btn-clear {
+            padding: 9px 16px; border-radius: 10px; border: 1.5px solid #e2e8f0;
+            background: #fff; color: #64748b; font-weight: 600; font-size: 13px;
+            cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px;
+        }
+        .btn-clear:hover { border-color: #94a3b8; color: #334155; }
 
-                <div class="section-head">
+        /* ── BULK ACTIONS ── */
+        .bulk-bar {
+            display: none; align-items: center; gap: 10px;
+            background: #eff6ff; border: 1.5px solid #bfdbfe;
+            border-radius: 12px; padding: 10px 16px;
+            margin-bottom: 12px; font-size: 14px; font-weight: 600; color: #1d4ed8;
+        }
+        .bulk-bar.visible { display: flex; }
+        .bulk-bar span { flex: 1; }
+        .btn-bulk-approve, .btn-bulk-reject {
+            padding: 7px 16px; border-radius: 8px; border: none;
+            font-weight: 700; font-size: 13px; cursor: pointer; transition: .15s;
+        }
+        .btn-bulk-approve { background: #16a34a; color: #fff; }
+        .btn-bulk-approve:hover { background: #15803d; }
+        .btn-bulk-reject  { background: #dc2626; color: #fff; }
+        .btn-bulk-reject:hover  { background: #b91c1c; }
 
-                    <h2 class="section-title">
-                        Total Question
-                        <span class="count">(${fn:length(listQuestion)})</span>
-                    </h2>
+        /* ── RESULT SUMMARY ── */
+        .result-summary {
+            font-size: 13px; color: #64748b; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .result-summary strong { color: #1e293b; }
 
-                    <button type="button" class="btn-create-subject" id="openCreateSubjectModal">
-                        <span class="btn-create-subject__icon">＋</span>
-                        <span>Create New Subject</span>
-                    </button>
-                </div>
+        /* ── TABLE ── */
+        .card {
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.07); border: 1.5px solid #e8edf3;
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+        th {
+            padding: 12px 14px; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px; color: #64748b;
+            white-space: nowrap;
+        }
+        th.sortable { cursor: pointer; user-select: none; }
+        th.sortable:hover { color: #4f46e5; }
+        th .sort-icon { margin-left: 4px; font-size: 11px; }
+        td {
+            padding: 13px 14px; font-size: 14px; color: #334155;
+            border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbff; }
+        .prompt-cell { max-width: 320px; }
+        .prompt-text {
+            display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
+            line-height: 1.5;
+        }
 
-                <div class="card">
+        /* ── STATUS BADGE ── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+        }
+        .badge--pending  { background: #fef3c7; color: #b45309; }
+        .badge--approved { background: #dcfce7; color: #16a34a; }
+        .badge--rejected { background: #fee2e2; color: #dc2626; }
+        .type-badge {
+            padding: 2px 9px; border-radius: 6px; font-size: 12px; font-weight: 700;
+        }
+        .type-scq   { background: #dbeafe; color: #1d4ed8; }
+        .type-mcq   { background: #fae8ff; color: #7e22ce; }
+        .type-essay { background: #fef3c7; color: #b45309; }
 
-                    <table class="table">
+        /* ── ACTION BUTTONS ── */
+        .btn-approve, .btn-reject {
+            padding: 5px 13px; border-radius: 7px; border: none;
+            font-size: 12px; font-weight: 700; cursor: pointer; transition: .15s;
+            display: inline-block;
+        }
+        .btn-approve { background: #dcfce7; color: #16a34a; }
+        .btn-approve:hover { background: #16a34a; color: #fff; }
+        .btn-reject  { background: #fee2e2; color: #dc2626; }
+        .btn-reject:hover  { background: #dc2626; color: #fff; }
+        .action-col { display: flex; gap: 6px; align-items: center; }
 
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th onclick="sort('SubjectName')" style="cursor:pointer">
-                                    Subject Name
-                                    <span id="iconSubjectName">
-                                        <c:choose>
-                                            <c:when test="${snState == '1'}">▲</c:when>
-                                            <c:when test="${snState == '2'}">▼</c:when>
-                                            <c:otherwise>⇅</c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </th>
-                                <th>Classes</th>
-                                <th>Teachers</th>
-                                <th>Active</th>
-                                <th>Create At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+        /* ── EMPTY ── */
+        .empty-row td { text-align: center; padding: 48px; color: #94a3b8; font-size: 15px; }
+        .empty-row td i { display: block; font-size: 36px; margin-bottom: 10px; }
 
-                        <tbody>
+        /* ── PAGINATION ── */
+        .pager { display: flex; align-items: center; gap: 4px; padding: 18px 0 0; flex-wrap: wrap; }
+        .pg {
+            min-width: 34px; height: 34px; display: inline-flex; align-items: center;
+            justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 600;
+            color: #475569; text-decoration: none; background: #fff;
+            border: 1.5px solid #e2e8f0; transition: .15s;
+        }
+        .pg:hover    { border-color: #6366f1; color: #4f46e5; }
+        .pg.is-active { background: linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; border-color: transparent; }
 
-                            <c:forEach items="${listSubject}" var="subject" begin="${page.start}" end="${page.end}">
+        /* ── CHECKBOX ── */
+        input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: #4f46e5; }
 
-                                <tr>
+        @media(max-width:768px){
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .controls  { flex-direction: column; }
+            .search-wrap { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
 
-                                    <td>
-                                        <c:out value="${subject.id}"/>
-                                    </td>
+<!-- TOPBAR -->
+<header class="topbar">
+    <div>
+        <div class="topbar__eyebrow">Administration</div>
+        <div class="topbar__title">Question Requests</div>
+    </div>
+    <a href="${ctx}/account/dashboard" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</header>
 
-                                    <td>
-                                        <c:out value="${subject.name}"/>
-                                    </td>
+<main class="page">
 
-                                    <td>
-                                        <c:out value="${subject.totalClass}"/>
-                                    </td>
-
-                                    <td>
-                                        <c:out value="${subject.totalTeacher}"/>
-                                    </td>
-
-                                    <td>
-                                        <c:out value="${subject.isActive}"/>
-                                    </td>
-
-                                    <td>
-                                        <c:out value="${subject.createAt}"/>
-                                    </td>
-                                    <td class="actions">
-
-                                        <div class="btncol">
-
-                                            <form action="${ctx}/subject/manage/toggle-status" method="post">
-                                                <input type="hidden" name="id" value="${subject.id}">
-                                                <input type="hidden" name="currentStatus" value="${subject.isActive}">
-
-                                                <c:choose>
-                                                    <c:when test="${subject.isActive == 1}">
-                                                        <button class="btn-act btn-act--amber" type="submit">Deactivate</button>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <button class="btn-act btn-act--green" type="submit">Activate</button>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </form>
-
-                                            <form action="${ctx}/admin/delete-subject" method="post">
-                                                <input type="hidden" name="id" value="${subject.id}">
-                                                <button class="btn-act btn-act--red" type="submit">Delete</button>
-                                            </form>
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                            </c:forEach>
-
-                            <c:if test="${empty listSubject}">
-                                <tr>
-                                    <td colspan="7" class="empty">
-                                        No subjects yet.
-                                    </td>
-                                </tr>
-                            </c:if>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-                <div class="pager">                    
-                    <c:url var="basePath" value="/subject/view/subject-list">
-                        <c:if test="${not empty search}">
-                            <c:param name="search" value="${search}"/>
-                        </c:if>                        
-                        <c:param name="txtSubjectName" value="${snState}"/>
-                        <c:forEach items="${statusList}" var="s">
-                            <c:param name="txtStatus" value="${s}"/>
-                        </c:forEach>
-                    </c:url>
-
-                    <c:if test="${page.index!=0}">
-                        <a class="pg" href="${basePath}&index=0">&laquo;</a>
-                        <a class="pg" href="${basePath}&index=${page.index-1}">&lsaquo;</a>
-                    </c:if>
-
-                    <c:forEach var="index" begin="${page.pageStart}" end="${page.pageEnd}">
-                        <a class="pg ${index==page.index ? 'is-active' : ''}"
-                           href="${basePath}&index=${index}">
-                            ${index+1}
-                        </a>
-                    </c:forEach>
-
-                    <c:if test="${page.index!=page.totalPage-1}">
-                        <a class="pg" href="${basePath}&index=${page.index+1}">&rsaquo;</a>
-                        <a class="pg" href="${basePath}&index=${page.totalPage-1}">&raquo;</a>
-                    </c:if>
-                </div>
-            </div>
-        </main>
-
-        <!-- CREATE SUBJECT MODAL -->
-        <div class="subject-modal ${param.modal eq 'create-subject' ? 'is-open' : ''}" id="createSubjectModal">
-            <div class="subject-modal__dialog">
-                <div class="subject-modal__header">
-                    <div>
-                        <div class="subject-modal__eyebrow">Administration</div>
-                        <h3 class="subject-modal__title">Create New Subject</h3>
-                    </div>
-
-                    <button type="button" class="subject-modal__close" id="closeCreateSubjectModal">&times;</button>
-                </div>
-
-                <form action="${ctx}/subject/manage/create" method="post" class="subject-modal__body">
-                    <div class="subject-modal__field">
-                        <label for="subjectName">Subject name</label>
-                        <input
-                            id="subjectName"
-                            name="subjectName"
-                            type="text"
-                            class="subject-modal__input"
-                            placeholder="e.g. Tin học"
-                            value="${fn:escapeXml(param.subjectName)}">
-                    </div>
-
-                    <c:if test="${not empty param.createError}">
-                        <div class="subject-modal__alert subject-modal__alert--error">
-                            ${param.createError}
-                        </div>
-                    </c:if>
-
-                    <c:if test="${not empty param.createSuccess}">
-                        <div class="subject-modal__alert subject-modal__alert--success">
-                            ${param.createSuccess}
-                        </div>
-                    </c:if>
-
-                    <div class="subject-modal__actions">
-                        <button type="button" class="btn-modal btn-modal--ghost" id="cancelCreateSubjectModal">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn-modal btn-modal--primary" name="action" value="create">
-                            Create Subject
-                        </button>
-                    </div>
-                </form>
+    <!-- STATS CARDS -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--total"><i class="bi bi-patch-question"></i></div>
+            <div>
+                <div class="stat-card__label">Total Questions</div>
+                <div class="stat-card__value">${statTotal}</div>
             </div>
         </div>
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','0')">
+            <div class="stat-card__icon stat-card__icon--pending"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+                <div class="stat-card__label">Pending Review</div>
+                <div class="stat-card__value">${statPending}</div>
+            </div>
+        </div>
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','1')">
+            <div class="stat-card__icon stat-card__icon--approved"><i class="bi bi-check-circle"></i></div>
+            <div>
+                <div class="stat-card__label">Approved</div>
+                <div class="stat-card__value">${statApproved}</div>
+            </div>
+        </div>
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','2')">
+            <div class="stat-card__icon stat-card__icon--rejected"><i class="bi bi-x-circle"></i></div>
+            <div>
+                <div class="stat-card__label">Rejected</div>
+                <div class="stat-card__value">${statRejected}</div>
+            </div>
+        </div>
+    </div>
 
-    </body>
-</html>
+    <!-- SEARCH & FILTER CONTROLS -->
+    <form id="filterForm" method="get" action="${base}">
+        <input type="hidden" name="sort" id="sortInput" value="${sort}">
+        <input type="hidden" name="dir"  id="dirInput"  value="${dir}">
+        <input type="hidden" name="index" value="0">
+
+        <div class="controls">
+            <div class="search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" name="search" id="searchInput"
+                       value="${fn:escapeXml(search)}"
+                       placeholder="Search by prompt or subject name…"
+                       autocomplete="off">
+            </div>
+
+            <select name="status" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="0" ${status == '0' ? 'selected' : ''}>Pending</option>
+                <option value="1" ${status == '1' ? 'selected' : ''}>Approved</option>
+                <option value="2" ${status == '2' ? 'selected' : ''}>Rejected</option>
+            </select>
+
+            <select name="type" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Types</option>
+                <option value="1" ${type == '1' ? 'selected' : ''}>SCQ</option>
+                <option value="2" ${type == '2' ? 'selected' : ''}>MCQ</option>
+                <option value="3" ${type == '3' ? 'selected' : ''}>Essay</option>
+            </select>
+
+            <button type="submit" class="btn-search">
+                <i class="bi bi-search"></i> Search
+            </button>
+
+            <a href="${base}" class="btn-clear">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </a>
+        </div>
+    </form>
+
+    <!-- BULK ACTION BAR -->
+    <div class="bulk-bar" id="bulkBar">
+        <span id="bulkCount">0 selected</span>
+        <form method="post" action="${base}" id="bulkForm">
+            <input type="hidden" name="action" id="bulkAction" value="">
+            <input type="hidden" name="filterStatus" value="${status}">
+            <input type="hidden" name="filterType" value="${type}">
+            <input type="hidden" name="search" value="${fn:escapeXml(search)}">
+            <input type="hidden" name="sort" value="${sort}">
+            <input type="hidden" name="dir" value="${dir}">
+            <input type="hidden" name="index" value="${page.index}">
+            <div id="bulkIds"></div>
+            <button type="button" class="btn-bulk-approve" onclick="submitBulk('bulk-approve')">
+                <i class="bi bi-check-all"></i> Approve Selected
+            </button>
+            <button type="button" class="btn-bulk-reject" onclick="submitBulk('bulk-reject')">
+                <i class="bi bi-x-lg"></i> Reject Selected
+            </button>
+        </form>
+    </div>
+
+    <!-- RESULT SUMMARY -->
+    <div class="result-summary">
+        <i class="bi bi-list-ul"></i>
+        Showing <strong>${fn:length(listQuestion)}</strong> question(s)
+        <c:if test="${not empty search}"> matching "<strong>${fn:escapeXml(search)}</strong>"</c:if>
+        <c:if test="${not empty status}">
+            &nbsp;·&nbsp;
+            <c:choose>
+                <c:when test="${status == '0'}">Status: <strong>Pending</strong></c:when>
+                <c:when test="${status == '1'}">Status: <strong>Approved</strong></c:when>
+                <c:when test="${status == '2'}">Status: <strong>Rejected</strong></c:when>
+            </c:choose>
+        </c:if>
+        <c:if test="${not empty type}">
+            &nbsp;·&nbsp; Type:
+            <c:choose>
+                <c:when test="${type == '1'}"><strong>SCQ</strong></c:when>
+                <c:when test="${type == '2'}"><strong>MCQ</strong></c:when>
+                <c:when test="${type == '3'}"><strong>Essay</strong></c:when>
+            </c:choose>
+        </c:if>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" title="Select all on this page"></th>
+                    <th class="sortable" onclick="sortBy('id')">#ID <span class="sort-icon">${sort=='id'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th class="sortable" onclick="sortBy('subject')">Subject <span class="sort-icon">${sort=='subject'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th class="sortable" onclick="sortBy('type')">Type <span class="sort-icon">${sort=='type'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th class="sortable" onclick="sortBy('chapter')">Chapter <span class="sort-icon">${sort=='chapter'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th>Prompt</th>
+                    <th class="sortable" onclick="sortBy('status')">Status <span class="sort-icon">${sort=='status'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:choose>
+                    <c:when test="${empty listSubject}">
+                        <tr class="empty-row">
+                            <td colspan="8">
+                                <i class="bi bi-inbox"></i>
+                                No questions found. Try adjusting your filters.
+                            </td>
+                        </tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach items="${listSubject}" var="q" begin="${page.start}" end="${page.end}">
+                            <tr>
+                                <td><input type="checkbox" class="row-check" data-id="${q.id}"></td>
+                                <td style="color:#6366f1;font-weight:700">#${q.id}</td>
+                                <td>${fn:escapeXml(q.subjectName)}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${q.type == 1}"><span class="type-badge type-scq">SCQ</span></c:when>
+                                        <c:when test="${q.type == 2}"><span class="type-badge type-mcq">MCQ</span></c:when>
+                                        <c:when test="${q.type == 3}"><span class="type-badge type-essay">Essay</span></c:when>
+                                        <c:otherwise>${q.type}</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>Ch. ${q.chapter}</td>
+                                <td class="prompt-cell">
+                                    <div class="prompt-text" title="${fn:escapeXml(q.prompt)}">${fn:escapeXml(q.prompt)}</div>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${q.status == 0}"><span class="badge badge--pending"><i class="bi bi-clock"></i>Pending</span></c:when>
+                                        <c:when test="${q.status == 1}"><span class="badge badge--approved"><i class="bi bi-check"></i>Approved</span></c:when>
+                                        <c:when test="${q.status == 2}"><span class="badge badge--rejected"><i class="bi bi-x"></i>Rejected</span></c:when>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <div class="action-col">
+                                        <c:if test="${q.status != 1}">
+                                            <form method="post" action="${base}">
+                                                <input type="hidden" name="action"     value="approve">
+                                                <input type="hidden" name="questionId" value="${q.id}">
+                                                <input type="hidden" name="filterStatus" value="${status}">
+                                                <input type="hidden" name="filterType"   value="${type}">
+                                                <input type="hidden" name="search"       value="${fn:escapeXml(search)}">
+                                                <input type="hidden" name="sort"         value="${sort}">
+                                                <input type="hidden" name="dir"          value="${dir}">
+                                                <input type="hidden" name="index"        value="${page.index}">
+                                                <button class="btn-approve" type="submit"><i class="bi bi-check"></i> Approve</button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${q.status != 2}">
+                                            <form method="post" action="${base}">
+                                                <input type="hidden" name="action"     value="reject">
+                                                <input type="hidden" name="questionId" value="${q.id}">
+                                                <input type="hidden" name="filterStatus" value="${status}">
+                                                <input type="hidden" name="filterType"   value="${type}">
+                                                <input type="hidden" name="search"       value="${fn:escapeXml(search)}">
+                                                <input type="hidden" name="sort"         value="${sort}">
+                                                <input type="hidden" name="dir"          value="${dir}">
+                                                <input type="hidden" name="index"        value="${page.index}">
+                                                <button class="btn-reject"  type="submit"><i class="bi bi-x"></i> Reject</button>
+                                            </form>
+                                        </c:if>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <c:if test="${page.totalPage > 1}">
+        <div class="pager">
+            <c:set var="bp" value="${base}?search=${search}&status=${status}&type=${type}&sort=${sort}&dir=${dir}"/>
+            <c:if test="${page.index > 0}">
+                <a class="pg" href="${bp}&index=0"><i class="bi bi-chevron-double-left"></i></a>
+                <a class="pg" href="${bp}&index=${page.index - 1}"><i class="bi bi-chevron-left"></i></a>
+            </c:if>
+            <c:forEach var="i" begin="${page.pageStart}" end="${page.pageEnd}">
+                <a class="pg ${i == page.index ? 'is-active' : ''}" href="${bp}&index=${i}">${i + 1}</a>
+            </c:forEach>
+            <c:if test="${page.index < page.totalPage - 1}">
+                <a class="pg" href="${bp}&index=${page.index + 1}"><i class="bi bi-chevron-right"></i></a>
+                <a class="pg" href="${bp}&index=${page.totalPage - 1}"><i class="bi bi-chevron-double-right"></i></a>
+            </c:if>
+        </div>
+    </c:if>
+
+</main>
+
 <script>
-    function sort(x) {
-        reset(x);
-
-        let el = document.getElementById("txt" + x);
-        let state = parseInt(el.value);
-        if (isNaN(state))
-            state = 0;
-
-        let newState = (state + 1) % 3;
-        el.value = newState;
-
-        updateIcon(x, newState);
-        document.getElementById("frmSort").submit();
+    // ── Sort ────────────────────────────────────────────────────────────────
+    function sortBy(col) {
+        const curSort = document.getElementById('sortInput').value;
+        const curDir  = document.getElementById('dirInput').value;
+        document.getElementById('sortInput').value = col;
+        document.getElementById('dirInput').value  = (curSort === col && curDir === 'asc') ? 'desc' : 'asc';
+        document.getElementById('filterForm').submit();
     }
 
-    function reset(x) {
-        ["SubjectName"].forEach(f => {
-            if (f !== x) {
-                const item = document.getElementById("txt" + f);
-                if (item) {
-                    item.value = 0;
-                }
-                updateIcon(f, 0);
-            }
-        });
+    // ── Quick filter from stat cards ────────────────────────────────────────
+    function applyFilter(name, value) {
+        const form = document.getElementById('filterForm');
+        const sel = form.querySelector('[name="' + name + '"]');
+        if (sel) { sel.value = value; form.submit(); }
     }
-    function updateIcon(field, state) {
-        const icon = document.getElementById("icon" + field);
-        if (!icon)
-            return;
-        switch (state) {
-            case 1:
-                icon.textContent = "▲";
-                break;
-            case 2:
-                icon.textContent = "▼";
-                break;
-            default:
-                icon.textContent = "⇅";
+
+    // ── Select All / Bulk ───────────────────────────────────────────────────
+    const selectAll  = document.getElementById('selectAll');
+    const bulkBar    = document.getElementById('bulkBar');
+    const bulkCount  = document.getElementById('bulkCount');
+    const bulkIds    = document.getElementById('bulkIds');
+
+    function updateBulkBar() {
+        const checked = document.querySelectorAll('.row-check:checked');
+        if (checked.length > 0) {
+            bulkBar.classList.add('visible');
+            bulkCount.textContent = checked.length + ' selected';
+        } else {
+            bulkBar.classList.remove('visible');
         }
     }
 
-    (function () {
-        const modal = document.getElementById('createSubjectModal');
-        const openBtn = document.getElementById('openCreateSubjectModal');
-        const closeBtn = document.getElementById('closeCreateSubjectModal');
-        const cancelBtn = document.getElementById('cancelCreateSubjectModal');
+    selectAll.addEventListener('change', function () {
+        document.querySelectorAll('.row-check').forEach(cb => cb.checked = this.checked);
+        updateBulkBar();
+    });
 
-        function openModal() {
-            modal.classList.add('is-open');
-            document.body.classList.add('modal-open');
-        }
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('row-check')) updateBulkBar();
+    });
 
-        function closeModal() {
-            modal.classList.remove('is-open');
-            document.body.classList.remove('modal-open');
-
-            const url = new URL(window.location.href);
-            url.searchParams.delete('modal');
-            url.searchParams.delete('createError');
-            url.searchParams.delete('createSuccess');
-            url.searchParams.delete('subjectName');
-            window.history.replaceState({}, '', url.toString());
-        }
-
-        if (openBtn) {
-            openBtn.addEventListener('click', openModal);
-        }
-
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeModal);
-        }
-
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', closeModal);
-        }
-
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                closeModal();
-            }
+    function submitBulk(action) {
+        const checked = document.querySelectorAll('.row-check:checked');
+        if (checked.length === 0) return;
+        document.getElementById('bulkAction').value = action;
+        bulkIds.innerHTML = '';
+        checked.forEach(cb => {
+            const inp = document.createElement('input');
+            inp.type  = 'hidden';
+            inp.name  = 'questionIds[]';
+            inp.value = cb.dataset.id;
+            bulkIds.appendChild(inp);
         });
+        document.getElementById('bulkForm').submit();
+    }
 
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-                closeModal();
-            }
-        });
-
-        if (modal.classList.contains('is-open')) {
-            document.body.classList.add('modal-open');
-        }
-    })();
+    // ── Live search on Enter ────────────────────────────────────────────────
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('filterForm').submit();
+    });
 </script>
-<style>
-    body.modal-open{
-        overflow: hidden;
-    }
-
-    .btn-create-subject{
-        display:inline-flex;
-        align-items:center;
-        gap:10px;
-        padding: 12px 18px;
-        border:none;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color:#fff;
-        font-weight: 800;
-        font-size: 14px;
-        box-shadow: 0 14px 30px rgba(37,99,235,0.24);
-        cursor:pointer;
-        transition: .18s ease;
-    }
-
-    .btn-create-subject:hover{
-        transform: translateY(-1px);
-        box-shadow: 0 18px 34px rgba(37,99,235,0.28);
-    }
-
-    .btn-create-subject__icon{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        width: 22px;
-        height: 22px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.18);
-        font-size: 15px;
-        line-height: 1;
-    }
-
-    .subject-modal{
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        background: rgba(15,23,42,0.52);
-        z-index: 1000;
-    }
-
-    .subject-modal.is-open{
-        display: flex;
-    }
-
-    .subject-modal__dialog{
-        width: 100%;
-        max-width: 500px;
-        background: #fff;
-        border-radius: 22px;
-        overflow: hidden;
-        box-shadow: 0 30px 80px rgba(2,6,23,0.22);
-        border: 1px solid #e5e7eb;
-        animation: modalFadeIn .18s ease;
-    }
-
-    @keyframes modalFadeIn{
-        from{
-            opacity: 0;
-            transform: translateY(8px) scale(.98);
-        }
-        to{
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .subject-modal__header{
-        background: linear-gradient(90deg, #0ea5e9, #4f46e5);
-        color: #fff;
-        padding: 18px 20px 16px;
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap: 16px;
-    }
-
-    .subject-modal__eyebrow{
-        font-size: 13px;
-        color: rgba(255,255,255,0.86);
-        margin-bottom: 4px;
-    }
-
-    .subject-modal__title{
-        margin: 0;
-        font-size: 24px;
-        font-weight: 900;
-        line-height: 1.1;
-    }
-
-    .subject-modal__close{
-        border:none;
-        background: transparent;
-        color:#fff;
-        font-size: 32px;
-        line-height: 1;
-        cursor:pointer;
-        padding:0;
-    }
-
-    .subject-modal__body{
-        padding: 20px;
-    }
-
-    .subject-modal__field{
-        display:flex;
-        flex-direction:column;
-        gap: 8px;
-    }
-
-    .subject-modal__field label{
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--text);
-    }
-
-    .subject-modal__input{
-        width:100%;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid #cbd5e1;
-        outline:none;
-        background:#fff;
-        font-size: 14px;
-        transition:.15s ease;
-    }
-
-    .subject-modal__input:focus{
-        border-color: rgba(37,99,235,0.65);
-        box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-    }
-
-    .subject-modal__alert{
-        margin-top: 14px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.55;
-    }
-
-    .subject-modal__alert--error{
-        background: rgba(239,68,68,0.10);
-        color:#b91c1c;
-        border:1px solid rgba(239,68,68,0.24);
-    }
-
-    .subject-modal__alert--success{
-        background: rgba(34,197,94,0.10);
-        color:#15803d;
-        border:1px solid rgba(34,197,94,0.22);
-    }
-
-    .subject-modal__actions{
-        display:flex;
-        justify-content:flex-end;
-        gap: 10px;
-        margin-top: 18px;
-        flex-wrap: wrap;
-    }
-
-    .btn-modal{
-        min-width: 120px;
-        height: 44px;
-        border-radius: 12px;
-        border: 1px solid transparent;
-        font-weight: 800;
-        cursor:pointer;
-        transition: .15s ease;
-    }
-
-    .btn-modal--ghost{
-        background:#fff;
-        color:#334155;
-        border-color:#cbd5e1;
-    }
-
-    .btn-modal--ghost:hover{
-        border-color:#94a3b8;
-    }
-
-    .btn-modal--primary{
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color:#fff;
-        box-shadow: 0 10px 24px rgba(37,99,235,0.22);
-    }
-
-    .btn-modal--primary:hover{
-        filter: brightness(1.03);
-    }
-
-    @media (max-width: 900px){
-        .btn-create-subject{
-            width: 100%;
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 640px){
-        .subject-modal{
-            padding: 14px;
-        }
-
-        .subject-modal__body{
-            padding: 16px;
-        }
-
-        .subject-modal__actions{
-            flex-direction: column-reverse;
-        }
-
-        .btn-modal{
-            width: 100%;
-        }
-    }
-</style>
+</body>
+</html>

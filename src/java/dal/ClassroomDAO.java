@@ -14,12 +14,12 @@ public class ClassroomDAO extends DBContext {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private static final String BASE_SELECT =
-        "SELECT a.Id, a.Name, a.ClassCode, a.Subject, a.TeacherId, " +
+        "SELECT a.Id, a.Name, a.ClassCode, a.SubjectId, a.TeacherId, " +
         "       b.FullName AS TeacherName, a.CreatedAt, a.MaxStudents, " +
         "       a.Status, a.TimeExpiryClassCode, " +
         "       (SELECT COUNT(*) FROM Enrollments e WHERE e.ClassId = a.Id) AS TotalStudent " +
         "FROM Classrooms a " +
-        "LEFT JOIN Users b ON a.TeacherId = b.UserId ";
+        "LEFT JOIN Users b ON a.TeacherId = b.Id ";
 
     protected PreparedStatement statement;
     protected ResultSet resultSet;
@@ -85,10 +85,10 @@ public class ClassroomDAO extends DBContext {
     // ─────────────────────────────────────────────────────────────────────
 
     public boolean updateClassroom(Classroom c) {
-        String sql = "UPDATE [Classrooms] SET Name=?, Subject=?, MaxStudents=? WHERE Id=?";
+        String sql = "UPDATE [Classrooms] SET Name=?, SubjectId=?, MaxStudents=? WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, c.getName());
-            ps.setString(2, c.getSubject());
+            ps.setString(2, c.getSubjectId());
             ps.setInt(3, c.getMaxStudent());
             ps.setInt(4, c.getId());
             return ps.executeUpdate() > 0;
@@ -180,14 +180,15 @@ public class ClassroomDAO extends DBContext {
         c.setId(rs.getInt("Id"));
         c.setName(rs.getString("Name"));
         c.setClassCode(rs.getString("ClassCode"));
-        c.setSubject(rs.getString("Subject"));
+        c.setSubjectId(rs.getString("SubjectId"));
+        c.setSubject(rs.getString("SubjectId")); // backward compat
         c.setTeacherId(rs.getString("TeacherId"));
         c.setTeacherName(rs.getString("TeacherName"));
         if (rs.getTimestamp("CreatedAt") != null)
             c.setCreatedAt(rs.getTimestamp("CreatedAt").toLocalDateTime().format(FMT));
         c.setMaxStudent(rs.getInt("MaxStudents"));
         c.setSum(rs.getInt("TotalStudent"));
-        try { c.setStatus(rs.getInt("Status")); } catch (SQLException ignored) {}
+        try { c.setStatus(rs.getBoolean("Status") ? 1 : 0); } catch (SQLException ignored) {}
         try {
             if (rs.getTimestamp("TimeExpiryClassCode") != null)
                 c.setTimeExpiryClassCode(rs.getTimestamp("TimeExpiryClassCode")
@@ -198,16 +199,17 @@ public class ClassroomDAO extends DBContext {
 
     private static String searchClause() {
         return " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ?" +
-               " OR LOWER(a.Subject) LIKE ? OR LOWER(b.FullName) LIKE ?)";
+               " OR LOWER(a.SubjectId) LIKE ? OR LOWER(b.FullName) LIKE ?)";
     }
 
     private static int bindSearch(PreparedStatement ps, int start, String search)
             throws SQLException {
         String p = "%" + search.trim().toLowerCase() + "%";
-        ps.setString(start,   p);
-        ps.setString(start+1, p);
-        ps.setString(start+2, p);
-        ps.setString(start+3, p);
+        // Dùng setNString để hỗ trợ tìm kiếm Tiếng Việt có dấu (truyền param dưới dạng NVARCHAR)
+        ps.setNString(start,   p);
+        ps.setNString(start+1, p);
+        ps.setNString(start+2, p);
+        ps.setNString(start+3, p);
         return start + 4;
     }
 

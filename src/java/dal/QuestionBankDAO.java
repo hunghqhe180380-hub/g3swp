@@ -20,6 +20,104 @@ public class QuestionBankDAO extends DBContext {
     protected PreparedStatement statement;
     protected ResultSet resultSet;
 
+    /**
+     * Search + filter + sort questions for Admin.
+     * @param search  keyword to match prompt or subject name (nullable)
+     * @param status  "0"=pending, "1"=approved, "2"=rejected, ""=all
+     * @param type    "1"=SCQ, "2"=MCQ, "3"=Essay, ""=all
+     * @param sort    column name: id|subject|type|chapter|status (default id)
+     * @param dir     "asc" or "desc"
+     */
+    public List<QuestionBank> getFilteredQuestions(String search, String status,
+            String type, String sort, String dir) {
+        List<QuestionBank> list = new ArrayList<>();
+        try {
+            // Build ORDER BY
+            String orderCol;
+            switch (sort == null ? "" : sort.toLowerCase()) {
+                case "subject":  orderCol = "s.subject_name"; break;
+                case "type":     orderCol = "q.Type";        break;
+                case "chapter":  orderCol = "q.Chapter";     break;
+                case "status":   orderCol = "q.Status";      break;
+                default:         orderCol = "q.Id";          break;
+            }
+            String orderDir = "desc".equalsIgnoreCase(dir) ? "DESC" : "ASC";
+
+            // Build WHERE conditions
+            StringBuilder where = new StringBuilder("WHERE 1=1 ");
+            if (status != null && !status.isEmpty()) {
+                where.append("AND q.Status = ").append(status).append(" ");
+            }
+            if (type != null && !type.isEmpty()) {
+                where.append("AND q.Type = ").append(type).append(" ");
+            }
+            boolean hasSearch = search != null && !search.trim().isEmpty();
+            if (hasSearch) {
+                // Dùng EXISTS subquery để search subject tên độc lập với LEFT JOIN
+                where.append("AND (q.Prompt LIKE ? "
+                        + "OR EXISTS (SELECT 1 FROM [dbo].[Subjects] sx "
+                        + "           WHERE sx.Id = q.SubjectId "
+                        + "           AND sx.subject_name LIKE ?)) ");
+            }
+
+            String sql = "SELECT q.Id, q.SubjectId, q.Type, q.Prompt, q.Chapter, "
+                       + "       q.CreatedById, q.CreatedAt, q.Status, s.subject_name AS SubjectName "
+                       + "FROM [dbo].[QuestionBank] q "
+                       + "LEFT JOIN [dbo].[Subjects] s ON q.SubjectId = s.Id "
+                       + where
+                       + "ORDER BY " + orderCol + " " + orderDir;
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            if (hasSearch) {
+                String kw = "%" + search.trim() + "%";
+                // LƯU Ý QUAN TRỌNG: Dùng setNString cho dữ liệu NVARCHAR để không bị vỡ font Tiếng Việt
+                ps.setNString(1, kw);
+                ps.setNString(2, kw);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                QuestionBank q = new QuestionBank(
+                        rs.getInt("Id"),
+                        rs.getString("SubjectId"),
+                        rs.getInt("Type"),
+                        rs.getString("Prompt"),
+                        rs.getInt("Chapter"),
+                        rs.getString("CreatedById"),
+                        rs.getTimestamp("CreatedAt") != null
+                            ? rs.getTimestamp("CreatedAt").toLocalDateTime()
+                                  .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                            : "",
+                        rs.getInt("Status"),
+                        null);
+                q.setSubjectName(rs.getString("SubjectName"));
+                list.add(q);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /** Count questions grouped by status for stats cards. Returns int[3]: [pending, approved, rejected] */
+    public int[] getQuestionStats() {
+        int[] stats = {0, 0, 0};
+        try {
+            String sql = "SELECT Status, COUNT(*) AS cnt FROM [dbo].[QuestionBank] GROUP BY Status";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int s = rs.getInt("Status");
+                int c = rs.getInt("cnt");
+                if (s == 0) stats[0] += c;
+                else if (s == 1) stats[1] += c;
+                else if (s == 2) stats[2] += c;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stats;
+    }
+
     //get all question in question bank
     public List<QuestionBank> getAllQuestionBank() {
         List<QuestionBank> listQuestionBank = new ArrayList<>();
@@ -193,6 +291,19 @@ public class QuestionBankDAO extends DBContext {
 //            e.printStackTrace();
 //        }
 //    }
+    /** Update question status: 0=pending, 1=approved, 2=rejected */
+    public void updateQuestionStatus(int id, int status) {
+        String sql = "UPDATE QuestionBank SET Status = ? WHERE Id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, status);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //delete question
     public void deleteQuestion(int id) {
 
@@ -214,23 +325,30 @@ public class QuestionBankDAO extends DBContext {
 
         List<QuestionBank> list = new ArrayList<>();
 
+        // No Status filter: teachers can use their own questions regardless of approval.
+        // For Essay (type=3): skip Chapter filter because Essay questions may have Chapter=0
+        // (saved by older code), and essay questions are generally not chapter-specific.
+        String chapterClause = (type == 3) ? "" : "  AND [Chapter] = ?\n";
+
         String sql = "  SELECT TOP (?) *\n"
                 + "FROM QuestionBank\n"
                 + "WHERE SubjectId = ?\n"
-                + "  AND [Chapter] = ?\n"
+                + chapterClause
                 + "  AND Type = ?\n"
-                + "  AND Status = 1\n"
-                + "AND CreatedById = ?\n"
+                + "  AND CreatedById = ?\n"
                 + "ORDER BY NEWID();";
 
         try {
             statement = connection.prepareStatement(sql);
 
-            statement.setObject(1, numberQuestion);
-            statement.setObject(2, subjectId);
-            statement.setObject(3, Chapter);
-            statement.setObject(4, type);
-            statement.setObject(5, createdById);
+            int paramIdx = 1;
+            statement.setObject(paramIdx++, numberQuestion);
+            statement.setObject(paramIdx++, subjectId);
+            if (type != 3) {
+                statement.setObject(paramIdx++, Chapter); // skip chapter param for Essay
+            }
+            statement.setObject(paramIdx++, type);
+            statement.setObject(paramIdx++, createdById);
             resultSet = statement.executeQuery();
 
             QuestionBankChoiceDAO qBankChoiceDAO = new QuestionBankChoiceDAO();
@@ -273,18 +391,22 @@ public class QuestionBankDAO extends DBContext {
     *get list question bank by teacher'is and subject'is
     *use when create assignment
      */
+    /**
+     * Get questions for a teacher+subject. Pass status=-1 to include all statuses (Pending + Approved).
+     */
     public List<QuestionBank> getListQuestionBankByTeacherAndSubject(String subjectId, String teacherId, int status) {
         List<QuestionBank> listQuestionBank = new ArrayList<>();
         try {
+            // When status == -1, skip the Status filter so teachers see ALL their own questions
+            String statusClause = (status == -1) ? "" : "And [Status] = " + status;
             String sql = "SELECT *\n"
                     + "FROM [dbo].[QuestionBank]\n"
                     + "Where [SubjectId] = ?\n"
                     + "And [CreatedById] = ?\n"
-                    + "And [Status] = ?";
+                    + statusClause;
             statement = connection.prepareStatement(sql);
             statement.setObject(1, subjectId);
             statement.setObject(2, teacherId);
-            statement.setObject(3, status);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 QuestionBank qBank = new QuestionBank();
