@@ -28,7 +28,7 @@
                         </div>
                     </div>
 
-                    <a href="submissions?assignmentId=${vm.assignmentId}"
+                    <a href="${pageContext.request.contextPath}/assignment/view/submission?assignmentId=${vm.assignmentId}&classId=${vm.classId}"
                        class="btn btn-light btn-sm">
                         ← Back
                     </a>
@@ -62,12 +62,23 @@
                                     <span class="fw-bold">${vm.submittedAt != null ? vm.submittedAt.toString().replace('T', ' ') : 'N/A'}</span>
                                 </div>
 
+                                <!-- Time taken (teacher only) -->
+                                <div class="mb-2 d-flex justify-content-between small">
+                                    <span class="text-muted">⏱ Time taken</span>
+                                    <span class="fw-bold text-primary">${vm.timeTaken}</span>
+                                </div>
+
                                 <hr>
 
 
                                 <hr>
 
                                 <div class="score-row">
+                                    <div class="chip scq">${vm.mcqScore}</div>
+                                    <div>/ ${vm.scqMax} SCQ</div>
+                                </div>
+
+                                <div class="score-row mt-2">
                                     <div class="chip mcq">${vm.mcqScore}</div>
                                     <div>/ ${vm.mcqMax} MCQ</div>
                                 </div>
@@ -104,10 +115,47 @@
                             <input type="hidden" name="assignmentId" value="${vm.assignmentId}" />
                             <input type="hidden" name="classId" value="${vm.classId}"/>
 
-                            <!-- ===== MCQ ===== -->
+                            <%-- ===== SCQ SECTION =====--%>
+                            <c:if test="${not empty vm.scqs}">
                             <div class="card shadow-sm border-0 mb-3">
-                                <div class="card-header fw-semibold">Multiple Choice Questions</div>
+                                <div class="card-header fw-semibold">Single Choice Questions <span class="badge bg-secondary ms-2">${vm.scqs.size()}</span></div>
+                                <div class="card-body">
+                                    <c:forEach var="q" items="${vm.scqs}" varStatus="i">
+                                        <div class="mcq-block">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary-subtle text-primary me-2">SCQ</span>
+                                                <span class="fw-bold">Question ${i.index + 1}</span>
+                                                <span class="ms-2 text-muted small">(${q.points} pts)</span>
+                                            </div>
+                                            <div class="fw-semibold mb-3">${q.prompt}</div>
+                                            <div class="choices-container">
+                                                <c:forEach var="c" items="${q.choices}">
+                                                    <c:choose>
+                                                        <c:when test="${c.cssClass == 'choice-correct'}">
+                                                            <div class="choice choice-correct"><span class="choice-icon">✓</span><span class="choice-text">${c.content}</span><span class="choice-label correct-label">Student chose · Correct</span></div>
+                                                        </c:when>
+                                                        <c:when test="${c.cssClass == 'choice-correct-unselected'}">
+                                                            <div class="choice choice-correct-unselected"><span class="choice-icon">○</span><span class="choice-text">${c.content}</span><span class="choice-label missed-label">Correct · Not chosen</span></div>
+                                                        </c:when>
+                                                        <c:when test="${c.cssClass == 'choice-wrong'}">
+                                                            <div class="choice choice-wrong"><span class="choice-icon">✗</span><span class="choice-text">${c.content}</span><span class="choice-label wrong-label">Student chose · Wrong</span></div>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div class="choice"><span class="choice-icon neutral-dot"></span><span class="choice-text">${c.content}</span></div>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            </c:if>
 
+                            <%-- ===== MCQ SECTION =====--%>
+                            <c:if test="${not empty vm.mcqs}">
+                            <div class="card shadow-sm border-0 mb-3">
+                                <div class="card-header fw-semibold">Multiple Choice Questions <span class="badge bg-secondary ms-2">${vm.mcqs.size()}</span></div>
                                 <div class="card-body">
                                     <c:forEach var="q" items="${vm.mcqs}" varStatus="i">
                                         <div class="mcq-block">
@@ -115,33 +163,62 @@
                                             <div class="d-flex align-items-center mb-2">
                                                 <span class="badge bg-info-subtle text-info me-2">MCQ</span>
                                                 <span class="fw-bold">Question ${i.index + 1}</span>
+                                                <span class="ms-2 text-muted small">(${q.points} pts)</span>
                                             </div>
 
                                             <div class="fw-semibold mb-3">
                                                 ${q.prompt}
                                             </div>
 
-                                            <!-- Container chia cột -->
+                                            <!-- Container chia 2 cột -->
                                             <div class="choices-container">
                                                 <c:forEach var="c" items="${q.choices}">
-                                                    <%-- Logic class: 
-                                                         - Nếu là đáp án đúng: dùng class 'correct'
-                                                         - Nếu sinh viên chọn mà sai: dùng class 'student-wrong'
-                                                         - Bạn hãy xử lý logic gán c.cssClass này trong Controller/ViewModel
-                                                    --%>
-                                                    <div class="choice ${c.cssClass}">
-                                                        ${c.content}
-                                                    </div>
+                                                    <c:choose>
+                                                        <%-- Đúng VÀ sinh viên đã chọn → xanh đậm --%>
+                                                        <c:when test="${c.cssClass == 'choice-correct'}">
+                                                            <div class="choice choice-correct">
+                                                                <span class="choice-icon">✓</span>
+                                                                <span class="choice-text">${c.content}</span>
+                                                                <span class="choice-label correct-label">Student chose · Correct</span>
+                                                            </div>
+                                                        </c:when>
+                                                        <%-- Đúng nhưng sinh viên KHÔNG chọn → xanh nhạt dashed --%>
+                                                        <c:when test="${c.cssClass == 'choice-correct-unselected'}">
+                                                            <div class="choice choice-correct-unselected">
+                                                                <span class="choice-icon">○</span>
+                                                                <span class="choice-text">${c.content}</span>
+                                                                <span class="choice-label missed-label">Correct · Not chosen</span>
+                                                            </div>
+                                                        </c:when>
+                                                        <%-- Sai nhưng sinh viên đã chọn → đỏ --%>
+                                                        <c:when test="${c.cssClass == 'choice-wrong'}">
+                                                            <div class="choice choice-wrong">
+                                                                <span class="choice-icon">✗</span>
+                                                                <span class="choice-text">${c.content}</span>
+                                                                <span class="choice-label wrong-label">Student chose · Wrong</span>
+                                                            </div>
+                                                        </c:when>
+                                                        <%-- Sai và không chọn → xám bình thường --%>
+                                                        <c:otherwise>
+                                                            <div class="choice">
+                                                                <span class="choice-icon neutral-dot"></span>
+                                                                <span class="choice-text">${c.content}</span>
+                                                            </div>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:forEach>
                                             </div>
                                         </div>
                                     </c:forEach>
                                 </div>
                             </div>
+                            </c:if>
 
-                            <!-- ===== ESSAY ===== -->
+
+                            <%-- ===== ESSAY SECTION =====--%>
+                            <c:if test="${not empty vm.essays}">
                             <div class="card shadow-sm border-0">
-                                <div class="card-header fw-semibold">Essay Questions</div>
+                                <div class="card-header fw-semibold">Essay Questions <span class="badge bg-secondary ms-2">${vm.essays.size()}</span></div>
 
                                 <div class="card-body">
 
@@ -186,6 +263,7 @@
 
                                 </div>
                             </div>
+                            </c:if>
 
                             <div class="mt-3 text-end">
                                 <!-- Overall Comment Section -->
@@ -237,6 +315,11 @@
         font-weight: bold;
     }
 
+    .chip.scq {
+        background: #ede9fe;
+        color: #7c3aed;
+    }
+
     .chip.mcq {
         background: #e0f2fe;
         color: #0369a1;
@@ -265,111 +348,137 @@
         background: linear-gradient(90deg,#34d399,#10b981);
     }
 
-    .choice {
-        padding: 6px;
-        border-radius: 6px;
-        margin-bottom: 4px;
-    }
+    /* ===== Choice States ===== */
 
-    .choice-correct {
-        background: #d1fae5;
-        border: 1px solid #10b981;
-    }
-
-    .choice-wrong {
-        background: #fee2e2;
-        border: 1px solid #ef4444;
-    }
-
-    .essay-block {
-        border: 1px solid #eee;
-        border-radius: 10px;
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-
-    .essay-answer {
-        background: #fafafa;
-        padding: 8px;
-        border-radius: 6px;
-    }
-
-    /* Layout tổng cho MCQ */
-    .mcq-block {
-        margin-bottom: 2rem;
-        padding: 15px;
-    }
-
-    /* Container chứa các lựa chọn - chia 2 cột */
-    .choices-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Chia làm 2 cột bằng nhau */
-        gap: 12px;
-        margin-top: 15px;
-    }
-
-    /* Style chung cho mỗi lựa chọn */
+    /* Layout chung cho mỗi choice */
     .choice {
         display: flex;
         align-items: center;
-        padding: 12px 15px;
-        border: 1px solid #e9ecef;
+        gap: 10px;
+        padding: 10px 14px;
+        border: 1.5px solid #e5e7eb;
         border-radius: 10px;
-        background-color: #fff;
-        transition: all 0.2s;
+        background: #fff;
+        font-size: 0.93rem;
         position: relative;
-        font-size: 0.95rem;
+        transition: border-color .15s, background .15s;
     }
 
-    /* Dấu chấm tròn giả lập Radio button */
-    .choice::before {
-        content: "";
+    /* Icon bên trái */
+    .choice-icon {
+        flex-shrink: 0;
+        font-size: 1rem;
+        width: 22px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* Dấu chấm cho neutral */
+    .neutral-dot {
+        display: inline-block;
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: #dee2e6;
-        margin-right: 12px;
-        flex-shrink: 0;
+        background: #d1d5db;
     }
 
-    /* Lựa chọn của sinh viên nhưng SAI */
-    .choice.student-wrong {
-        border-color: #f8d7da;
-        background-color: #fff8f8;
-        color: #dc3545;
-    }
-    .choice.student-wrong::before {
-        background-color: #dc3545;
-    }
-    .choice.student-wrong::after {
-        content: "Student Choice";
-        position: absolute;
-        right: 15px;
-        font-size: 0.75rem;
-        font-weight: bold;
+    /* Text của choice */
+    .choice-text {
+        flex: 1;
     }
 
-    /* Lựa chọn ĐÚNG */
-    .choice.correct {
-        border-color: #28a745;
-        background-color: #f4fff6;
-        color: #28a745;
-    }
-    .choice.correct::before {
-        background-color: #28a745;
-    }
-    .choice.correct::after {
-        content: "Correct";
-        position: absolute;
-        right: 15px;
-        font-size: 0.75rem;
-        font-weight: bold;
+    /* Label góc phải */
+    .choice-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+        padding: 2px 7px;
+        border-radius: 20px;
     }
 
-    /* Nếu sinh viên chọn ĐÚNG luôn (vừa correct vừa student-choice) */
-    .choice.correct.student-choice {
-        border-width: 2px;
+    /* ✅ ĐÚNG + CHỌN → Xanh đậm */
+    .choice-correct {
+        border-color: #16a34a;
+        background: #f0fdf4;
     }
+    .choice-correct .choice-icon {
+        color: #16a34a;
+    }
+    .choice-correct .choice-text {
+        color: #14532d;
+        font-weight: 600;
+    }
+    .correct-label {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #86efac;
+    }
+
+    /* ⭕ ĐÚNG + KHÔNG CHỌN → Xanh nhạt dashed (missed) */
+    .choice-correct-unselected {
+        border-color: #86efac;
+        border-style: dashed;
+        background: #f7fef9;
+    }
+    .choice-correct-unselected .choice-icon {
+        color: #4ade80;
+    }
+    .choice-correct-unselected .choice-text {
+        color: #166534;
+    }
+    .missed-label {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #86efac;
+    }
+
+    /* ❌ SAI + CHỌN → Đỏ */
+    .choice-wrong {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+    .choice-wrong .choice-icon {
+        color: #dc2626;
+    }
+    .choice-wrong .choice-text {
+        color: #7f1d1d;
+        font-weight: 600;
+    }
+    .wrong-label {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+    }
+
+    /* ===== MCQ Layout ===== */
+    .mcq-block {
+        margin-bottom: 2rem;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .mcq-block:last-child { border-bottom: none; }
+
+    .choices-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    /* ===== Essay Layout ===== */
+    .essay-block {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .essay-answer {
+        background: #f9fafb;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
 </style>
 
 <script>
@@ -382,6 +491,7 @@
     const finalBar = document.getElementById('finalBar');
 
     const mcq = ${vm.mcqScore};
+    const scqMax = ${vm.scqMax};
     const essayMax = ${vm.essayMax};
     const finalMax = ${vm.finalMax};
 

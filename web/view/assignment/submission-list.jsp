@@ -39,17 +39,27 @@
 
     <%-- TOOLBAR --%>
     <div class="toolbar card border-0 shadow-sm mb-3">
-        <div class="card-body d-flex align-items-center justify-content-between py-2">
-            <div class="flex-grow-1 me-3" style="max-width:640px;">
-                <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                    <input id="q" type="text" autocomplete="off" class="form-control"
-                           placeholder="Search by student name or email…">
-                </div>
+        <div class="card-body d-flex align-items-center justify-content-between py-2" style="flex-wrap:wrap;gap:10px;">
+
+            <form action="${ctx}/assignment/view/submission" method="get" class="rs-search">
+                <span class="rs-search__icon"><i class="bi bi-search"></i></span>
+                <input class="rs-search__input" type="text" name="search"
+                       value="<c:out value='${search}'/>"
+                       placeholder="Search by name or email…">
+                <input type="hidden" name="assignmentId" value="${assignmentId}">
+                <input type="hidden" name="classId" value="${classId}">
+                <button class="rs-search__submit" type="submit"><i class="bi bi-arrow-right"></i></button>
+            </form>
+
+            <div class="filter-pills" id="filterPills">
+                <button type="button" class="fpill ${param.status == '' || empty param.status ? 'is-active' : ''}" data-status="">All</button>
+                <button type="button" class="fpill fpill-inprogress ${fn:contains(param.status, '1') ? 'is-active' : ''}" data-status="1"><i class="bi bi-hourglass-split"></i> In Progress</button>
+                <button type="button" class="fpill fpill-submitted  ${fn:contains(param.status, '2') ? 'is-active' : ''}"  data-status="2"><i class="bi bi-check-circle"></i> Submitted</button>
+                <button type="button" class="fpill fpill-graded    ${fn:contains(param.status, '3') ? 'is-active' : ''}"  data-status="3"><i class="bi bi-patch-check"></i> Graded</button>
+                <button type="button" class="fpill fpill-late      ${fn:contains(param.status, '4') ? 'is-active' : ''}"  data-status="4"><i class="bi bi-alarm"></i> Late</button>
+                <button type="button" class="fpill fpill-violated  ${fn:contains(param.status, '5') ? 'is-active' : ''}"  data-status="5"><i class="bi bi-x-octagon"></i> Violated</button>
             </div>
-            <div class="small text-muted d-none d-md-block">
-                List of all attempts. MCQ is auto-graded. Essay/Mixed may require grading.
-            </div>
+
         </div>
     </div>
 
@@ -65,16 +75,8 @@
                 Violated: <b id="stViolated">0</b>
             </div>
 
-            <!-- FILTER -->
+            <!-- SORT -->
             <div class="d-flex gap-4">
-                <select id="filterStatus" class="form-select form-select-sm">
-                    <option value="All">All</option>
-                    <option value="Graded">Graded</option>
-                    <option value="NotGraded">Not graded</option>
-                    <option value="Violated">Violated</option>
-                </select>
-
-                <!-- SORT -->
                 <select id="sortBy" class="form-select form-select-sm">
                     <option value="submitted">Submitted time</option>
                     <option value="score">Score</option>
@@ -95,8 +97,9 @@
                         <th style="width: 110px;">Attempt</th>
                         <th style="width: 140px;" class="text-nowrap">Started</th>
                         <th style="width: 140px;" class="text-nowrap">Submitted</th>
-                        <th style="width: 200px;" class="text-end">MCQ</th>
-                        <th style="width: 200px;" class="text-end">Essay</th>
+                        <th style="width: 160px;" class="text-end">SCQ</th>
+                        <th style="width: 160px;" class="text-end">MCQ</th>
+                        <th style="width: 160px;" class="text-end">Essay</th>
                         <th style="width: 200px;" class="text-end">Final</th>
                         <th style="width: 96px;"></th>
                     </tr>
@@ -154,6 +157,21 @@
                             <%-- Dates --%>
                             <td class="text-nowrap">${it.startedAtStr}</td>
                             <td class="text-nowrap">${it.submittedAtStr}</td>
+
+                            <%-- SCQ --%>
+                            <td class="text-end">
+                                <div class="score-cell">
+                                    <div class="score-line">
+                                        <span class="score-badge score-scq">${it.scqScoreFmt}</span>
+                                        <span class="score-denom">/ ${it.scqMaxFmt}</span>
+                                    </div>
+                                    <div class="progress progress-thin">
+                                        <div class="progress-bar bg-scq" role="progressbar"
+                                             style="width:${it.scqPercent}%"></div>
+                                    </div>
+                                    <div class="mini-hint">auto</div>
+                                </div>
+                            </td>
 
                             <%-- MCQ --%>
                             <td class="text-end">
@@ -245,24 +263,62 @@
                 </tbody>
             </table>
         </div>
+
+
     </div>
+    <!-- JS-managed paging container -->
+    <div id="jsPaging" class="pager"></div>
 </div>
 
-<%-- Search script --%>
+<%-- Status filter (multi-select) script --%>
 <script>
     (function () {
-        const q = document.getElementById('q');
-        const rows = Array.from(document.querySelectorAll('#submissionsTable tbody tr'));
-        if (!q)
-            return;
+        const pills = Array.from(document.querySelectorAll('#filterPills .fpill'));
 
-        q.addEventListener('input', function () {
-            const term = (q.value || '').trim().toLowerCase();
-            rows.forEach(function (r) {
-                const name = r.getAttribute('data-name') || '';
-                const email = r.getAttribute('data-email') || '';
-                const show = !term || name.includes(term) || email.includes(term);
-                r.style.display = show ? '' : 'none';
+        function buildUrl(activeTypes) {
+            const url = new URL(window.location.href);
+            if (activeTypes.size === 0 || (activeTypes.size === 1 && activeTypes.has(''))) {
+                url.searchParams.delete('status');
+            } else {
+                url.searchParams.set('status', Array.from(activeTypes).filter(function (t) { return t !== ''; }).join(','));
+            }
+            url.searchParams.delete('index');
+            return url.toString();
+        }
+
+        function updatePills() {
+            pills.forEach(function (p) {
+                p.classList.toggle('is-active', activeTypes.has(p.dataset.status));
+            });
+        }
+
+        // Init active set from URL
+        const activeTypes = new Set();
+        const paramVal = new URL(window.location.href).searchParams.get('status') || '';
+        if (!paramVal) {
+            activeTypes.add('');
+        } else {
+            paramVal.split(',').forEach(function (s) { activeTypes.add(s.trim()); });
+        }
+        updatePills();
+
+        pills.forEach(function (pill) {
+            pill.addEventListener('click', function () {
+                const t = pill.dataset.status;
+                if (t === '') {
+                    activeTypes.clear();
+                    activeTypes.add('');
+                } else {
+                    activeTypes.delete('');
+                    if (activeTypes.has(t)) {
+                        activeTypes.delete(t);
+                    } else {
+                        activeTypes.add(t);
+                    }
+                    if (activeTypes.size === 0) activeTypes.add('');
+                }
+                updatePills();
+                window.location.href = buildUrl(activeTypes);
             });
         });
     })();
@@ -271,62 +327,65 @@
 <script>
     (function () {
 
-        const q = document.getElementById('q');
-        const filter = document.getElementById('filterStatus');
+        // FIX: use correct selector - input has name="search", not id="q"
+        const q = document.querySelector('input[name="search"]');
         const sort = document.getElementById('sortBy');
 
         const table = document.getElementById('submissionsTable');
         const tbody = table.querySelector('tbody');
 
+        // Collect ALL rows once (including those hidden by server-side paging)
+        // Since server-side paging hides rows via c:forEach begin/end,
+        // we need all visible rows in the tbody
         let rows = Array.from(tbody.querySelectorAll('tr'));
 
         let currentPage = 1;
         const pageSize = 15;
 
-        function getFilteredRows() {
+        // FIX: parse "dd/MM/yyyy HH:mm" string to comparable timestamp
+        function parseSubmittedDate(str) {
+            if (!str || str === '—') return 0;
+            // format: "19/11/2025 22:47"
+            const parts = str.split(' ');
+            if (parts.length < 2) return 0;
+            const dateParts = parts[0].split('/');
+            const timeParts = parts[1].split(':');
+            if (dateParts.length < 3) return 0;
+            // new Date(year, month-1, day, hour, min)
+            return new Date(
+                parseInt(dateParts[2]),
+                parseInt(dateParts[1]) - 1,
+                parseInt(dateParts[0]),
+                parseInt(timeParts[0] || 0),
+                parseInt(timeParts[1] || 0)
+            ).getTime();
+        }
 
-            const term = (q.value || '').toLowerCase();
-            const f = filter.value;
+        function getFilteredRows() {
+            const term = (q ? q.value : '').toLowerCase();
 
             return rows.filter(r => {
-
                 const name = r.dataset.name || '';
                 const email = r.dataset.email || '';
-                const status = r.dataset.status || '';
-
                 const matchSearch = !term || name.includes(term) || email.includes(term);
-
-                let matchFilter = true;
-
-                if (f === "Graded")
-                    matchFilter = status === "Graded";
-                if (f === "Violated")
-                    matchFilter = status === "Violated";
-                if (f === "NotGraded")
-                    matchFilter = status !== "Graded";
-
-                return matchSearch && matchFilter;
+                return matchSearch;
             });
         }
 
         function sortRows(list) {
-
             const type = sort.value;
 
             list.sort((a, b) => {
-
                 if (type === "name") {
-                    return a.dataset.name.localeCompare(b.dataset.name);
+                    return (a.dataset.name || '').localeCompare(b.dataset.name || '');
                 }
-
                 if (type === "score") {
-                    return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
+                    return parseFloat(b.dataset.score || 0) - parseFloat(a.dataset.score || 0);
                 }
-
                 if (type === "submitted") {
-                    return parseInt(b.dataset.submitted) - parseInt(a.dataset.submitted);
+                    // FIX: parse date string properly
+                    return parseSubmittedDate(b.dataset.submitted) - parseSubmittedDate(a.dataset.submitted);
                 }
-
                 return 0;
             });
 
@@ -334,15 +393,13 @@
         }
 
         function render() {
-
             let filtered = getFilteredRows();
             filtered = sortRows(filtered);
 
             updateStats(filtered);
 
-            const totalPage = Math.ceil(filtered.length / pageSize);
-            if (currentPage > totalPage)
-                currentPage = 1;
+            const totalPage = Math.ceil(filtered.length / pageSize) || 1;
+            if (currentPage > totalPage) currentPage = 1;
 
             const start = (currentPage - 1) * pageSize;
             const pageRows = filtered.slice(start, start + pageSize);
@@ -354,8 +411,7 @@
         }
 
         function updateStats(list) {
-
-            let graded = 0, not = 0, violated = 0;
+            let graded = 0, notGraded = 0, violated = 0;
 
             list.forEach(r => {
                 const s = r.dataset.status;
@@ -364,55 +420,84 @@
                 else if (s === "Violated")
                     violated++;
                 else
-                    not++;
+                    notGraded++;
             });
 
             document.getElementById('stTotal').innerText = list.length;
             document.getElementById('stGraded').innerText = graded;
-            document.getElementById('stNot').innerText = not;
+            document.getElementById('stNot').innerText = notGraded;
             document.getElementById('stViolated').innerText = violated;
         }
 
         function renderPaging(totalPage) {
-
-            let paging = document.getElementById('paging');
-
-            if (!paging) {
-                paging = document.createElement('div');
-                paging.id = "paging";
-                paging.className = "d-flex justify-content-center mt-3 gap-2";
-                table.parentElement.appendChild(paging);
-            }
-
+            const paging = document.getElementById('jsPaging');
             paging.innerHTML = "";
 
-            for (let i = 1; i <= totalPage; i++) {
+            // Helper to create paging button
+            function mkBtn(label, page, disabled, active) {
                 const btn = document.createElement('button');
-                btn.className = "btn btn-sm " + (i === currentPage ? "btn-primary" : "btn-outline-secondary");
-                btn.innerText = i;
-
-                btn.onclick = () => {
-                    currentPage = i;
-                    render();
-                };
-
-                paging.appendChild(btn);
+                btn.type = 'button';
+                btn.className = 'pg' + (active ? ' is-active' : '') + (disabled ? ' disabled' : '');
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (!disabled) {
+                    btn.onclick = () => { currentPage = page; render(); };
+                }
+                return btn;
             }
+
+            // First & Prev
+            paging.appendChild(mkBtn('&laquo;', 1, currentPage === 1, false));
+            paging.appendChild(mkBtn('&lsaquo;', currentPage - 1, currentPage === 1, false));
+
+            // Page numbers: show at most 5 around current page
+            const delta = 2;
+            const rangeStart = Math.max(1, currentPage - delta);
+            const rangeEnd   = Math.min(totalPage, currentPage + delta);
+
+            if (rangeStart > 1) {
+                paging.appendChild(mkBtn('1', 1, false, false));
+                if (rangeStart > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pg-ellipsis';
+                    ellipsis.innerText = '…';
+                    paging.appendChild(ellipsis);
+                }
+            }
+
+            for (let i = rangeStart; i <= rangeEnd; i++) {
+                paging.appendChild(mkBtn(i, i, false, i === currentPage));
+            }
+
+            if (rangeEnd < totalPage) {
+                if (rangeEnd < totalPage - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pg-ellipsis';
+                    ellipsis.innerText = '…';
+                    paging.appendChild(ellipsis);
+                }
+                paging.appendChild(mkBtn(totalPage, totalPage, false, false));
+            }
+
+            // Next & Last
+            paging.appendChild(mkBtn('&rsaquo;', currentPage + 1, currentPage === totalPage, false));
+            paging.appendChild(mkBtn('&raquo;', totalPage, currentPage === totalPage, false));
         }
 
         // EVENTS
-        q.addEventListener('input', () => {
+        if (q) {
+            q.addEventListener('input', () => {
+                currentPage = 1;
+                render();
+            });
+        }
+
+        sort.addEventListener('change', () => {
             currentPage = 1;
             render();
         });
 
-        filter.addEventListener('change', () => {
-            currentPage = 1;
-            render();
-        });
-
-        sort.addEventListener('change', render);
-
+        // Initial render
         render();
 
     })();

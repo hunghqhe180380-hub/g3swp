@@ -1,5 +1,6 @@
 package model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,21 @@ public class GradeAttemptVM {
     private LocalDateTime submittedAt;
     private String status;
 
+    /** Returns formatted duration like "12 min 34 sec" or "N/A" */
+    public String getTimeTaken() {
+        if (startedAt == null || submittedAt == null) return "N/A";
+        Duration d = Duration.between(startedAt, submittedAt);
+        long totalSeconds = Math.abs(d.toSeconds());
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        if (minutes > 0) return minutes + " min " + seconds + " sec";
+        return seconds + " sec";
+    }
+
+    // SCQ
+    private double scqScore;
+    private double scqMax;
+
     // MCQ
     private double mcqScore;
     private double mcqMax;
@@ -38,7 +54,11 @@ public class GradeAttemptVM {
     // comment tổng
     private String teacherComment;
 
-    private List<GradeMcqItem> mcqs;
+    private List<GradeMcqItem> scqs;  // Single Choice Questions (type=1)
+    private List<GradeMcqItem> mcqs;  // Multiple Choice Questions (type=2)
+
+    public List<GradeMcqItem> getScqs() { return scqs; }
+    public void setScqs(List<GradeMcqItem> scqs) { this.scqs = scqs; }
 
     public List<GradeMcqItem> getMcqs() {
         return mcqs;
@@ -141,6 +161,11 @@ public class GradeAttemptVM {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public double getScqScore() { return scqScore; }
+    public void setScqScore(double scqScore) { this.scqScore = scqScore; }
+    public double getScqMax() { return scqMax; }
+    public void setScqMax(double scqMax) { this.scqMax = scqMax; }
 
     public double getMcqScore() {
         return mcqScore;

@@ -590,6 +590,22 @@ body.assignment-page{
     background:#ef4444;
 }
 
+.status-pill--inprogress{
+    background:#3b82f6;
+}
+
+/* Final score – chỉ hiện xanh khi Status=Graded */
+.score-pill--final-ok{
+    background:#16a34a;
+    color:#fff;
+}
+
+/* Final score chưa chấm → xám mờ với dấu — */
+.score-pill--pending{
+    background:#94a3b8;
+    color:#fff;
+}
+
 .history-footnote{
     border-top:1px solid #edf2f7;
     margin-top:14px;
