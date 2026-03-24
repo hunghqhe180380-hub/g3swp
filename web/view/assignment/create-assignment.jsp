@@ -46,7 +46,7 @@
 
                 <div class="ca-layout">
                     <section class="ca-board">
-                        <form id="assignmentForm" action="#" method="post">
+                        <form id="assignmentForm" action="${ctx}/assignment/manage/create" method="post">
                             <input type="hidden" name="modeCreate" id="activeMode" value="auto">
 
                             <!-- Assignment details -->
@@ -103,7 +103,7 @@
 
                             <!-- AUTO MODE -->
                             <div class="ca-mode-panel" id="autoModePanel">
-                                <input type="hidden" name="modeCreate" id="activeMode" value="manual">
+                                <%-- modeCreate is controlled by the ONE hidden input at the top of the form (#activeMode) --%>
                                 <div class="ca-section">
                                     <div class="ca-section__head">
                                         <div class="ca-section__title">
@@ -840,15 +840,39 @@
                 createAssignmentBtn.addEventListener('click', function () {
                     updateSummary();
                     const valid = validateForm(true);
+                    if (!valid) return;
 
-                    if (!valid) {
-                        return;
+                    const form = document.getElementById('assignmentForm');
+                    const mode = activeModeInput.value;
+
+                    // Remove previously injected dynamic inputs to avoid duplication
+                    form.querySelectorAll('.ca-dynamic-input').forEach(el => el.remove());
+
+                    function addHidden(name, value) {
+                        const inp = document.createElement('input');
+                        inp.type  = 'hidden';
+                        inp.name  = name;
+                        inp.value = value;
+                        inp.className = 'ca-dynamic-input';
+                        form.appendChild(inp);
                     }
 
-                    alert('Frontend validation passed. Backend create-assignment flow will be connected later.');
-                    if (valid) {
-                        document.getElementById('assignmentForm').submit();
+                    if (mode === 'auto') {
+                        getAutoGroupsData().forEach(function (g) {
+                            addHidden('typeQuestionGroup',   g.type);
+                            addHidden('chapterQuestionGroup', g.chapters.join(','));
+                            addHidden('numberQuestionGroup', g.count);
+                            addHidden('pointPerQuestion',    g.points);
+                        });
+                    } else {
+                        // Manual mode: inject questionId + pointOfQuestion for each selected question
+                        getSelectedManualQuestions().forEach(function (q) {
+                            addHidden('questionId',      q.id);
+                            addHidden('pointOfQuestion', q.points);
+                        });
                     }
+
+                    form.submit();
                 });
 
                 [
@@ -872,12 +896,8 @@
                 renderManualChapterFilters();
                 renderManualSelected();
                 renderManualQuestionArea();
-                createAutoGroup({
-                    type: 'MCQ',
-                    chapters: [1],
-                    count: 10,
-                    points: 10
-                });
+                // Start with one empty group for the teacher to configure
+                createAutoGroup();
                 setMode('auto');
                 updateSummary();
             })();

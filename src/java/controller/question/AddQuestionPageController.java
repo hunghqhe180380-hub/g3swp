@@ -116,9 +116,13 @@ public class AddQuestionPageController extends HttpServlet {
 
                     if (corrects != null) {
                         for (String c : corrects) {
-                            if (Integer.parseInt(c) == j) {
-                                isCorrect = true;
-                                break;
+                            try {
+                                if (Integer.parseInt(c) == j) {
+                                    isCorrect = true;
+                                    break;
+                                }
+                            } catch (NumberFormatException e) {
+                                // Ignore non-integer values like "undefined" from JS
                             }
                         }
                     }
@@ -138,6 +142,7 @@ public class AddQuestionPageController extends HttpServlet {
             QuestionBank qBank = new QuestionBank();
             qBank.setSubjectId(subjectId);
             qBank.setType(3);
+            qBank.setChapter(Integer.parseInt(chapter)); // FIX: Essay cũng phải lưu chapter đúng
             qBank.setPrompt(essay);
             qBankDAO.insertQuestion(qBank, user.getUserID());
 

@@ -116,112 +116,76 @@ public class AddQuestionToAssignmentController extends HttpServlet {
         //create with auto mode
         if (modeCreate.equalsIgnoreCase("auto")) {
 
-            String[] typeQuestionGroup = request.getParameterValues("typeQuestionGroup");
+            String[] typeQuestionGroup   = request.getParameterValues("typeQuestionGroup");
             String[] chapterQuestionGroup = request.getParameterValues("chapterQuestionGroup");
-            String[] numberQuestionGroup = request.getParameterValues("numberQuestionGroup");
-            String[] pointPerQuestion = request.getParameterValues("pointPerQuestion");
+            String[] numberQuestionGroup  = request.getParameterValues("numberQuestionGroup");
+            String[] pointPerQuestion     = request.getParameterValues("pointPerQuestion");
 
             //get subjectId of this class
             ClassroomDAO clsDAO = new ClassroomDAO();
             Classroom cls = clsDAO.getClassInfoByClassId(classId);
             String subjectId = cls.getSubjectId();
 
-            //create question group then put into list question group
-            List<QuestionGroup> listQuestionGroup = new ArrayList<>();
-
-            //every group question also have type - level - number of question - point per questio
-            // => length of each properties must be equal
-            for (int i = 0; i < typeQuestionGroup.length; i++) {
-
-                QuestionGroup qGroup = new QuestionGroup();
-
-                qGroup.setType(Integer.parseInt(typeQuestionGroup[i]));
-                qGroup.setChapter(Integer.parseInt(chapterQuestionGroup[i]));
-                qGroup.setNumberQuestion(Integer.parseInt(numberQuestionGroup[i]));
-                qGroup.setPointPerQuestion(Integer.parseInt(pointPerQuestion[i]));
-
-                listQuestionGroup.add(qGroup);
-            }
-
-            //get random question from QuestionBank by (subjectId and properties of question groups)
-            //random question group
-            Map<String, List<QuestionBank>> listRandomGroup = new HashMap<>();
-            for (int i = 0; i < listQuestionGroup.size(); i++) {
-                listRandomGroup.put(listQuestionGroup.get(i).getType() + "-" + listQuestionGroup.get(i).getChapter(),
-                        qBankDAO.getRandomQuestions(subjectId,
-                                user.getUserID(),
-                                listQuestionGroup.get(i).getChapter(),
-                                listQuestionGroup.get(i).getType(),
-                                listQuestionGroup.get(i).getNumberQuestion(),
-                                listQuestionGroup.get(i).getPointPerQuestion()));
-            }
-
-            List<QuestionBank> listQuestionBankRandomResult = new ArrayList<>();
-            for (Map.Entry<String, List<QuestionBank>> entry : listRandomGroup.entrySet()) {
-
-                String key = entry.getKey();
-                List<QuestionBank> list = entry.getValue();
-
-                System.out.println("Group: " + key);
-
-                for (QuestionBank q : list) {
-                    listQuestionBankRandomResult.add(q);
-                }
-            }
-
-            //insert listQuestionBankRandomResult into Assignment 
-            for (int i = 0; i < listQuestionBankRandomResult.size(); i++) {
-                asgQuestionDAO.insertQuestion(newAssignmentId, listQuestionBankRandomResult.get(i));
-            }
-
-            boolean hasSGC = false;
-            boolean hasMCQ = false;
+            boolean hasSCQ   = false;
+            boolean hasMCQ   = false;
             boolean hasEssay = false;
 
-            for (QuestionGroup q : listQuestionGroup) {
-                if (q.getType() == 1) {
-                    hasSGC = true;
+            // Global dedup: no question can appear twice in the same assignment
+            java.util.Set<Integer> insertedQuestionIds = new java.util.HashSet<>();
+
+            for (int i = 0; i < typeQuestionGroup.length; i++) {
+                int type    = Integer.parseInt(typeQuestionGroup[i]);
+                int numberQ = Integer.parseInt(numberQuestionGroup[i]);
+                int pointQ  = Integer.parseInt(pointPerQuestion[i]);
+
+                if (type == 1) hasSCQ   = true;
+                if (type == 2) hasMCQ   = true;
+                if (type == 3) hasEssay = true;
+
+                // chapterQuestionGroup[i] may be "1" or "1,2,3" – handle both
+                String chaptersRaw = chapterQuestionGroup[i];
+                String[] chapTokens = (chaptersRaw == null || chaptersRaw.trim().isEmpty())
+                        ? new String[0]
+                        : chaptersRaw.trim().split(",");
+
+                // Collect a pool from every selected chapter, then pick N random
+                List<QuestionBank> pool = new ArrayList<>();
+                for (String tok : chapTokens) {
+                    tok = tok.trim();
+                    if (tok.isEmpty()) continue;
+                    int chapter = Integer.parseInt(tok);
+                    List<QuestionBank> batch = qBankDAO.getRandomQuestions(
+                            subjectId, user.getUserID(), chapter, type, numberQ, pointQ);
+                    for (QuestionBank b : batch) {
+                        // Only add to pool if not already inserted in a previous group
+                        if (!insertedQuestionIds.contains(b.getId())) {
+                            pool.add(b);
+                        }
+                    }
                 }
-                if (q.getType() == 2) {
-                    hasMCQ = true;
-                }
-                if (q.getType() == 3) {
-                    hasEssay = true;
+
+                // Shuffle the combined pool and pick the required number of questions
+                java.util.Collections.shuffle(pool);
+                int take = Math.min(numberQ, pool.size());
+                for (int j = 0; j < take; j++) {
+                    QuestionBank q = pool.get(j);
+                    if (insertedQuestionIds.add(q.getId())) { // add() returns false if already present
+                        q.setSettingPoint(pointQ);
+                        asgQuestionDAO.insertQuestion(newAssignmentId, q);
+                    }
                 }
             }
 
-// đếm số loại có trong assignment
-            int countType = 0;
-            if (hasSGC) {
-                countType++;
-            }
-            if (hasMCQ) {
-                countType++;
-            }
-            if (hasEssay) {
-                countType++;
-            }
-
+            // Count distinct types
+            int countType = (hasSCQ ? 1 : 0) + (hasMCQ ? 1 : 0) + (hasEssay ? 1 : 0);
             int assignmentType;
+            if      (countType >= 2) assignmentType = 4;
+            else if (hasSCQ)         assignmentType = 1;
+            else if (hasMCQ)         assignmentType = 2;
+            else if (hasEssay)       assignmentType = 3;
+            else                     assignmentType = 0;
 
-            if (countType >= 2) {
-                assignmentType = 4; // mixed
-            } else if (hasSGC) {
-                assignmentType = 1;
-            } else if (hasMCQ) {
-                assignmentType = 2;
-            } else if (hasEssay) {
-                assignmentType = 3;
-            } else {
-                assignmentType = 0; // fallback (không có câu nào)
-            }
-
-// update DB
             asgDAO.updateTypeFollowQuestionInAssignment(newAssignmentId, assignmentType);
-//            System.out.println("newAssignmentId22222 : " + newAssignmentId);
-//            request.setAttribute("listQuestionGroup", listQuestionGroup);
-//            request.setAttribute("classId", classId);
-//            request.setAttribute("listquestion", listRandomGroup);
         }
 
         /*

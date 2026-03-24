@@ -90,7 +90,7 @@ public class CreateAssignmentController extends HttpServlet {
 
         //get list question from question bank of this subject by subject'id
         QuestionBankDAO qBankDAO = new QuestionBankDAO();
-        List<QuestionBank> listQuestion = qBankDAO.getListQuestionBankByTeacherAndSubject(subject.getId(), user.getUserID(), 1);
+        List<QuestionBank> listQuestion = qBankDAO.getListQuestionBankByTeacherAndSubject(subject.getId(), user.getUserID(), -1); // -1 = all statuses
 
         /////
         request.setAttribute("listQuestion", listQuestion);
