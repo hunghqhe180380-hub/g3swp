@@ -338,6 +338,7 @@
                 const seeds = Array.from(document.querySelectorAll('.ca-seed')).map(el => ({
                         id: Number(el.dataset.id),
                         type: el.dataset.type,
+                        typeId: el.dataset.type === 'SCQ' ? 1 : el.dataset.type === 'MCQ' ? 2 : 3,
                         chapter: Number(el.dataset.chapter),
                         subject: el.dataset.subject,
                         prompt: el.dataset.prompt
@@ -533,9 +534,9 @@
                                     updateGroup();
                                 }
                         );
-
+                
                         const matched = subjectQuestions.filter(q => {
-                            const typeOk = !type || q.type === type;
+                            const typeOk = !type || q.typeId === Number(type);
                             const chapterOk = !selectedChapter || q.chapter === selectedChapter;
                             return typeOk && chapterOk;
                         }).length;
@@ -630,7 +631,7 @@
                         });
                         updateGroup();
                     }
-                    updateGroup()
+                    updateGroup();
                     return wrapper;
                 }
 
@@ -975,7 +976,7 @@
                     if (mode === 'auto') {
                         getAutoGroupsData().forEach(function (g) {
                             addHidden('typeQuestionGroup', g.type);
-                            addHidden('chapterQuestionGroup', g.chapters.join(','));
+                            addHidden('chapterQuestionGroup', g.chapter);
                             addHidden('numberQuestionGroup', g.count);
                             addHidden('pointPerQuestion', g.points);
                         });

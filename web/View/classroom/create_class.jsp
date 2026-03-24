@@ -40,14 +40,21 @@
                             </div>
 
                             <div class="cc-field">
-                                <label class="cc-label" for="subject">Subject</label>
-                                <select name="subjectId"  id="id">
-                                    <option value="none">---</option>
-                                    <c:forEach items="${requestScope.listSubject}" var="subject">
-                                        <option ${requestScope.subjectId == subject.id ? 'selected' : ''} value="${subject.id}">${subject.name}</option>
-                                    </c:forEach>
-                                </select>
+                                <label class="cc-label" for="subjectId">Subject</label>
+
+                                <div class="cc-select">
+                                    <select class="cc-input cc-input--select" name="subjectId" id="subjectId">
+                                        <option value="none">Select subject</option>
+                                        <c:forEach items="${requestScope.listSubject}" var="subject">
+                                            <option ${requestScope.subjectId == subject.id ? 'selected' : ''} value="${subject.id}">
+                                                ${subject.name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+
                                 <input type="text" value="${requestScope.subjectName}" id="subject" hidden>
+
                                 <c:if test="${not empty listMSG.msgSubject}">
                                     <div class="cc-error">${listMSG.msgSubject}</div>
                                 </c:if>
@@ -136,6 +143,7 @@
             (function () {
                 const nameInp = document.getElementById('className')
                         || document.querySelector('input[name="className"]');
+                const subjectSelect = document.getElementById('subjectId');
                 const subjectInp = document.getElementById('subject')
                         || document.querySelector('input[name="subject"]');
                 const limitInp = document.getElementById('studentLimit')
@@ -151,17 +159,17 @@
 
                 function update() {
                     const name = safeText(nameInp?.value);
-                    const subject = safeText(subjectInp?.value);
+                    const subject = subjectSelect ? safeText(subjectSelect.options[subjectSelect.selectedIndex]?.text) : safeText(subjectInp?.value);
                     const limitRaw = safeText(limitInp?.value);
 
                     pvName.textContent = name ? name : 'Class name';
-                    pvSubject.textContent = subject ? subject : '—';
+                    pvSubject.textContent = (subject && subject !== 'Select subject' && subject !== '---') ? subject : '—';
 
                     const limit = (limitRaw === '' ? '—' : limitRaw);
                     pvStudents.textContent = "0 / " + limit;
                 }
 
-                [nameInp, subjectInp, limitInp].forEach(el => {
+                [nameInp, subjectSelect, limitInp].forEach(el => {
                     if (!el)
                         return;
                     el.addEventListener('input', update);

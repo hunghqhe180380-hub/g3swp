@@ -208,7 +208,7 @@
 
                     <div class="assignment-actions">
                         <button type="button" class="btn-ui btn-ui--muted" id="openHistoryBtn">
-                            <i class="bi bi-card-list"></i>Test history
+                            <i class="bi bi-card-list"></i>Assignment history
                         </button>
 
                         <a href="#" class="btn-ui btn-ui--primary" id="detailStartBtn">
