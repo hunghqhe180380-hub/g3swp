@@ -699,11 +699,11 @@ CORRECT: B</pre>
                     let essay = 0;
 
                     if (method === 'manual') {
-                        if (type === 'SCQ')
+                        if (type === '1')
                             scq = manualCount;
-                        if (type === 'MCQ')
+                        if (type === '2')
                             mcq = manualCount;
-                        if (type === 'Essay')
+                        if (type === '3')
                             essay = manualCount;
                     }
 
@@ -738,6 +738,9 @@ CORRECT: B</pre>
                         errors.push('Subject is required.');
                     if (!chapter)
                         errors.push('Chapter is required.');
+                    if (!/^\d+$/.test(chapter)) {
+                        errors.push('Chapter must be an integer number > 0');
+                    }
                     if (!type)
                         errors.push('Question type is required.');
 
@@ -755,7 +758,7 @@ CORRECT: B</pre>
                                 errors.push('Question #' + (idx + 1) + ': prompt is required.');
                             }
 
-                            if (type === 'SCQ' || type === 'MCQ') {
+                            if (type === '1' || type === '2') {
                                 const optionRows = Array.from(item.querySelectorAll('.aq-option-row'));
                                 const filledOptions = optionRows.filter(row => row.querySelector('.aq-option-input').value.trim());
                                 const correctCount = optionRows.filter(row => row.querySelector('.aq-option-correct').checked).length;
@@ -764,12 +767,12 @@ CORRECT: B</pre>
                                     errors.push('Question #' + (idx + 1) + ': at least 2 answer options are required.');
                                 }
 
-                                if (type === 'SCQ' && correctCount !== 1) {
+                                if (type === '1' && correctCount !== 1) {
                                     errors.push('Question #' + (idx + 1) + ': SCQ must have exactly 1 correct answer.');
                                 }
 
-                                if (type === 'MCQ' && correctCount < 1) {
-                                    errors.push('Question #' + (idx + 1) + ': MCQ must have at least 1 correct answer.');
+                                if (type === '2' && correctCount < 2) {
+                                    errors.push('Question #' + (idx + 1) + ': MCQ must have at least 2 correct answer.');
                                 }
                             }
                         });

@@ -764,6 +764,10 @@
                     if (!title) {
                         errors.push('Assignment title is required.');
                     }
+                    
+                    if(title.length > 160){
+                        errors.push('Assignment titlet must less than 160 character.')
+                    }
 
                     if (!maxPoints || maxPoints < 1 || maxPoints > 100) {
                         errors.push('Total points must be between 1 and 100.');

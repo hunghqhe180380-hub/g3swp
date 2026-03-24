@@ -210,7 +210,12 @@
         <!-- Mock data -->
         <div class="qb-seed-list d-none" id="questionSeeds">
             <c:forEach items="${requestScope.listQuestionBank}" var="q" varStatus="loop">
-                <div class="qb-seed" data-id="${q.id}" data-prompt="${q.prompt}" data-type="<c:choose><c:when test='${q.type == 1}'>SCQ</c:when><c:when test='${q.type == 2}'>MCQ</c:when><c:when test='${q.type == 3}'>Essay</c:when></c:choose>" data-chapter="${q.chapter}" data-subject="${q.subjectName}" data-created="${q.createdAt}"></div>
+                <div class="qb-seed" data-id="${q.id}" data-prompt="${q.prompt}" data-type="<c:choose><c:when test='${q.type == 1}'>SCQ</c:when><c:when test='${q.type == 2}'>MCQ</c:when><c:when test='${q.type == 3}'>Essay</c:when></c:choose>" data-chapter="${q.chapter}" data-subject="${q.subjectName}" data-created="${q.createdAt}"
+                     data-keywords="<c:forEach items="${q.listQuestionBankChoice}" var="choice">
+                         <c:if test="${q.type != 3 and choice.isCorrect == true}">
+                            Answer: ${choice.text}
+                         </c:if>
+                     </c:forEach>"></div>
             </c:forEach>
 
             <!--            <div class="qb-seed" data-id="102" data-prompt="Which sentence uses the past perfect tense correctly?" data-type="MCQ" data-chapter="2" data-subject="Tiếng Anh" data-created="2026-03-20 08:20" data-keywords="english grammar tense past perfect"></div>
@@ -427,20 +432,21 @@
                                 '<div class="qb-card__keywords">' + escapeHtml(q.keywords) + '</div>' +
                                 '<div class="qb-card__footer">' +
                                 '   <div class="qb-card__chapter-mark">Question bank item</div>' +
-                                '   <button type="button" class="qb-delete-btn" data-id="' + escapeHtml(q.id) + '">' +
+                                '   <a href="${ctx}/question/manage/delete-question?questionId=' + encodeURIComponent(q.id) + '"type="button" class="qb-delete-btn" data-id="' + escapeHtml(q.id) + '">' +
                                 '       <i class="bi bi-trash3"></i><span>Delete</span>' +
-                                '   </button>' +
+                                '   </a>' +
                                 '</div>';
 
                         questionGrid.appendChild(card);
                     });
 
-                    questionGrid.querySelectorAll('.qb-delete-btn').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const questionId = btn.dataset.id;
-                            alert('Delete question #' + questionId + ' (hook backend later)');
-                        });
-                    });
+//                    questionGrid.querySelectorAll('.qb-delete-btn').forEach(btn => {
+//                        btn.addEventListener('click', function () {
+//                            const questionId = btn.dataset.id;
+//                            alert('Delete question #' + questionId + ' (hook backend later)');
+//                            
+//                        });
+//                    });
 
                     emptyState.style.display = list.length === 0 ? 'flex' : 'none';
                     paginationWrap.style.display = list.length === 0 ? 'none' : 'flex';

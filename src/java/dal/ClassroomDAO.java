@@ -166,7 +166,7 @@ public class ClassroomDAO extends DBContext {
 
     /** Clear expired class codes */
     public void clearExpiredClassCode() {
-        String sql = "UPDATE Classrooms SET ClassCode=NULL, TimeExpiryClassCode=NULL " +
+        String sql = "UPDATE Classrooms SET ClassCode=NULL " +
                      "WHERE TimeExpiryClassCode IS NOT NULL AND TimeExpiryClassCode < GETDATE()";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.executeUpdate();

@@ -403,6 +403,7 @@ public class QuestionBankDAO extends DBContext {
                     + "FROM [dbo].[QuestionBank]\n"
                     + "Where [SubjectId] = ?\n"
                     + "And [CreatedById] = ?\n"
+                    + ""
                     + statusClause;
             statement = connection.prepareStatement(sql);
             statement.setObject(1, subjectId);

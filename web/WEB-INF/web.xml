@@ -194,6 +194,10 @@
         <servlet-name>AcceptQuestionController</servlet-name>
         <servlet-class>controller.question.AcceptQuestionController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DeleteQuestionInBankController</servlet-name>
+        <servlet-class>controller.question.DeleteQuestionInBankController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SubmissionListController</servlet-name>
         <url-pattern>/assignment/view/submission</url-pattern>
@@ -397,6 +401,10 @@
     <servlet-mapping>
         <servlet-name>AcceptQuestionController</servlet-name>
         <url-pattern>/question/manage/accept-question</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteQuestionInBankController</servlet-name>
+        <url-pattern>/question/manage/delete-question</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

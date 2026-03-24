@@ -73,7 +73,7 @@ public class CreateClassController extends HttpServlet {
     public void getListSubject(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         SubjectDAO subjectDAO = new SubjectDAO();
-        List<Subject> listSubject = subjectDAO.getListSubject();
+        List<Subject> listSubject = subjectDAO.getListSubjectActive();
         request.setAttribute("listSubject", listSubject);
     }
 

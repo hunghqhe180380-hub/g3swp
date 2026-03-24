@@ -349,6 +349,7 @@
                 <tr>
                     <th><input type="checkbox" id="selectAll" title="Select all on this page"></th>
                     <th class="sortable" onclick="sortBy('id')">#ID <span class="sort-icon">${sort=='id'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
+                    <th class="sortable" onclick="sortBy('teacher')">Teacher <span class="sort-icon">${sort=='teacher'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>    
                     <th class="sortable" onclick="sortBy('subject')">Subject <span class="sort-icon">${sort=='subject'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
                     <th class="sortable" onclick="sortBy('type')">Type <span class="sort-icon">${sort=='type'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
                     <th class="sortable" onclick="sortBy('chapter')">Chapter <span class="sort-icon">${sort=='chapter'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
@@ -372,6 +373,7 @@
                             <tr>
                                 <td><input type="checkbox" class="row-check" data-id="${q.id}"></td>
                                 <td style="color:#6366f1;font-weight:700">#${q.id}</td>
+                                <td></td>
                                 <td>${fn:escapeXml(q.subjectName)}</td>
                                 <td>
                                     <c:choose>

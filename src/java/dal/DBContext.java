@@ -13,7 +13,7 @@ public class DBContext {
         try {
             String user = "sa";
             String pass = "123";
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=ABC;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=POET;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;";
 
             // Nạp Driver SQL Server
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");

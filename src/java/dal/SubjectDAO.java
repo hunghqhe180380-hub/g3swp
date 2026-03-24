@@ -112,23 +112,17 @@ public class SubjectDAO extends DBContext {
     public List<Subject> getListSubjectOfTeacher(String teacherId) {
         List<Subject> listSubject = new ArrayList<>();
         try {
-            String sql = "SELECT TOP (1000) [Id]\n"
-                    + "      ,[Name]\n"
-                    + "      ,[ClassCode]\n"
-                    + "      ,[SubjectId]\n"
-                    + "      ,[TeacherId]\n"
-                    + "      ,[CreatedAt]\n"
-                    + "      ,[MaxStudents]\n"
-                    + "      ,[TimeExpiryClassCode]\n"
-                    + "      ,[Status]\n"
-                    + "  FROM [dbo].[Classrooms]\n"
-                    + "  Where TeacherId = ?";
+            String sql = "SELECT distinct Subjects.Id, Subjects.subject_name, Subjects.is_active, Classrooms.TeacherId\n"
+                    + "  FROM [POET].[dbo].[Classrooms]\n"
+                    + "  JOIN Subjects\n"
+                    + "  ON Classrooms.SubjectId = Subjects.Id\n"
+                    + "  Where TeacherId = ? And Subjects.is_active = 1";
             statement = connection.prepareStatement(sql);
             statement.setObject(1, teacherId);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Subject s = new Subject();
-                s.setId(resultSet.getString("SubjectId"));
+                s.setId(resultSet.getString("Id"));
                 listSubject.add(s);
             }
         } catch (Exception e) {
@@ -138,7 +132,9 @@ public class SubjectDAO extends DBContext {
         return listSubject;
     }
 
-    /** Toggle subject active status (0=inactive, 1=active) */
+    /**
+     * Toggle subject active status (0=inactive, 1=active)
+     */
     public void updateSubjectStatus(String subjectId, int newStatus) {
         try {
             String sql = "UPDATE [dbo].[Subjects] SET [is_active] = ? WHERE [Id] = ?";
@@ -151,7 +147,9 @@ public class SubjectDAO extends DBContext {
         }
     }
 
-    /** Delete a subject by ID */
+    /**
+     * Delete a subject by ID
+     */
     public void deleteSubject(String subjectId) {
         try {
             String sql = "DELETE FROM [dbo].[Subjects] WHERE [Id] = ?";
@@ -162,6 +160,29 @@ public class SubjectDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    //get list subject active (use when create class)
+    public List<Subject> getListSubjectActive() {
+        List<Subject> listSubject = new ArrayList<>();
+        try {
+            String sql = "SELECT [Id]\n"
+                    + "      ,[subject_name]\n"
+                    + "      ,[is_active]\n"
+                    + "      ,[create_at]\n"
+                    + "  FROM [POET].[dbo].[Subjects]\n"
+                    + "  Where is_active = 1";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Subject s = new Subject();
+                s.setId(resultSet.getString("Id"));
+                s.setName(resultSet.getString("subject_name"));
+                listSubject.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listSubject;
+    }
 }
-
-
