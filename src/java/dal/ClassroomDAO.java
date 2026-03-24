@@ -17,9 +17,11 @@ public class ClassroomDAO extends DBContext {
         "SELECT a.Id, a.Name, a.ClassCode, a.SubjectId, a.TeacherId, " +
         "       b.FullName AS TeacherName, a.CreatedAt, a.MaxStudents, " +
         "       a.Status, a.TimeExpiryClassCode, " +
-        "       (SELECT COUNT(*) FROM Enrollments e WHERE e.ClassId = a.Id) AS TotalStudent " +
+        "       (SELECT COUNT(*) FROM Enrollments e WHERE e.ClassId = a.Id) AS TotalStudent, " +
+        "       ISNULL(s.subject_name, a.SubjectId) AS SubjectName " +
         "FROM Classrooms a " +
-        "LEFT JOIN Users b ON a.TeacherId = b.Id ";
+        "LEFT JOIN Users b ON a.TeacherId = b.Id " +
+        "LEFT JOIN Subjects s ON a.SubjectId = s.Id ";
 
     protected PreparedStatement statement;
     protected ResultSet resultSet;
@@ -181,7 +183,11 @@ public class ClassroomDAO extends DBContext {
         c.setName(rs.getString("Name"));
         c.setClassCode(rs.getString("ClassCode"));
         c.setSubjectId(rs.getString("SubjectId"));
-        c.setSubject(rs.getString("SubjectId")); // backward compat
+        // Use the resolved subject name from LEFT JOIN Subjects
+        try { c.setSubject(rs.getString("SubjectName")); } catch (SQLException ignored) {
+            c.setSubject(rs.getString("SubjectId"));
+        }
+
         c.setTeacherId(rs.getString("TeacherId"));
         c.setTeacherName(rs.getString("TeacherName"));
         if (rs.getTimestamp("CreatedAt") != null)
@@ -198,8 +204,10 @@ public class ClassroomDAO extends DBContext {
     }
 
     private static String searchClause() {
-        return " AND (LOWER(a.Name) LIKE ? OR LOWER(a.ClassCode) LIKE ?" +
-               " OR LOWER(a.SubjectId) LIKE ? OR LOWER(b.FullName) LIKE ?)";
+        // SQL Server with default collation is already case-insensitive — no need for LOWER()
+        // Search by class name, class code, teacher name, and subject name
+        return " AND (a.Name LIKE ? OR a.ClassCode LIKE ?" +
+               " OR b.FullName LIKE ? OR ISNULL(s.subject_name, a.SubjectId) LIKE ?)";
     }
 
     private static int bindSearch(PreparedStatement ps, int start, String search)

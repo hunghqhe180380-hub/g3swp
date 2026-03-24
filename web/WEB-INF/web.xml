@@ -151,6 +151,14 @@
         <servlet-class>controller.assignment.CreateAssignmentController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ToggleSubjectStatusController</servlet-name>
+        <servlet-class>controller.subject.ToggleSubjectStatusController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSubjectController</servlet-name>
+        <servlet-class>controller.subject.DeleteSubjectController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>TakeAssignmentController</servlet-name>
         <servlet-class>controller.assignment.TakeAssignmentController</servlet-class>
     </servlet>
@@ -239,6 +247,10 @@
         <url-pattern>/classroom/view/class-list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ClassListController</servlet-name>
+        <url-pattern>/classroom/manage/class-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>VerifyEmailController</servlet-name>
         <url-pattern>/verify-email</url-pattern>
     </servlet-mapping>
@@ -317,6 +329,14 @@
     <servlet-mapping>
         <servlet-name>CreateSubjectController</servlet-name>
         <url-pattern>/subject/manage/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ToggleSubjectStatusController</servlet-name>
+        <url-pattern>/subject/manage/toggle-status</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSubjectController</servlet-name>
+        <url-pattern>/admin/delete-subject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UnenrollStudentController</servlet-name>
