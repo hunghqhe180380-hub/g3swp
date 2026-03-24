@@ -68,7 +68,7 @@
                         <input class="rs-search__input" type="search" name="search" id="searchInput"
                                value="<c:out value='${search}'/>"
                                placeholder="Search by title…" autocomplete="off">
-                        <input type="hidden" name="classId" value="${classroom.id}">
+                        <input type="hidden" name="classId" value="${requestScope.classId}">
                         <button class="rs-search__submit" type="submit">
                             <i class="bi bi-arrow-right"></i>
                         </button>
@@ -199,7 +199,7 @@
                         <c:if test="${not empty search}">
                             <c:param name="search" value="${search}"/>
                         </c:if>
-                        <c:param name="classId" value="${classroom.id}"/>
+                        <c:param name="classId" value="${requestScope.classId}"/>
                     </c:url>
 
                     <c:if test="${page.index!=0}">

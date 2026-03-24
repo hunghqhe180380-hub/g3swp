@@ -6,11 +6,15 @@ public class Classroom {
     private String name;
     private String classCode;
     private String subject;
+    private String subjectId;
+    private String subjectName;
     private String teacherId;
-    private String teacherName; // joined from Users
-    private String createdAt;   // formatted "dd/MM/yyyy HH:mm"
+    private String teacherName;
+    private String createdAt;
     private int    maxStudent;
-    private int    sum;          // enrollment count
+    private int    sum;
+    private int    status;
+    private String timeExpiryClassCode;
 
     public Classroom() {}
 
@@ -43,7 +47,14 @@ public class Classroom {
     public String getClassCode()             { return classCode; }
     public void   setClassCode(String c)     { this.classCode = c; }
 
-  
+    public String getSubject()               { return subject; }
+    public void   setSubject(String s)       { this.subject = s; }
+
+    public String getSubjectId()             { return subjectId; }
+    public void   setSubjectId(String id)    { this.subjectId = id; }
+
+    public String getSubjectName()           { return subjectName; }
+    public void   setSubjectName(String n)   { this.subjectName = n; }
 
     public String getTeacherId()             { return teacherId; }
     public void   setTeacherId(String t)     { this.teacherId = t; }
@@ -59,4 +70,10 @@ public class Classroom {
 
     public int    getSum()                   { return sum; }
     public void   setSum(int sum)            { this.sum = sum; }
+
+    public int    getStatus()                { return status; }
+    public void   setStatus(int status)      { this.status = status; }
+
+    public String getTimeExpiryClassCode()   { return timeExpiryClassCode; }
+    public void   setTimeExpiryClassCode(String t) { this.timeExpiryClassCode = t; }
 }

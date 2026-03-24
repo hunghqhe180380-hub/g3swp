@@ -134,7 +134,7 @@
                             data-email="${fn:toLowerCase(it.studentEmail)}"
                             data-status="${it.status}"
                             data-score="${it.finalScore != null ? it.finalScore : 0}"
-                            data-submitted="${it.submittedAtStr}"
+                            data-submitted="${it.submittedAt}"
                             >
 
                             <%-- Student --%>
@@ -155,8 +155,8 @@
                             </td>
 
                             <%-- Dates --%>
-                            <td class="text-nowrap">${it.startedAtStr}</td>
-                            <td class="text-nowrap">${it.submittedAtStr}</td>
+                            <td class="text-nowrap">${it.startedAt}</td>
+                            <td class="text-nowrap">${it.submittedAt}</td>
 
                             <%-- SCQ --%>
                             <td class="text-end">
