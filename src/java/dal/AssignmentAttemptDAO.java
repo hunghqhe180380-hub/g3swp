@@ -7,6 +7,7 @@ package dal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.*;
@@ -119,11 +120,11 @@ public class AssignmentAttemptDAO extends DBContext {
 
                 java.sql.Timestamp startedTs = (java.sql.Timestamp) row[5];
                 if (startedTs != null) {
-                    item.setStartedAt(startedTs.toLocalDateTime());
+                    item.setStartedAt(startedTs.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 }
                 java.sql.Timestamp submittedTs = (java.sql.Timestamp) row[6];
                 if (submittedTs != null) {
-                    item.setSubmittedAt(submittedTs.toLocalDateTime());
+                    item.setSubmittedAt(submittedTs.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 }
 
                 int statusInt = (int) row[7];

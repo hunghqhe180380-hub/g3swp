@@ -82,9 +82,9 @@ public class AssignmentDAO extends DBContext {
                 s.setStudentId(resultSet.getString("UserId"));
                 s.setStudentName(resultSet.getString("FullName"));
                 s.setStudentEmail(resultSet.getString("Email"));
-                s.setStartedAt(resultSet.getTimestamp("StartedAt").toLocalDateTime());
+                s.setStartedAt(resultSet.getTimestamp("StartedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 if (resultSet.getTimestamp("SubmittedAt") != null) {
-                    s.setSubmittedAt(resultSet.getTimestamp("SubmittedAt").toLocalDateTime());
+                    s.setSubmittedAt(resultSet.getTimestamp("SubmittedAt").toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 }
                 s.setStatus(resultSet.getString("Status"));
                 // AutoScore = SCQ + MCQ combined (Type 1 + Type 2)

@@ -602,7 +602,7 @@ CORRECT: B</pre>
                         return;
                     }
 
-                    if (type === 'Essay') {
+                    if (type === '3') {
                         body.innerHTML =
                                 '<div class="aq-field aq-field--full">' +
                                 '   <label>Essay answer</label>' +

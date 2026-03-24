@@ -110,10 +110,7 @@ public class ListAssignmentController extends HttpServlet {
                 typeLabel = "MCQ";
             } else if (a.getType() == 3) {
                 typeLabel = "Essay";
-            } else if (a.getType() == 4) {
-                typeLabel = "Mixed";
             }
-
             LocalDateTime closeAt = null;
             if (a.getCloseAt() != null && !a.getCloseAt().trim().isEmpty()) {
                 closeAt = LocalDateTime.parse(a.getCloseAt(), dateFmt);

@@ -97,6 +97,9 @@
                                             <c:when test="${a.type == 'Mixed'}">
                                                 <span class="chip chip--mixed">${a.type}</span>
                                             </c:when>
+                                            <c:when test="${a.type == 'SCQ'}">
+                                                <span class="chip chip--scq">${a.type}</span>
+                                            </c:when>
                                             <c:when test="${a.type == 'MCQ'}">
                                                 <span class="chip chip--mcq">${a.type}</span>
                                             </c:when>
@@ -310,6 +313,8 @@
                     if (kind === 'type') {
                         if (value === 'Mixed')
                             el.classList.add('chip--mixed');
+                        else if (value === 'SCQ')
+                            el.classList.add('chip--scq');
                         else if (value === 'MCQ')
                             el.classList.add('chip--mcq');
                         else

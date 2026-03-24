@@ -1,11 +1,6 @@
 package model;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class SubmissionListItem {
-
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private int attemptId;
     private int attemptNumber;
@@ -14,8 +9,8 @@ public class SubmissionListItem {
     private String studentName;
     private String studentEmail;
 
-    private LocalDateTime startedAt;
-    private LocalDateTime submittedAt;
+    private String startedAt;
+    private String submittedAt;
 
     private String status;
 
@@ -84,19 +79,19 @@ public class SubmissionListItem {
         this.studentEmail = studentEmail;
     }
 
-    public LocalDateTime getStartedAt() {
+    public String getStartedAt() {
         return startedAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {
+    public void setStartedAt(String startedAt) {
         this.startedAt = startedAt;
     }
 
-    public LocalDateTime getSubmittedAt() {
+    public String getSubmittedAt() {
         return submittedAt;
     }
 
-    public void setSubmittedAt(LocalDateTime submittedAt) {
+    public void setSubmittedAt(String submittedAt) {
         this.submittedAt = submittedAt;
     }
 
@@ -212,16 +207,6 @@ public class SubmissionListItem {
 
     public void setRequiresManual(boolean requiresManual) {
         this.requiresManual = requiresManual;
-    }
-
-    // === Helper methods for JSP display ===
-
-    public String getStartedAtStr() {
-        return startedAt != null ? startedAt.format(DATE_FORMAT) : "—";
-    }
-
-    public String getSubmittedAtStr() {
-        return submittedAt != null ? submittedAt.format(DATE_FORMAT) : "—";
     }
 
     // SCQ (Type 1)
