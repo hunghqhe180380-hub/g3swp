@@ -395,6 +395,62 @@
                     });
                 }
 
+                function getUsedChaptersByType(type, excludeGroupId) {
+                    if (!type)
+                        return [];
+
+                    return Array.from(autoGroupsWrap.querySelectorAll('.ca-auto-group'))
+                            .filter(group => String(group.dataset.groupId) !== String(excludeGroupId))
+                            .map(group => {
+                                return {
+                                    type: group.querySelector('.ca-group-type').value,
+                                    chapter: Number(group.dataset.selectedChapter || 0)
+                                };
+                            })
+                            .filter(item => item.type === type && item.chapter > 0)
+                            .map(item => item.chapter);
+                }
+
+                function buildAutoSingleChapterChips(container, selectedChapterRef, getCurrentType, groupId, onChange) {
+                    container.innerHTML = '';
+
+                    const currentType = getCurrentType();
+                    const usedChapters = getUsedChaptersByType(currentType, groupId);
+
+                    if (!currentType) {
+                        container.innerHTML = '<div class="ca-empty-inline">Choose question type first.</div>';
+                        return;
+                    }
+
+                    chapterList.forEach(ch => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'ca-chip-filter';
+                        btn.textContent = 'Chapter ' + ch;
+
+                        const isSelected = selectedChapterRef.value === ch;
+                        const isDisabled = usedChapters.includes(ch) && !isSelected;
+
+                        if (isSelected) {
+                            btn.classList.add('is-active');
+                        }
+
+                        if (isDisabled) {
+                            btn.classList.add('is-disabled');
+                        }
+
+                        btn.addEventListener('click', function () {
+                            if (isDisabled)
+                                return;
+
+                            selectedChapterRef.value = (selectedChapterRef.value === ch) ? null : ch;
+                            onChange();
+                        });
+
+                        container.appendChild(btn);
+                    });
+                }
+
                 function createAutoGroup(initial) {
                     autoGroupCounter++;
                     const groupId = autoGroupCounter;
@@ -452,30 +508,72 @@
                     const summaryEl = wrapper.querySelector('.ca-group-summary');
                     const chapterToggleBtn = wrapper.querySelector('.ca-chapter-toggle');
 
-                    const selectedChapters = [];
+                    const selectedChapterRef = {
+                        value: null
+                    };
 
                     function updateGroup() {
                         const hiddenInput = wrapper.querySelector('.ca-group-chapters-hidden');
-                        hiddenInput.value = selectedChapters.join(',');
-                        wrapper.dataset.selectedChapters = selectedChapters.slice().sort((a, b) => a - b).join(',');
-
                         const type = typeEl.value;
                         const count = Number(countEl.value || 0);
                         const pts = Number(pointsEl.value || 0);
+                        const selectedChapter = selectedChapterRef.value;
+
+                        wrapper.dataset.selectedChapter = selectedChapter || '';
+                        hiddenInput.value = selectedChapter || '';
+
+                        buildAutoSingleChapterChips(
+                                chapterWrap,
+                                selectedChapterRef,
+                                function () {
+                                    return typeEl.value;
+                                },
+                                groupId,
+                                function () {
+                                    updateGroup();
+                                }
+                        );
 
                         const matched = subjectQuestions.filter(q => {
                             const typeOk = !type || q.type === type;
-                            const chapterOk = selectedChapters.length === 0 || selectedChapters.includes(q.chapter);
+                            const chapterOk = !selectedChapter || q.chapter === selectedChapter;
                             return typeOk && chapterOk;
                         }).length;
 
                         matchEl.value = matched;
 
-                        if (type && count > 0 && pts > 0 && selectedChapters.length > 0) {
-                            summaryEl.innerHTML = count + ' question(s) × ' + pts + ' point(s) = <b>' + (count * pts) + ' pts</b>';
+                        if (!type) {
+                            summaryEl.textContent = 'Choose question type first.';
+                        } else if (!selectedChapter) {
+                            summaryEl.textContent = 'Choose exactly 1 chapter for this group.';
+                        } else if (count > 0 && pts > 0) {
+                            summaryEl.innerHTML =
+                                    type + ' • Chapter ' + selectedChapter + ' • ' +
+                                    count + ' question(s) × ' + pts + ' point(s) = <b>' + (count * pts) + ' pts</b>';
                         } else {
                             summaryEl.textContent = 'Waiting for configuration.';
                         }
+
+                        Array.from(autoGroupsWrap.querySelectorAll('.ca-auto-group')).forEach(group => {
+                            if (String(group.dataset.groupId) !== String(groupId)) {
+                                const otherTypeEl = group.querySelector('.ca-group-type');
+                                const otherChapterWrap = group.querySelector('.ca-group-chapters');
+                                const otherGroupId = group.dataset.groupId;
+                                const otherSelectedChapterRef = {
+                                    value: group.dataset.selectedChapter ? Number(group.dataset.selectedChapter) : null
+                                };
+
+                                buildAutoSingleChapterChips(
+                                        otherChapterWrap,
+                                        otherSelectedChapterRef,
+                                        function () {
+                                            return otherTypeEl.value;
+                                        },
+                                        otherGroupId,
+                                        function () {}
+                                );
+                            }
+                        });
 
                         updateSummary();
                         validateForm(false);
@@ -486,17 +584,37 @@
                         chapterToggleBtn.textContent = expanded ? 'Collapse' : 'Expand';
                     });
 
-                    buildChapterChips(chapterWrap, selectedChapters, function () {
-                        buildChapterChips(chapterWrap, selectedChapters, arguments.callee);
+
+                    typeEl.addEventListener('change', function () {
+                        selectedChapterRef.value = null;
                         updateGroup();
                     });
 
-                    typeEl.addEventListener('change', updateGroup);
                     countEl.addEventListener('input', updateGroup);
                     pointsEl.addEventListener('input', updateGroup);
 
                     wrapper.querySelector('.ca-remove-btn').addEventListener('click', function () {
                         wrapper.remove();
+
+                        Array.from(autoGroupsWrap.querySelectorAll('.ca-auto-group')).forEach(group => {
+                            const otherTypeEl = group.querySelector('.ca-group-type');
+                            const otherChapterWrap = group.querySelector('.ca-group-chapters');
+                            const otherGroupId = group.dataset.groupId;
+                            const otherSelectedChapterRef = {
+                                value: group.dataset.selectedChapter ? Number(group.dataset.selectedChapter) : null
+                            };
+
+                            buildAutoSingleChapterChips(
+                                    otherChapterWrap,
+                                    otherSelectedChapterRef,
+                                    function () {
+                                        return otherTypeEl.value;
+                                    },
+                                    otherGroupId,
+                                    function () {}
+                            );
+                        });
+
                         updateSummary();
                         validateForm(false);
                     });
@@ -527,11 +645,7 @@
                             type: group.querySelector('.ca-group-type').value,
                             count: Number(group.querySelector('.ca-group-count').value || 0),
                             points: Number(group.querySelector('.ca-group-points').value || 0),
-                            chapters: (group.dataset.selectedChapters || '')
-                                    .split(',')
-                                    .filter(Boolean)
-                                    .map(Number)
-                                    .sort((a, b) => a - b)
+                            chapter: Number(group.dataset.selectedChapter || 0)
                         };
                     });
                 }
@@ -764,10 +878,6 @@
                     if (!title) {
                         errors.push('Assignment title is required.');
                     }
-                    
-                    if(title.length > 160){
-                        errors.push('Assignment titlet must less than 160 character.')
-                    }
 
                     if (!maxPoints || maxPoints < 1 || maxPoints > 100) {
                         errors.push('Total points must be between 1 and 100.');
@@ -797,18 +907,18 @@
                         groups.forEach((g, idx) => {
                             if (!g.type)
                                 errors.push('Group #' + (idx + 1) + ': question type is required.');
-                            if (!g.chapters.length)
-                                errors.push('Group #' + (idx + 1) + ': choose at least one chapter.');
+                            if (!g.chapter)
+                                errors.push('Group #' + (idx + 1) + ': choose at least and exactly 1 chapter.');
                             if (!g.count || g.count < 1)
                                 errors.push('Group #' + (idx + 1) + ': number of questions must be greater than 0.');
                             if (!g.points || g.points < 1)
                                 errors.push('Group #' + (idx + 1) + ': points per question must be greater than 0.');
                         });
 
-                        const signatures = groups.map(g => g.type + '|' + g.chapters.join(','));
+                        const signatures = groups.map(g => g.type + '|' + g.chapter);
                         const duplicateExists = signatures.some((sig, idx) => signatures.indexOf(sig) !== idx);
                         if (duplicateExists) {
-                            errors.push('Auto groups cannot have the same exact type and same exact chapter set.');
+                            errors.push('Auto groups cannot have the same type and same chapter.');
                         }
                     } else {
                         const selected = getSelectedManualQuestions();
@@ -844,7 +954,8 @@
                 createAssignmentBtn.addEventListener('click', function () {
                     updateSummary();
                     const valid = validateForm(true);
-                    if (!valid) return;
+                    if (!valid)
+                        return;
 
                     const form = document.getElementById('assignmentForm');
                     const mode = activeModeInput.value;
@@ -854,8 +965,8 @@
 
                     function addHidden(name, value) {
                         const inp = document.createElement('input');
-                        inp.type  = 'hidden';
-                        inp.name  = name;
+                        inp.type = 'hidden';
+                        inp.name = name;
                         inp.value = value;
                         inp.className = 'ca-dynamic-input';
                         form.appendChild(inp);
@@ -863,15 +974,15 @@
 
                     if (mode === 'auto') {
                         getAutoGroupsData().forEach(function (g) {
-                            addHidden('typeQuestionGroup',   g.type);
+                            addHidden('typeQuestionGroup', g.type);
                             addHidden('chapterQuestionGroup', g.chapters.join(','));
                             addHidden('numberQuestionGroup', g.count);
-                            addHidden('pointPerQuestion',    g.points);
+                            addHidden('pointPerQuestion', g.points);
                         });
                     } else {
                         // Manual mode: inject questionId + pointOfQuestion for each selected question
                         getSelectedManualQuestions().forEach(function (q) {
-                            addHidden('questionId',      q.id);
+                            addHidden('questionId', q.id);
                             addHidden('pointOfQuestion', q.points);
                         });
                     }

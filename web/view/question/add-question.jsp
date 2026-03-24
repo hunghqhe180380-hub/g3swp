@@ -127,12 +127,7 @@
                                         <div class="aq-method-card__text">Create multiple question items directly in the form.</div>
                                     </label>
 
-                                    <label class="aq-method-card">
-                                        <input type="radio" name="inputMethod" value="txt">
-                                        <div class="aq-method-card__icon"><i class="bi bi-filetype-txt"></i></div>
-                                        <div class="aq-method-card__title">Import TXT</div>
-                                        <div class="aq-method-card__text">Upload a TXT file, review the raw content, and submit later.</div>
-                                    </label>
+
                                 </div>
                             </div>
 
@@ -152,53 +147,7 @@
                                 <div id="questionItemsWrap" class="aq-question-items"></div>
                             </div>
 
-                            <div class="aq-section is-hidden" id="txtSection">
-                                <div class="aq-section__head">
-                                    <div class="aq-section__title">
-                                        <i class="bi bi-upload"></i>
-                                        <span>TXT import</span>
-                                    </div>
-                                </div>
 
-                                <div class="aq-import-box">
-                                    <div class="aq-import-box__left">
-                                        <label for="txtFile" class="aq-upload">
-                                            <i class="bi bi-cloud-arrow-up"></i>
-                                            <span>Choose TXT file</span>
-                                        </label>
-                                        <input type="file" id="txtFile" accept=".txt" hidden>
-
-                                        <div class="aq-upload__hint">
-                                            Accepted format: <b>.txt</b>
-                                        </div>
-                                    </div>
-
-                                    <div class="aq-import-box__right">
-                                        <div class="aq-format-guide">
-                                            <div class="aq-format-guide__title">Suggested TXT format</div>
-                                            <pre class="aq-format-guide__code">PROMPT: ...
-TYPE: SCQ | MCQ | Essay
-SUBJECT: Tiếng Anh
-CHAPTER: 3
-
-OPTION A: ...
-OPTION B: ...
-OPTION C: ...
-OPTION D: ...
-CORRECT: B</pre>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="aq-file-meta" id="fileMeta">
-                                    No file selected.
-                                </div>
-
-                                <div class="aq-field aq-field--full">
-                                    <label for="txtRawPreview">Raw TXT preview</label>
-                                    <textarea id="txtRawPreview" class="aq-control aq-control--textarea aq-control--textarea-md" readonly placeholder="Imported TXT content will appear here..."></textarea>
-                                </div>
-                            </div>
 
                             <div class="aq-form-error" id="formErrorBox"></div>
 
@@ -251,7 +200,7 @@ CORRECT: B</pre>
                                     <div class="aq-step-item__dot"></div>
                                     <div>
                                         <div class="aq-step-item__title">4. Add content</div>
-                                        <div class="aq-step-item__desc">Create multiple questions or import from TXT.</div>
+                                        <div class="aq-step-item__desc">Create multiple questions.</div>
                                     </div>
                                 </div>
 
@@ -409,17 +358,11 @@ CORRECT: B</pre>
                 const typeSelect = document.getElementById('typeSelect');
 
                 const manualSection = document.getElementById('manualSection');
-                const txtSection = document.getElementById('txtSection');
-                const methodCards = Array.from(document.querySelectorAll('.aq-method-card'));
-                const methodInputs = Array.from(document.querySelectorAll('input[name="inputMethod"]'));
 
                 const questionItemsWrap = document.getElementById('questionItemsWrap');
                 const addQuestionItemBtn = document.getElementById('addQuestionItemBtn');
 
-                const txtFile = document.getElementById('txtFile');
-                const txtRawPreview = document.getElementById('txtRawPreview');
-                const fileMeta = document.getElementById('fileMeta');
-
+                const methodCards = Array.from(document.querySelectorAll('.aq-method-card'));
                 const stepSubject = document.getElementById('stepSubject');
                 const stepChapter = document.getElementById('stepChapter');
                 const stepType = document.getElementById('stepType');
@@ -484,8 +427,7 @@ CORRECT: B</pre>
                 }
 
                 function getCurrentMethod() {
-                    const checked = document.querySelector('input[name="inputMethod"]:checked');
-                    return checked ? checked.value : 'manual';
+                    return 'manual';
                 }
 
                 function rebuildChapterOptions() {
@@ -510,16 +452,10 @@ CORRECT: B</pre>
                 }
 
                 function updateMethodUI() {
-                    const method = getCurrentMethod();
-
                     methodCards.forEach(card => {
-                        const input = card.querySelector('input');
-                        card.classList.toggle('is-active', input.checked);
+                        card.classList.add('is-active');
                     });
-
-                    manualSection.classList.toggle('is-hidden', method !== 'manual');
-                    txtSection.classList.toggle('is-hidden', method !== 'txt');
-
+                    manualSection.classList.remove('is-hidden');
                     refreshSummary();
                     refreshSteps();
                 }
@@ -537,9 +473,8 @@ CORRECT: B</pre>
                         return prompt && prompt.value.trim();
                     });
 
-                    const hasTxtContent = txtRawPreview.value.trim();
 
-                    setStepDone(stepContent, method === 'manual' ? hasManualContent : !!hasTxtContent);
+                    setStepDone(stepContent, hasManualContent);
                     setStepDone(stepSubmit, validateForm(false, true));
                 }
 
@@ -637,17 +572,27 @@ CORRECT: B</pre>
                         refreshSteps();
                     });
                 }
+                function reindexQuestionItems() {
+                    const items = Array.from(questionItemsWrap.querySelectorAll('.aq-question-item'));
 
+                    items.forEach((item, index) => {
+                        item.dataset.questionId = index + 1;
+
+                        const titleEl = item.querySelector('.aq-question-item__title');
+                        if (titleEl) {
+                            titleEl.textContent = 'Question #' + (index + 1);
+                        }
+                    });
+                }
                 function createQuestionItem(initialPrompt) {
-                    questionCounter++;
-
+                    const nextIndex = questionItemsWrap.querySelectorAll('.aq-question-item').length + 1;
                     const item = document.createElement('div');
                     item.className = 'aq-question-item';
-                    item.dataset.questionId = questionCounter;
+                    item.dataset.questionId = nextIndex;
 
                     item.innerHTML =
                             '<div class="aq-question-item__head">' +
-                            '   <div class="aq-question-item__title">Question #' + questionCounter + '</div>' +
+                            '   <div class="aq-question-item__title">Question #' + nextIndex + '</div>' +
                             '   <button type="button" class="aq-remove-question-btn">Remove</button>' +
                             '</div>' +
                             '<div class="aq-grid aq-grid--1">' +
@@ -662,6 +607,7 @@ CORRECT: B</pre>
 
                     item.querySelector('.aq-remove-question-btn').addEventListener('click', function () {
                         item.remove();
+                        reindexQuestionItems();
                         refreshSummary();
                         refreshSteps();
                     });
@@ -670,7 +616,7 @@ CORRECT: B</pre>
                         refreshSummary();
                         refreshSteps();
                     });
-
+                    reindexQuestionItems();
                     buildQuestionBody(item);
                     refreshSummary();
                     refreshSteps();
@@ -687,7 +633,7 @@ CORRECT: B</pre>
                 function refreshSummary() {
                     const items = Array.from(questionItemsWrap.querySelectorAll('.aq-question-item'));
                     const type = typeSelect.value;
-                    const method = getCurrentMethod();
+
 
                     const manualCount = items.filter(item => {
                         const prompt = item.querySelector('.aq-question-prompt');
@@ -698,24 +644,21 @@ CORRECT: B</pre>
                     let mcq = 0;
                     let essay = 0;
 
-                    if (method === 'manual') {
-                        if (type === '1')
-                            scq = manualCount;
-                        if (type === '2')
-                            mcq = manualCount;
-                        if (type === '3')
-                            essay = manualCount;
-                    }
 
-                    summaryTotalQuestions.textContent = method === 'manual' ? manualCount : (txtRawPreview.value.trim() ? 1 : 0);
+                    if (type === '1')
+                        scq = manualCount;
+                    if (type === '2')
+                        mcq = manualCount;
+                    if (type === '3')
+                        essay = manualCount;
+
+
+                    summaryTotalQuestions.textContent = manualCount;
                     summaryScq.textContent = scq;
                     summaryMcq.textContent = mcq;
                     summaryEssay.textContent = essay;
 
-                    if (method === 'txt') {
-                        summaryReadyBox.className = 'aq-draft-summary__status';
-                        summaryReadyBox.textContent = txtRawPreview.value.trim() ? 'TXT content loaded and ready for later processing.' : 'Waiting for TXT import.';
-                    } else if (!type) {
+                    if (!type) {
                         summaryReadyBox.className = 'aq-draft-summary__status';
                         summaryReadyBox.textContent = 'Choose question type first.';
                     } else if (manualCount === 0) {
@@ -776,10 +719,6 @@ CORRECT: B</pre>
                                 }
                             }
                         });
-                    } else {
-                        if (!txtRawPreview.value.trim()) {
-                            errors.push('Please import a TXT file before submitting.');
-                        }
                     }
 
                     if (!silentCheck) {
@@ -799,9 +738,7 @@ CORRECT: B</pre>
                     createQuestionItem('');
                 });
 
-                methodInputs.forEach(input => {
-                    input.addEventListener('change', updateMethodUI);
-                });
+
 
                 subjectSelect.addEventListener('change', function () {
                     chapterSelect.value = '';
@@ -819,26 +756,7 @@ CORRECT: B</pre>
                     refreshSteps();
                 });
 
-                txtFile.addEventListener('change', function () {
-                    const file = txtFile.files && txtFile.files[0];
-                    if (!file) {
-                        fileMeta.textContent = 'No file selected.';
-                        txtRawPreview.value = '';
-                        refreshSummary();
-                        refreshSteps();
-                        return;
-                    }
 
-                    fileMeta.textContent = 'Selected file: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        txtRawPreview.value = e.target.result || '';
-                        refreshSummary();
-                        refreshSteps();
-                    };
-                    reader.readAsText(file, 'UTF-8');
-                });
 
                 submitQuestionsBtn.addEventListener('click', function () {
                     const valid = validateForm(true, false);
@@ -1195,7 +1113,7 @@ CORRECT: B</pre>
 
     .aq-methods{
         display:grid;
-        grid-template-columns:repeat(2, minmax(0,1fr));
+        grid-template-columns:1fr;
         gap:14px;
     }
 
@@ -1911,5 +1829,12 @@ CORRECT: B</pre>
         .aq-search{
             min-width:0;
         }
+    }
+    .aq-import-box,
+    .aq-upload,
+    .aq-upload__hint,
+    .aq-format-guide,
+    .aq-file-meta{
+        display:none !important;
     }
 </style>

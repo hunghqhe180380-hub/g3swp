@@ -716,6 +716,21 @@ body.ca-page{
     background:#94a3b8;
 }
 
+.ca-chip-filter.is-disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    color:#94a3b8;
+    background:#f8fafc;
+    border-color:#e2e8f0;
+    pointer-events:none;
+}
+
+.ca-chip-filter.is-disabled:hover{
+    color:#94a3b8;
+    background:#f8fafc;
+    border-color:#e2e8f0;
+}
+
 @media (max-width: 1220px){
     .ca-layout{
         grid-template-columns:1fr;
