@@ -89,12 +89,13 @@ public class AssignmentDAO extends DBContext {
                 s.setStudentId(resultSet.getString("UserId"));
                 s.setStudentName(resultSet.getString("FullName"));
                 s.setStudentEmail(resultSet.getString("Email"));
-                if (resultSet.getTimestamp("StartedAt") != null)
+                if (resultSet.getTimestamp("StartedAt") != null) {
                     s.setStartedAt(resultSet.getTimestamp("StartedAt").toLocalDateTime()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                }
                 if (resultSet.getTimestamp("SubmittedAt") != null) {
                     s.setSubmittedAt(resultSet.getTimestamp("SubmittedAt").toLocalDateTime()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                 }
                 s.setStatus(resultSet.getString("Status"));
                 // AutoScore = SCQ + MCQ combined (Type 1 + Type 2)
@@ -196,7 +197,6 @@ public class AssignmentDAO extends DBContext {
         }
         return newAssignmentId;
     }
-
 
     public GradeAttemptVM getAttemptDetail(int attemptId) {
         GradeAttemptVM vm = new GradeAttemptVM();
@@ -810,4 +810,41 @@ public class AssignmentDAO extends DBContext {
         return choices;
     }
 
+    //get total assignmet(teacher)
+    public int getTeacherTotalAssignment(String teacherId) {
+        int total = 0;
+        try {
+            String sql = "SELECT count(Id) as TotalAssignment\n"
+                    + "  FROM [dbo].[Assignments]\n"
+                    + "  Where CreatedById = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, teacherId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                total = resultSet.getInt("TotalAssignment");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    //get student's assignment due
+    public int getStudentAssignmentDue(int classId) {
+        int total = 0;
+        try {
+            String sql = "SELECT Count(ClassId) as TotalAssignment\n"
+                    + "  FROM [dbo].[Assignments]\n"
+                    + "  Where ClassId = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, classId);
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                total = resultSet.getInt("TotalAssignment");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
 }

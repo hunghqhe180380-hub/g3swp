@@ -229,14 +229,14 @@
 
     <!-- STATS CARDS -->
     <div class="stats-row">
-        <div class="stat-card">
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','')">
             <div class="stat-card__icon stat-card__icon--total"><i class="bi bi-patch-question"></i></div>
             <div>
                 <div class="stat-card__label">Total Questions</div>
                 <div class="stat-card__value">${statTotal}</div>
             </div>
         </div>
-        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','0')">
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','2')">
             <div class="stat-card__icon stat-card__icon--pending"><i class="bi bi-hourglass-split"></i></div>
             <div>
                 <div class="stat-card__label">Pending Review</div>
@@ -250,7 +250,7 @@
                 <div class="stat-card__value">${statApproved}</div>
             </div>
         </div>
-        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','2')">
+        <div class="stat-card" style="cursor:pointer" onclick="applyFilter('status','0')">
             <div class="stat-card__icon stat-card__icon--rejected"><i class="bi bi-x-circle"></i></div>
             <div>
                 <div class="stat-card__label">Rejected</div>
@@ -276,9 +276,9 @@
 
             <select name="status" class="filter-select" onchange="this.form.submit()">
                 <option value="">All Status</option>
-                <option value="0" ${status == '0' ? 'selected' : ''}>Pending</option>
+                <option value="2" ${status == '2' ? 'selected' : ''}>Pending</option>
                 <option value="1" ${status == '1' ? 'selected' : ''}>Approved</option>
-                <option value="2" ${status == '2' ? 'selected' : ''}>Rejected</option>
+                <option value="0" ${status == '0' ? 'selected' : ''}>Rejected</option>
             </select>
 
             <select name="type" class="filter-select" onchange="this.form.submit()">
@@ -349,7 +349,7 @@
                 <tr>
                     <th><input type="checkbox" id="selectAll" title="Select all on this page"></th>
                     <th class="sortable" onclick="sortBy('id')">#ID <span class="sort-icon">${sort=='id'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
-                    <th class="sortable" onclick="sortBy('teacher')">Teacher <span class="sort-icon">${sort=='teacher'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>    
+<!--                    <th class="sortable" onclick="sortBy('teacher')">Teacher <span class="sort-icon">${sort=='teacher'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>    -->
                     <th class="sortable" onclick="sortBy('subject')">Subject <span class="sort-icon">${sort=='subject'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
                     <th class="sortable" onclick="sortBy('type')">Type <span class="sort-icon">${sort=='type'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
                     <th class="sortable" onclick="sortBy('chapter')">Chapter <span class="sort-icon">${sort=='chapter'?(dir=='asc'?'▲':'▼'):'⇅'}</span></th>
@@ -373,8 +373,12 @@
                             <tr>
                                 <td><input type="checkbox" class="row-check" data-id="${q.id}"></td>
                                 <td style="color:#6366f1;font-weight:700">#${q.id}</td>
-                                <td></td>
-                                <td>${fn:escapeXml(q.subjectName)}</td>
+                                <c:if test="${q.subjectName == null}">
+                                    <td>This subject not available</td>
+                                </c:if>
+                                  <c:if test="${q.subjectName != null}">
+                                      <td>${fn:escapeXml(q.subjectName)}</td>
+                                </c:if>  
                                 <td>
                                     <c:choose>
                                         <c:when test="${q.type == 1}"><span class="type-badge type-scq">SCQ</span></c:when>
@@ -389,16 +393,16 @@
                                 </td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${q.status == 0}"><span class="badge badge--pending"><i class="bi bi-clock"></i>Pending</span></c:when>
+                                        <c:when test="${q.status == 0}"><span class="badge badge--rejected"><i class="bi bi-clock"></i>Rejected</span></c:when>
                                         <c:when test="${q.status == 1}"><span class="badge badge--approved"><i class="bi bi-check"></i>Approved</span></c:when>
-                                        <c:when test="${q.status == 2}"><span class="badge badge--rejected"><i class="bi bi-x"></i>Rejected</span></c:when>
+                                        <c:when test="${q.status == 2}"><span class="badge badge--pending"><i class="bi bi-x"></i>Pending</span></c:when>
                                     </c:choose>
                                 </td>
                                 <td>
                                     <div class="action-col">
-                                        <c:if test="${q.status != 1}">
+                                        <c:if test="${q.status == 1 or q.status == 0}">
                                             <form method="post" action="${base}">
-                                                <input type="hidden" name="action"     value="approve">
+                                                <input type="hidden" name="action"     value="delete">
                                                 <input type="hidden" name="questionId" value="${q.id}">
                                                 <input type="hidden" name="filterStatus" value="${status}">
                                                 <input type="hidden" name="filterType"   value="${type}">
@@ -406,10 +410,10 @@
                                                 <input type="hidden" name="sort"         value="${sort}">
                                                 <input type="hidden" name="dir"          value="${dir}">
                                                 <input type="hidden" name="index"        value="${page.index}">
-                                                <button class="btn-approve" type="submit"><i class="bi bi-check"></i> Approve</button>
+                                                <button class="btn-reject" type="submit"><i class="bi bi-x"></i> Delete</button>
                                             </form>
                                         </c:if>
-                                        <c:if test="${q.status != 2}">
+                                        <c:if test="${q.status == 2}">
                                             <form method="post" action="${base}">
                                                 <input type="hidden" name="action"     value="reject">
                                                 <input type="hidden" name="questionId" value="${q.id}">
@@ -421,7 +425,19 @@
                                                 <input type="hidden" name="index"        value="${page.index}">
                                                 <button class="btn-reject"  type="submit"><i class="bi bi-x"></i> Reject</button>
                                             </form>
-                                        </c:if>
+                                        
+                                        <form method="post" action="${base}">
+                                                <input type="hidden" name="action"     value="approve">
+                                                <input type="hidden" name="questionId" value="${q.id}">
+                                                <input type="hidden" name="filterStatus" value="${status}">
+                                                <input type="hidden" name="filterType"   value="${type}">
+                                                <input type="hidden" name="search"       value="${fn:escapeXml(search)}">
+                                                <input type="hidden" name="sort"         value="${sort}">
+                                                <input type="hidden" name="dir"          value="${dir}">
+                                                <input type="hidden" name="index"        value="${page.index}">
+                                                <button class="btn-approve"  type="submit"><i class="bi bi-x"></i> Approve</button>
+                                            </form>
+                                                </c:if>
                                     </div>
                                 </td>
                             </tr>

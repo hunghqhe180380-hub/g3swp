@@ -60,8 +60,8 @@
                             </svg>
                         </div>
                         <div>
-                            <div class="stat-label">Assignments Due</div>
-                            <div class="stat-value">${empty requestScope.assignmentsDue ? "Error" : requestScope.assignmentsDue}</div>
+                            <div class="stat-label">Assignments</div>
+                            <div class="stat-value">${empty sessionScope.assignmentsDue ? "Error" : sessionScope.assignmentsDue}</div>
                         </div>
                     </div>
 

@@ -152,7 +152,13 @@ public class SubjectDAO extends DBContext {
      */
     public void deleteSubject(String subjectId) {
         try {
-            String sql = "DELETE FROM [dbo].[Subjects] WHERE [Id] = ?";
+            String sql = "ALTER TABLE Classrooms NOCHECK CONSTRAINT FK_Classrooms_Subjects;\n"
+                    + "ALTER TABLE QuestionBank  NOCHECK CONSTRAINT FK_QuestionBank_Subjects;\n"
+                    + "\n"
+                    + "DELETE FROM Subjects WHERE Id = ?;\n"
+                    + "\n"
+                    + "ALTER TABLE Classrooms CHECK CONSTRAINT FK_Classrooms_Subjects;\n"
+                    + "ALTER TABLE QuestionBank  CHECK CONSTRAINT FK_QuestionBank_Subjects;";
             statement = connection.prepareStatement(sql);
             statement.setString(1, subjectId);
             statement.executeUpdate();

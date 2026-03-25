@@ -52,9 +52,9 @@ public class AcceptQuestionController extends HttpServlet {
         request.setAttribute("type",         type);
         request.setAttribute("sort",         sort);
         request.setAttribute("dir",          dir);
-        request.setAttribute("statPending",  stats[0]);
+        request.setAttribute("statPending",  stats[2]);
         request.setAttribute("statApproved", stats[1]);
-        request.setAttribute("statRejected", stats[2]);
+        request.setAttribute("statRejected", stats[0]);
         request.setAttribute("statTotal",    stats[0] + stats[1] + stats[2]);
 
         request.getRequestDispatcher("/view/question/accept_question.jsp")
@@ -71,13 +71,13 @@ public class AcceptQuestionController extends HttpServlet {
 
         if (action.equals("approve") || action.equals("reject")) {
             // single action
-            int newStatus = "approve".equals(action) ? 1 : 2;
+            int newStatus = "approve".equals(action) ? 1 : 0;
             String qid = request.getParameter("questionId");
             if (qid != null) dao.updateQuestionStatus(parseInt(qid, -1), newStatus);
 
         } else if (action.equals("bulk-approve") || action.equals("bulk-reject")) {
             // bulk: multiple questionIds[]
-            int newStatus = "bulk-approve".equals(action) ? 1 : 2;
+            int newStatus = "bulk-approve".equals(action) ? 1 : 0;
             String[] ids = request.getParameterValues("questionIds[]");
             if (ids != null) {
                 for (String id : ids) {

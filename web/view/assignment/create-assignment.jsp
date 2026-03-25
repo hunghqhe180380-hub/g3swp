@@ -65,8 +65,8 @@
                                         <input type="text" name="classId" value="${requestScope.classId}" hidden readonly>
                                     </div>
                                     <div class="ca-field">
-                                        <label for="assignmentTitle">Assignment Description</label>
-                                        <input id="assignmentTitle" name="description" class="ca-control" type="text" placeholder="Enter assignment description">
+                                        <label for="assignmentDescription">Assignment Description</label>
+                                        <input id="assignmentDescription" name="description" class="ca-control" type="text" placeholder="Enter assignment description">
                                     </div>
                                     <div class="ca-field">
                                         <label for="subjectReadonly">Subject</label>
@@ -308,6 +308,7 @@
                 const manualModePanel = document.getElementById('manualModePanel');
 
                 const assignmentTitle = document.getElementById('assignmentTitle');
+                const assignmentDescription = document.getElementById('assignmentDescription');
                 const totalPoints = document.getElementById('totalPoints');
                 const attemptCount = document.getElementById('attemptCount');
                 const openTime = document.getElementById('openTime');
@@ -534,7 +535,7 @@
                                     updateGroup();
                                 }
                         );
-                
+
                         const matched = subjectQuestions.filter(q => {
                             const typeOk = !type || q.typeId === Number(type);
                             const chapterOk = !selectedChapter || q.chapter === selectedChapter;
@@ -542,7 +543,13 @@
                         }).length;
 
                         matchEl.value = matched;
-
+                        if (count > matched && matched > 0) {
+                            countEl.classList.add('is-error');
+                            summaryEl.innerHTML =
+                                    '<span style="color:red">Only ' + matched + ' questions available</span>';
+                        } else {
+                            countEl.classList.remove('is-error');
+                        }
                         if (!type) {
                             summaryEl.textContent = 'Choose question type first.';
                         } else if (!selectedChapter) {
@@ -869,6 +876,7 @@
                     const errors = [];
                     const mode = activeModeInput.value;
                     const title = assignmentTitle.value.trim();
+                    const description = assignmentDescription.value.trim();
                     const maxPoints = Number(totalPoints.value || 0);
                     const attempts = Number(attemptCount.value || 0);
                     const duration = Number(durationMinutes.value || 0);
@@ -878,6 +886,18 @@
 
                     if (!title) {
                         errors.push('Assignment title is required.');
+                    }
+
+                    if (title.length > 160) {
+                        errors.push('Assignment title must be less than 160 character.');
+                    }
+
+                    if (!description) {
+                        errors.push('Assignment description is required.');
+                    }
+
+                    if (description.length > 160) {
+                        errors.push('Assignment description must be less than 160 characters.');
                     }
 
                     if (!maxPoints || maxPoints < 1 || maxPoints > 100) {
@@ -894,8 +914,14 @@
 
                     if (!open || !close) {
                         errors.push('Open time and close time are required.');
-                    } else if (new Date(close).getTime() <= new Date(open).getTime()) {
-                        errors.push('Close time must be later than open time.');
+                    } else {
+                        if (new Date(close).getTime() <= new Date(open).getTime()) {
+                            errors.push('Close time must be later than open time.');
+                        } else {
+                            if (new Date(open).getTime() < new Date().getTime()) {
+                                errors.push('Open time must be greater than or equal to current time.');
+                            }
+                        }
                     }
 
                     if (mode === 'auto') {
@@ -914,6 +940,20 @@
                                 errors.push('Group #' + (idx + 1) + ': number of questions must be greater than 0.');
                             if (!g.points || g.points < 1)
                                 errors.push('Group #' + (idx + 1) + ': points per question must be greater than 0.');
+                            if (g.type && g.chapter) {
+                                const matched = subjectQuestions.filter(q => {
+                                    return q.typeId === Number(g.type) && q.chapter === g.chapter;
+                                }).length;
+
+                                if (g.count > matched) {
+                                    errors.push(
+                                            'Group #' + (idx + 1) +
+                                            ': number of questions (' + g.count +
+                                            ') exceeds available (' + matched + ')'
+                                            );
+                                }
+                            }
+
                         });
 
                         const signatures = groups.map(g => g.type + '|' + g.chapter);

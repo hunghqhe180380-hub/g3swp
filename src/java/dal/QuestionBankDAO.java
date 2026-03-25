@@ -108,9 +108,9 @@ public class QuestionBankDAO extends DBContext {
             while (rs.next()) {
                 int s = rs.getInt("Status");
                 int c = rs.getInt("cnt");
-                if (s == 0) stats[0] += c;
+                if (s == 2) stats[2] += c;
                 else if (s == 1) stats[1] += c;
-                else if (s == 2) stats[2] += c;
+                else if (s == 0) stats[0] += c;
             }
         } catch (Exception e) {
             e.printStackTrace();

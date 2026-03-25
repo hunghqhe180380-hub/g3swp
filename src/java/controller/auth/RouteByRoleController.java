@@ -4,6 +4,7 @@
  */
 package controller.auth;
 
+import controller.assignment.AsignmentListController;
 import controller.material.MaterialListController;
 import dal.AssignmentDAO;
 import dal.MaterialDAO;
@@ -54,6 +55,18 @@ public class RouteByRoleController extends HttpServlet {
                 totalMatCount += count;
             }
         }
+        
+        int assignmentsDue = 0;
+        AssignmentDAO asgDAO = new AssignmentDAO();
+        if (userLogin.getRole().equalsIgnoreCase("teacher")) {
+            assignmentsDue = asgDAO.getTeacherTotalAssignment(userLogin.getUserID());
+        } 
+        if (userLogin.getRole().equalsIgnoreCase("student")){
+            for (int i = 0; i < classList.size(); i++) {
+                assignmentsDue += asgDAO.getStudentAssignmentDue(classList.get(i).getId());
+            }
+        }
+                    session.setAttribute("assignmentsDue", assignmentsDue);
         session.setAttribute("totalMaterial", totalMatCount);
         response.sendRedirect(request.getContextPath() + "/account/dashboard");
 //        //get total Assignment by classId

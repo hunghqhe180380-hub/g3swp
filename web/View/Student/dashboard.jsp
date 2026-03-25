@@ -61,7 +61,7 @@
                     </div>
                     <div>
                         <div class="stat-label">Assignments Due</div>
-                        <div class="stat-value">${empty requestScope.assignmentsDue ? 'ERROR' : requestScope.assignmentsDue}</div>
+                        <div class="stat-value">${empty sessionScope.assignmentsDue ? 'ERROR' : sessionScope.assignmentsDue}</div>
                     </div>
                 </div>
 
@@ -87,7 +87,7 @@
                     </div>
                     <div>
                         <div class="stat-label">Classes Active This Week</div>
-                        <div class="stat-value">${empty session.activeThisWeek ? ERROR : requestScope.activeThisWeek}</div>
+                        <div class="stat-value">${sessionScope.classList.size()}</div>
                     </div>
                 </div>
             </section>
