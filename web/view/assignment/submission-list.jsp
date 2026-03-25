@@ -280,7 +280,9 @@
             if (activeTypes.size === 0 || (activeTypes.size === 1 && activeTypes.has(''))) {
                 url.searchParams.delete('status');
             } else {
-                url.searchParams.set('status', Array.from(activeTypes).filter(function (t) { return t !== ''; }).join(','));
+                url.searchParams.set('status', Array.from(activeTypes).filter(function (t) {
+                    return t !== '';
+                }).join(','));
             }
             url.searchParams.delete('index');
             return url.toString();
@@ -298,7 +300,9 @@
         if (!paramVal) {
             activeTypes.add('');
         } else {
-            paramVal.split(',').forEach(function (s) { activeTypes.add(s.trim()); });
+            paramVal.split(',').forEach(function (s) {
+                activeTypes.add(s.trim());
+            });
         }
         updatePills();
 
@@ -315,7 +319,8 @@
                     } else {
                         activeTypes.add(t);
                     }
-                    if (activeTypes.size === 0) activeTypes.add('');
+                    if (activeTypes.size === 0)
+                        activeTypes.add('');
                 }
                 updatePills();
                 window.location.href = buildUrl(activeTypes);
@@ -344,21 +349,25 @@
 
         // FIX: parse "dd/MM/yyyy HH:mm" string to comparable timestamp
         function parseSubmittedDate(str) {
-            if (!str || str === '—') return 0;
-            // format: "19/11/2025 22:47"
-            const parts = str.split(' ');
-            if (parts.length < 2) return 0;
-            const dateParts = parts[0].split('/');
-            const timeParts = parts[1].split(':');
-            if (dateParts.length < 3) return 0;
-            // new Date(year, month-1, day, hour, min)
-            return new Date(
-                parseInt(dateParts[2]),
-                parseInt(dateParts[1]) - 1,
-                parseInt(dateParts[0]),
-                parseInt(timeParts[0] || 0),
-                parseInt(timeParts[1] || 0)
-            ).getTime();
+            if (!str || str === '—')
+                return 0;
+
+            const nativeTime = Date.parse(str);
+            if (!Number.isNaN(nativeTime))
+                return nativeTime;
+
+            const m = String(str).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+            if (!m)
+                return 0;
+
+            const day = parseInt(m[1], 10);
+            const month = parseInt(m[2], 10) - 1;
+            const year = parseInt(m[3], 10);
+            const hour = parseInt(m[4] || '0', 10);
+            const minute = parseInt(m[5] || '0', 10);
+            const second = parseInt(m[6] || '0', 10);
+
+            return new Date(year, month, day, hour, minute, second).getTime();
         }
 
         function getFilteredRows() {
@@ -377,13 +386,12 @@
 
             list.sort((a, b) => {
                 if (type === "name") {
-                    return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+                    return (a.dataset.name || '').localeCompare(b.dataset.name || '', undefined, {sensitivity: 'base'});
                 }
                 if (type === "score") {
-                    return parseFloat(b.dataset.score || 0) - parseFloat(a.dataset.score || 0);
+                    return Number(b.dataset.score || 0) - Number(a.dataset.score || 0);
                 }
                 if (type === "submitted") {
-                    // FIX: parse date string properly
                     return parseSubmittedDate(b.dataset.submitted) - parseSubmittedDate(a.dataset.submitted);
                 }
                 return 0;
@@ -399,7 +407,8 @@
             updateStats(filtered);
 
             const totalPage = Math.ceil(filtered.length / pageSize) || 1;
-            if (currentPage > totalPage) currentPage = 1;
+            if (currentPage > totalPage)
+                currentPage = 1;
 
             const start = (currentPage - 1) * pageSize;
             const pageRows = filtered.slice(start, start + pageSize);
@@ -441,7 +450,10 @@
                 btn.innerHTML = label;
                 btn.disabled = disabled;
                 if (!disabled) {
-                    btn.onclick = () => { currentPage = page; render(); };
+                    btn.onclick = () => {
+                        currentPage = page;
+                        render();
+                    };
                 }
                 return btn;
             }
@@ -453,7 +465,7 @@
             // Page numbers: show at most 5 around current page
             const delta = 2;
             const rangeStart = Math.max(1, currentPage - delta);
-            const rangeEnd   = Math.min(totalPage, currentPage + delta);
+            const rangeEnd = Math.min(totalPage, currentPage + delta);
 
             if (rangeStart > 1) {
                 paging.appendChild(mkBtn('1', 1, false, false));
