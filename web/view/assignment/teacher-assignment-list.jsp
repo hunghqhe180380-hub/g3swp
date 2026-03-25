@@ -105,7 +105,7 @@
                                 <p class="text-muted">
                                     Create your first assignment for this class
                                 </p>
-                                
+
                                 <a href="${ctx}/assignment/manage/create?classId=${requestScope.classId}" class="btn btn-primary">
                                     <i class="bi bi-plus-lg"></i>
                                     Create assignment
@@ -175,10 +175,9 @@
                                     <a href="${ctx}/assignment/view/submission?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-secondary btn-sm me-2">
                                         <i class="bi bi-people"></i> Submissions
                                     </a>
-
-                                    <button class="btn btn-outline-danger btn-sm">
+                                    <a href="${ctx}/assignment/manage/delete?classId=${requestScope.classId}&assignmentId=${a.id}" class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-trash"></i> Delete
-                                    </button>
+                                    </a>
 
                                 </div>
 
@@ -222,58 +221,61 @@
             </c:if>
         </div>
 
-    <script>
-        (function () {
-            var pills      = Array.from(document.querySelectorAll('#filterPills .fpill'));
-            var allCards   = Array.from(document.querySelectorAll('.assignment-card'));
-            var totalEl    = document.getElementById('totalCount');
-            var activeTypes = new Set();
+        <script>
+            (function () {
+                var pills = Array.from(document.querySelectorAll('#filterPills .fpill'));
+                var allCards = Array.from(document.querySelectorAll('.assignment-card'));
+                var totalEl = document.getElementById('totalCount');
+                var activeTypes = new Set();
 
-            function applyFilter() {
-                var types = activeTypes.size > 0 && !activeTypes.has('') ? activeTypes : null;
-                var count = 0;
+                function applyFilter() {
+                    var types = activeTypes.size > 0 && !activeTypes.has('') ? activeTypes : null;
+                    var count = 0;
 
-                allCards.forEach(function (card) {
-                    var ctype = card.dataset.type || '';
-                    var show  = !types || types.has(ctype);
-                    card.style.display = show ? '' : 'none';
-                    if (show) count++;
-                });
+                    allCards.forEach(function (card) {
+                        var ctype = card.dataset.type || '';
+                        var show = !types || types.has(ctype);
+                        card.style.display = show ? '' : 'none';
+                        if (show)
+                            count++;
+                    });
 
-                if (totalEl) totalEl.textContent = count;
-            }
+                    if (totalEl)
+                        totalEl.textContent = count;
+                }
 
-            function updateActivePills() {
-                pills.forEach(function (p) {
-                    p.classList.toggle('is-active', activeTypes.has(p.dataset.type));
-                });
-            }
+                function updateActivePills() {
+                    pills.forEach(function (p) {
+                        p.classList.toggle('is-active', activeTypes.has(p.dataset.type));
+                    });
+                }
 
-            pills.forEach(function (pill) {
-                pill.addEventListener('click', function () {
-                    var t = pill.dataset.type;
+                pills.forEach(function (pill) {
+                    pill.addEventListener('click', function () {
+                        var t = pill.dataset.type;
 
-                    if (t === '') {
-                        activeTypes.clear();
-                    } else {
-                        activeTypes.delete('');
-                        if (activeTypes.has(t)) {
-                            activeTypes.delete(t);
+                        if (t === '') {
+                            activeTypes.clear();
                         } else {
-                            activeTypes.add(t);
+                            activeTypes.delete('');
+                            if (activeTypes.has(t)) {
+                                activeTypes.delete(t);
+                            } else {
+                                activeTypes.add(t);
+                            }
+                            if (activeTypes.size === 0)
+                                activeTypes.add('');
                         }
-                        if (activeTypes.size === 0) activeTypes.add('');
-                    }
 
-                    updateActivePills();
-                    applyFilter();
+                        updateActivePills();
+                        applyFilter();
+                    });
                 });
-            });
 
-            updateActivePills();
-            applyFilter();
-        })();
-    </script>
+                updateActivePills();
+                applyFilter();
+            })();
+        </script>
 
-</body>
+    </body>
 </html>

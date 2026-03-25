@@ -839,12 +839,25 @@ public class AssignmentDAO extends DBContext {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, classId);
             resultSet = statement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 total = resultSet.getInt("TotalAssignment");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return total;
+    }
+
+    //delete assignment 
+    public void deleteAssignment(int assignmentId) {
+        try {
+            String sql = "DELETE FROM [dbo].[Assignments]\n"
+                    + "      WHERE Id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, assignmentId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
